@@ -1,5 +1,5 @@
 import express from "express";
-import db from "../db/connection.js";
+import db from "../db/dummy/dummy_database.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
@@ -10,9 +10,7 @@ const userCollection = db.collection("users");
 
 //Get all users (excl password field)
 userRouter.get("/", async (req, res) => {
-  const results = await userCollection
-    .find({}, { projection: { password: 0 } })
-    .toArray();
+  const results = await userCollection.find();
   res.send(results).status(200);
 });
 
