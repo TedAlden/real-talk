@@ -2,7 +2,7 @@ import fs from "fs";
 import path from "path";
 
 // Load the data (for persistence across sessions, you’d need to write back to the file)
-const dbFilePath = path.resolve("./users.json");
+const dbFilePath = path.resolve("./db/dummy/users.json");
 let users = [];
 
 try {
