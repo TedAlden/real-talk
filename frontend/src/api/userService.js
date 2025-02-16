@@ -12,7 +12,7 @@ async function getUsers() {
 
 async function loginUser(user) {
   try {
-    const response = await axiosInstance.post("/user/login", user);
+    const response = await axiosInstance.post("/users/login", user);
     console.log(response);
     return response;
   } catch (error) {
@@ -22,7 +22,7 @@ async function loginUser(user) {
 
 async function registerUser(user) {
   try {
-    const response = await axiosInstance.post("/user/register", user);
+    const response = await axiosInstance.post("/users/register", user);
     console.log(response);
     return response;
   } catch (error) {
