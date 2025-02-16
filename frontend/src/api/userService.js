@@ -6,7 +6,11 @@ async function getUsers() {
     console.log(response);
     return response;
   } catch (error) {
-    console.error(error);
+    if (error.response) {
+      console.error("Backend error:", error.response.data);
+    } else {
+      console.error("Error:", error.message);
+    }
   }
 }
 
@@ -16,7 +20,11 @@ async function loginUser(user) {
     console.log(response);
     return response;
   } catch (error) {
-    console.error(error);
+    if (error.response) {
+      console.error("Backend error:", error.response.data);
+    } else {
+      console.error("Error:", error.message);
+    }
   }
 }
 
@@ -26,7 +34,11 @@ async function registerUser(user) {
     console.log(response);
     return response;
   } catch (error) {
-    console.error(error);
+    if (error.response) {
+      console.error("Backend error:", error.response.data);
+    } else {
+      console.error("Error:", error.message);
+    }
   }
 }
 
