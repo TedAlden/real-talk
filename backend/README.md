@@ -4,10 +4,10 @@
 
 | HTTP Method | Endpoint                    | Description                              |
 | ----------- | --------------------------- | ---------------------------------------- |
-| **POST**    | `/api/auth/register`        | Register a new user                      |
-| **POST**    | `/api/auth/login`           | Log in using username/email and password |
-| **POST**    | `/api/auth/forgot-password` | Sending password reset link via email    |
-| **POST**    | `/api/auth/reset-password`  | Reset user password                      |
+| **POST**    | `/api/users/register`        | Register a new user                      |
+| **POST**    | `/api/users/login`           | Log in using username/email and password |
+| **POST**    | `/api/users/forgot-password` | Sending password reset link via email    |
+| **POST**    | `/api/users/reset-password`  | Reset user password                      |
 
 ## User Endpoints
 
