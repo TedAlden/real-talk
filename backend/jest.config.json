@@ -1,0 +1,6 @@
+{
+  "preset": "ts-jest",
+  "globalSetup": "<rootDir>/test/jest/globalSetup.ts",
+  "globalTeardown": "<rootDir>/test/jest/globalTeardown.ts",
+  "setupFilesAfterEnv": ["<rootDir>/test/jest/setupFile.ts"]
+}
