@@ -32,12 +32,22 @@ userRouter.post("/register", async (req, res) => {
       return res.status(409).json({ error: "That username is already taken" });
     }
     //Hash the password so it's not stored in plaintext
-    req.body.password = await bcrypt.hash(req.body.password, 10);
+    const hash = await bcrypt.hash(req.body.password, 10);
+    // the hash returned from bcrypt includes the password hash with the salt
+    // appended in the same string i.e. "passwordhash.salt"
+
     //Insert the new user into the collection
-    const newUser = req.body;
+    const newUser = {
+      username: req.body.username,
+      email: req.body.email,
+      password: hash,
+      isVerified: false,
+      isAdmin: false,
+    };
     const result = await userCollection.insertOne(newUser);
     res.status(201).json({ message: "User registered successfully" });
   } catch (error) {
+    console.error("Registration error:", error);
     res.status(400).json({ error: "Registration failed" });
   }
 });
