@@ -51,6 +51,23 @@ authRouter.post("/register", async (req, res) => {
       isAdmin: false,
     };
     const result = await userCollection.insertOne(newUser);
+
+    // generate verification token
+    const token = jwt.sign({ userId: result.insertedId }, secret_key, {
+      expiresIn: "1d",
+    });
+
+    // generate verification email
+    const mailData = {
+      from: process.env.NODEMAILER_USER,
+      to: req.body.email,
+      subject: "RealTalk: Verify your account",
+      html: `<h1>Verify your account</h1><p>Your token is:<br><br>${token}</p>`,
+    };
+
+    // send verification email
+    transporter.sendMail(mailData);
+
     res.status(201).json({ message: "User registered successfully" });
   } catch (error) {
     console.error("Registration error:", error);
@@ -104,15 +121,41 @@ authRouter.post("/login", async (req, res) => {
 /**
  * POST /auth/verify-email
  *
- * Verify the user's email address.
+ * Verify the user's email address. Requires an authorisation token.
  *
  * Request body:
  * {
- *  email: string
+ *  email: string,
+ *  token: string
  * }
  */
 authRouter.post("/verify-email", async (req, res) => {
-  // TODO
+  const email = req.body.email;
+  const token = req.body.token;
+
+  // check if user exists
+  const user = await userCollection.findOne({
+    email,
+  });
+
+  if (!user) {
+    return res.status(400).json({ error: "User not found" });
+  }
+
+  // verify token
+  jwt.verify(token, secret_key, async (err, decoded) => {
+    if (err) {
+      return res.status(400).json({ error: "Invalid token" });
+    }
+
+    // update user
+    await userCollection.updateOne(
+      { _id: new ObjectId(decoded.userId) },
+      { $set: { isVerified: true } }
+    );
+
+    return res.status(200).json({ message: "Email verified" });
+  });
 });
 
 /**
