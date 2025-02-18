@@ -3,6 +3,8 @@ import db from "../db/connection.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
+const secret_key = process.env.SECRET_KEY || "use_env_key_in_production";
+
 const userRouter = express.Router();
 
 //Collections are basically tables in MongoDB. Get the user table from the database.
@@ -65,7 +67,7 @@ userRouter.post("/login", async (req, res) => {
       const result = await bcrypt.compare(req.body.password, user.password);
       if (result) {
         //If the password is correct, create a token
-        const token = jwt.sign({ userId: user._id }, "your-secret-key", {
+        const token = jwt.sign({ userId: user._id }, secret_key, {
           expiresIn: "1h",
         });
         //Send the token back to the client. Status 200 means everything is OK
