@@ -5,14 +5,14 @@ import jwt from "jsonwebtoken";
 
 const secret_key = process.env.SECRET_KEY || "use_env_key_in_production";
 
-const userRouter = express.Router();
+const authRouter = express.Router();
 
 //Collections are basically tables in MongoDB. Get the user table from the database.
 const userCollection = db.collection("users");
 
 //Gets all users from the database
 //req is the request object (what the client sends to the server), res is the response object (what the server sends back to the client)
-userRouter.get("/", async (req, res) => {
+authRouter.get("/", async (req, res) => {
   //Find users in the collection with no filter, so everyone
   const results = await userCollection.find();
   //Send the results as a JSON object, status 200 means everything is OK
@@ -22,7 +22,7 @@ userRouter.get("/", async (req, res) => {
 //Registers a new user. They should show up in the database after this
 //req is the request object (what the client sends to the server), res is the response object (what the server sends back to the client)
 //We should be sending a user object with the new user's details
-userRouter.post("/register", async (req, res) => {
+authRouter.post("/register", async (req, res) => {
   try {
     //Find users in the collection with the given username. If there's a user with that username
     const existingUser = await userCollection.findOne({
@@ -57,7 +57,7 @@ userRouter.post("/register", async (req, res) => {
 //Authenticate (login) the user
 //req is the request object (what the client sends to the server), res is the response object (what the server sends back to the client)
 //We should be sending a user object with a username and password
-userRouter.post("/login", async (req, res) => {
+authRouter.post("/login", async (req, res) => {
   try {
     //Find the user with the given username
     const user = await userCollection.findOne({ username: req.body.username });
@@ -92,4 +92,4 @@ userRouter.post("/login", async (req, res) => {
   }
 });
 
-export default userRouter;
+export default authRouter;
