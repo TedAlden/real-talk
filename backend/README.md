@@ -2,12 +2,13 @@
 
 ## Authentication Endpoints
 
-| HTTP Method | Endpoint                | Description                              |
-| ----------- | ----------------------- | ---------------------------------------- |
-| **POST**    | `/auth/register`        | Register a new user                      |
-| **POST**    | `/auth/login`           | Log in using username/email and password |
-| **POST**    | `/auth/forgot-password` | Sending password reset link via email    |
-| **POST**    | `/auth/reset-password`  | Reset user password                      |
+| HTTP Method | Endpoint                | Description                                 |
+| ----------- | ----------------------- | ------------------------------------------- |
+| **POST**    | `/auth/register`        | Register a new user                         |
+| **POST**    | `/auth/login`           | Log in using username/email and password    |
+| **POST**    | `/auth/verify-email`    | Verify the email of a newly registered user |
+| **POST**    | `/auth/forgot-password` | Request password reset email                |
+| **POST**    | `/auth/reset-password`  | Reset user password                         |
 
 ## User Endpoints
 
