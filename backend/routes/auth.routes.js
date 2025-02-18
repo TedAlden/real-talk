@@ -3,6 +3,8 @@ import db from "../db/connection.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
+import { ObjectId } from "mongodb";
+
 import transporter from "../util/mailer.js";
 
 const secret_key = process.env.SECRET_KEY || "use_env_key_in_production";
@@ -176,7 +178,25 @@ authRouter.post("/forgot-password", async (req, res) => {
  * }
  */
 authRouter.post("/reset-password", async (req, res) => {
-  // TODO
+  const token = req.body.token;
+  const password = req.body.password;
+
+  // verify token
+  jwt.verify(token, secret_key, async (err, decoded) => {
+    if (err) {
+      return res.status(400).json({ error: "Invalid token" });
+    }
+
+    // update password
+    const hash = await bcrypt.hash(password, 10);
+
+    await userCollection.updateOne(
+      { _id: new ObjectId(decoded.userId) },
+      { $set: { password: hash } }
+    );
+
+    return res.status(200).json({ message: "Password updated" });
+  });
 });
 
 export default authRouter;
