@@ -50,6 +50,12 @@ authRouter.post("/register", async (req, res) => {
       return res.status(409).json({ error: "That username is already taken" });
     }
 
+    if (!(username && email && password)) {
+      return res
+        .status(400)
+        .json({ error: "Username, email or password is missing." });
+    }
+
     // Hash the password
     bcrypt.hash(password, 10, async (err, hash) => {
       if (err) throw err;
