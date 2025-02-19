@@ -4,27 +4,29 @@ import db from "../src/db/connection";
 import transporter from "../src/util/mailer.js"; // Import the mailer
 import jest from "jest-mock";
 
+const userCollection = db.collection("users");
+
 describe("User registration", () => {
-  beforeAll(() => {
+  beforeAll(async () => {
     // Override sendMail to prevent actual email sending.
     transporter.sendMail = jest.fn((mailData, callback) => {
       callback(null, { response: "Test mode: Email not sent" });
     });
+    await userCollection.deleteMany({});
   });
 
-  afterAll(() => {
+  afterAll(async () => {
     // Restore original implementation after tests.
     transporter.sendMail.mockRestore();
+    await userCollection.deleteMany({});
   });
 
   test("should register a new user", async () => {
-    const res = await request(app)
-      .post("/auth/register")
-      .send({
-        username: "testuser",
-        email: "test.email@gmail.com",
-        password: "password123",
-      });
+    const res = await request(app).post("/auth/register").send({
+      username: "testuser",
+      email: "test.email@gmail.com",
+      password: "password123",
+    });
 
     expect(res.statusCode).toBe(201);
     expect(res.body).toHaveProperty("message", "User registered successfully.");
