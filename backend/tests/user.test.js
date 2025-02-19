@@ -26,4 +26,19 @@ describe("User registration", () => {
     expect(res.body).toHaveProperty("message", "User registered successfully.");
     expect(transporter.sendMail).toHaveBeenCalled();
   });
+
+  test("should not register a user with existing username", async () => {
+    await db.collection("users").insertOne({
+      username: "existingUser",
+      password: "hashedpwd",
+    });
+
+    const res = await request(app).post("/auth/register").send({
+      username: "existingUser",
+      password: "securepassword",
+    });
+
+    expect(res.statusCode).toBe(409);
+    expect(res.body.error).toBe("That username is already taken");
+  });
 });
