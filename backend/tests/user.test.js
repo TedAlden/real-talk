@@ -87,4 +87,21 @@ describe("User login", () => {
     expect(res.statusCode).toBe(200);
     expect(res.body).toHaveProperty("token");
   });
+
+  test("should not log in a user who is unverified", async () => {
+    const hashedPassword = await bcrypt.hash("hashedpwd2", 10);
+    const { insertedId } = await db.collection("users").insertOne({
+      username: "existingUser2",
+      password: hashedPassword,
+      isVerified: false,
+    });
+
+    const res = await request(app).post("/auth/login").send({
+      username: "existingUser2",
+      password: "hashedpwd2",
+    });
+
+    expect(res.statusCode).toBe(401);
+    expect(res.body.error).toBe("User is not verified");
+  });
 });
