@@ -104,4 +104,14 @@ describe("User login", () => {
     expect(res.statusCode).toBe(401);
     expect(res.body.error).toBe("User is not verified");
   });
+
+  test("should not log in a user who doesnt exist", async () => {
+    const res = await request(app).post("/auth/login").send({
+      username: "existingUser3",
+      password: "hashedpwd3",
+    });
+
+    expect(res.statusCode).toBe(400);
+    expect(res.body.error).toBe("User doesn't exist");
+  });
 });
