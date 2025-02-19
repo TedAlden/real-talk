@@ -43,11 +43,17 @@ authRouter.post("/register", async (req, res) => {
   try {
     const { username, email, password } = req.body;
 
-    // Check if user exists
-    const existingUser = await userCollection.findOne({ username });
-    if (existingUser) {
+    // Check if username is already registered
+    const existingUsername = await userCollection.findOne({ username });
+    if (existingUsername) {
       // HTTP status 409 means conflict
-      return res.status(409).json({ error: "That username is already taken" });
+      return res.status(409).json({ error: "Username is already registered." });
+    }
+
+    // Check if email is already registered
+    const existingEmail = await userCollection.findOne({ email });
+    if (existingEmail) {
+      return res.status(409).json({ error: "Email is already registered." });
     }
 
     // Check all fields are supplied
