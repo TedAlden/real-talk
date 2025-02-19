@@ -8,6 +8,10 @@ on:
     branches:
       - main
 
+defaults:
+  run:
+    working-directory: ./backend
+
 jobs:
   unit-test-with-jest:
     runs-on: ubuntu-latest
@@ -22,10 +26,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: "22"
-
-      # change to backend directory
-      - name: Change to backend directory
-        run: cd backend
 
       # install dependencies
       - name: Install dependencies
