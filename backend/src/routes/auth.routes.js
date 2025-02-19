@@ -62,10 +62,10 @@ authRouter.post("/register", async (req, res) => {
         isVerified: false,
         isAdmin: false,
       };
-      await userCollection.insertOne(newUser);
+      const newUserId = await userCollection.insertOne(newUser);
 
       // Generate verification token
-      const token = jwt.sign({ userId: newUser._id }, secret_key, {
+      const token = jwt.sign({ userId: newUserId }, secret_key, {
         expiresIn: "1d",
       });
 
