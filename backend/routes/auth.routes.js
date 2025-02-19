@@ -2,30 +2,12 @@ import express from "express";
 import db from "../db/connection.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-
 import { ObjectId } from "mongodb";
 
 import transporter from "../util/mailer.js";
 
-const secret_key = process.env.SECRET_KEY || "use_env_key_in_production";
-
 const authRouter = express.Router();
-
 const userCollection = db.collection("users");
-
-/**
- * GET /auth
- *
- * Get all users.
- */
-authRouter.get("/", async (req, res) => {
-  // TODO: move this to users router when created
-
-  // Find all users in the collection
-  const results = await userCollection.find().toArray();
-
-  res.send(results).status(200);
-});
 
 /**
  * POST /auth/register
@@ -77,7 +59,7 @@ authRouter.post("/register", async (req, res) => {
     const { insertedId } = await userCollection.insertOne(newUser);
 
     // Generate verification token
-    const token = jwt.sign({ userId: insertedId }, secret_key, {
+    const token = jwt.sign({ userId: insertedId }, process.env.SECRET_KEY, {
       expiresIn: "1d",
     });
 
@@ -98,7 +80,7 @@ authRouter.post("/register", async (req, res) => {
     res.status(201).json({ message: "User registered successfully." });
   } catch (error) {
     console.error("Registration error:", error);
-    res.status(500).json({ error: "Server error." });
+    return res.status(500).json({ error: "Server error." });
   }
 });
 
@@ -135,7 +117,7 @@ authRouter.post("/login", async (req, res) => {
 
       if (result) {
         // If the password is correct, create a token and send it to the user
-        const token = jwt.sign({ userId: user._id }, secret_key, {
+        const token = jwt.sign({ userId: user._id }, process.env.SECRET_KEY, {
           expiresIn: "1h",
         });
         return res.status(200).json({ token });
@@ -172,7 +154,7 @@ authRouter.post("/verify-email", async (req, res) => {
     }
 
     // Verify token
-    jwt.verify(token, secret_key, async (err, decoded) => {
+    jwt.verify(token, process.env.SECRET_KEY, async (err, decoded) => {
       if (err) {
         return res.status(400).json({ error: "Invalid token" });
       }
@@ -217,7 +199,7 @@ authRouter.post("/forgot-password", async (req, res) => {
         type: "password-reset",
         userId: user._id,
       },
-      secret_key,
+      process.env.SECRET_KEY,
       {
         expiresIn: "15m",
       }
@@ -260,7 +242,7 @@ authRouter.post("/reset-password", async (req, res) => {
     const { token, password } = req.body;
 
     // Verify token to check user is authorised to reset the password
-    jwt.verify(token, secret_key, async (err, decoded) => {
+    jwt.verify(token, process.env.SECRET_KEY, async (err, decoded) => {
       if (err) {
         return res.status(400).json({ error: "Invalid token" });
       }
