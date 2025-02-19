@@ -125,3 +125,34 @@ describe("User login", () => {
     expect(res.body.error).toBe("Incorrect password");
   });
 });
+
+// We'll move this when the user routes are properly defined later
+describe("User operations", () => {
+  beforeAll(async () => {
+    await userCollection.deleteMany({});
+    const hashedPassword1 = await bcrypt.hash("password1", 10);
+    const hashedPassword2 = await bcrypt.hash("password2", 10);
+    await db.collection("users").insertMany([
+      {
+        username: "testUser1",
+        password: hashedPassword1,
+        isVerified: true,
+      },
+      {
+        username: "testUser2",
+        password: hashedPassword2,
+        isVerified: true,
+      },
+    ]);
+  });
+
+  afterAll(async () => {
+    await userCollection.deleteMany({});
+  });
+
+  test("/GET should get an array of all users", async () => {
+    const res = await request(app).get("/auth/");
+    expect(res.statusCode).toBe(200);
+    expect(res.body).toBeInstanceOf(Array);
+  });
+});
