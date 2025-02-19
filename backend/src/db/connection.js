@@ -1,8 +1,10 @@
 import { MongoClient } from "mongodb";
 
 //These parameters are taken from the .env file, usually kept on your machine rather than the repo for security
-const connectionString = process.env.DATABASE_URI || "";
-const databaseName = process.env.DATABASE_NAME || "";
+const connectionString =
+  process.env.MONGO_TEST_URI || process.env.DATABASE_URI || "";
+const databaseName =
+  process.env.MONGO_TEST_DB || process.env.DATABASE_NAME || "";
 
 //Create a new MongoClient and connect to the database
 const client = new MongoClient(connectionString);
