@@ -1,6 +1,6 @@
 import request from "supertest";
-import app from "../src/app";
-import db from "../src/db/connection";
+import app from "../src/app.js";
+import db from "../src/db/connection.js";
 import transporter from "../src/util/mailer.js"; // Import the mailer
 import jest from "jest-mock";
 import bcrypt from "bcrypt";
