@@ -114,4 +114,21 @@ describe("User login", () => {
     expect(res.statusCode).toBe(400);
     expect(res.body.error).toBe("User doesn't exist");
   });
+
+  test("should not log in a user with a wrong password", async () => {
+    const hashedPassword = await bcrypt.hash("hashedpwd4", 10);
+    const { insertedId } = await db.collection("users").insertOne({
+      username: "existingUser",
+      password: hashedPassword,
+      isVerified: true,
+    });
+
+    const res = await request(app).post("/auth/login").send({
+      username: "existingUser",
+      password: "wronghashedpwd",
+    });
+
+    expect(res.statusCode).toBe(401);
+    expect(res.body.error).toBe("Incorrect password");
+  });
 });
