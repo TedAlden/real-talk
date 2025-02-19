@@ -3,6 +3,7 @@ import app from "../src/app";
 import db from "../src/db/connection";
 import transporter from "../src/util/mailer.js"; // Import the mailer
 import jest from "jest-mock";
+import bcrypt from "bcrypt";
 
 const userCollection = db.collection("users");
 
@@ -58,5 +59,32 @@ describe("User registration", () => {
 
     expect(res.statusCode).toBe(400);
     expect(res.body.error).toBe("Username, email or password is missing.");
+  });
+});
+
+describe("User login", () => {
+  beforeAll(async () => {
+    await userCollection.deleteMany({});
+  });
+
+  afterAll(async () => {
+    await userCollection.deleteMany({});
+  });
+
+  test("should log in a user who is verified and exists", async () => {
+    const hashedPassword = await bcrypt.hash("hashedpwd", 10);
+    const { insertedId } = await db.collection("users").insertOne({
+      username: "existingUser",
+      password: hashedPassword,
+      isVerified: true,
+    });
+
+    const res = await request(app).post("/auth/login").send({
+      username: "existingUser",
+      password: "hashedpwd",
+    });
+
+    expect(res.statusCode).toBe(200);
+    expect(res.body).toHaveProperty("token");
   });
 });
