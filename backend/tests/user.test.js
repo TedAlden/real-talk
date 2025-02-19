@@ -49,4 +49,14 @@ describe("User registration", () => {
     expect(res.statusCode).toBe(409);
     expect(res.body.error).toBe("That username is already taken");
   });
+
+  test("should not register a user with missing fields", async () => {
+    const res = await request(app).post("/auth/register").send({
+      username: "whereDidMyPasswordGo",
+      email: "test2.email@gmail.com",
+    });
+
+    expect(res.statusCode).toBe(400);
+    expect(res.body.error).toBe("Username, email or password is missing.");
+  });
 });
