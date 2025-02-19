@@ -50,6 +50,7 @@ authRouter.post("/register", async (req, res) => {
       return res.status(409).json({ error: "That username is already taken" });
     }
 
+    // Check all fields are supplied
     if (!(username && email && password)) {
       return res
         .status(400)
@@ -57,39 +58,38 @@ authRouter.post("/register", async (req, res) => {
     }
 
     // Hash the password
-    bcrypt.hash(password, 10, async (err, hash) => {
-      if (err) throw err;
+    const hash = await bcrypt.hash(password, 10);
 
-      // Insert the new user into the collection
-      const newUser = {
-        username,
-        email,
-        password: hash,
-        isVerified: false,
-        isAdmin: false,
-      };
-      const { insertedId } = await userCollection.insertOne(newUser);
-      // Generate verification token
-      const token = jwt.sign({ userId: insertedId }, secret_key, {
-        expiresIn: "1d",
-      });
+    // Insert the new user into the collection
+    const newUser = {
+      username,
+      email,
+      password: hash,
+      isVerified: false,
+      isAdmin: false,
+    };
+    const { insertedId } = await userCollection.insertOne(newUser);
 
-      // Generate the 'verify your account' email
-      const mailData = {
-        from: process.env.NODEMAILER_USER,
-        to: email,
-        subject: "RealTalk: Verify your account",
-        html: `<h1>Verify your account</h1><p>Your token:<br><br>${token}</p>`,
-      };
-
-      // Send the email
-      transporter.sendMail(mailData, (err, info) => {
-        if (err) throw err;
-      });
-
-      // 201 status means the user was created successfully
-      res.status(201).json({ message: "User registered successfully." });
+    // Generate verification token
+    const token = jwt.sign({ userId: insertedId }, secret_key, {
+      expiresIn: "1d",
     });
+
+    // Generate the 'verify your account' email
+    const mailData = {
+      from: process.env.NODEMAILER_USER,
+      to: email,
+      subject: "RealTalk: Verify your account",
+      html: `<h1>Verify your account</h1><p>Your token:<br><br>${token}</p>`,
+    };
+
+    // Send the email
+    transporter.sendMail(mailData, (err, info) => {
+      if (err) throw err;
+    });
+
+    // 201 status means the user was created successfully
+    res.status(201).json({ message: "User registered successfully." });
   } catch (error) {
     console.error("Registration error:", error);
     res.status(500).json({ error: "Server error." });
