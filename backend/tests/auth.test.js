@@ -65,6 +65,20 @@ describe("User registration", () => {
 describe("User login", () => {
   beforeAll(async () => {
     await userCollection.deleteMany({});
+    const hashedPassword1 = await bcrypt.hash("password1", 10);
+    const hashedPassword2 = await bcrypt.hash("password2", 10);
+    await db.collection("users").insertMany([
+      {
+        username: "VerifiedUser",
+        password: hashedPassword1,
+        isVerified: true,
+      },
+      {
+        username: "UnverifiedUser",
+        password: hashedPassword2,
+        isVerified: false,
+      },
+    ]);
   });
 
   afterAll(async () => {
@@ -72,16 +86,9 @@ describe("User login", () => {
   });
 
   test("should log in a user who is verified and exists", async () => {
-    const hashedPassword = await bcrypt.hash("hashedpwd", 10);
-    const { insertedId } = await db.collection("users").insertOne({
-      username: "existingUser",
-      password: hashedPassword,
-      isVerified: true,
-    });
-
     const res = await request(app).post("/auth/login").send({
-      username: "existingUser",
-      password: "hashedpwd",
+      username: "VerifiedUser",
+      password: "password1",
     });
 
     expect(res.statusCode).toBe(200);
@@ -89,16 +96,9 @@ describe("User login", () => {
   });
 
   test("should not log in a user who is unverified", async () => {
-    const hashedPassword = await bcrypt.hash("hashedpwd2", 10);
-    const { insertedId } = await db.collection("users").insertOne({
-      username: "existingUser2",
-      password: hashedPassword,
-      isVerified: false,
-    });
-
     const res = await request(app).post("/auth/login").send({
-      username: "existingUser2",
-      password: "hashedpwd2",
+      username: "UnverifiedUser",
+      password: "password2",
     });
 
     expect(res.statusCode).toBe(401);
@@ -107,8 +107,8 @@ describe("User login", () => {
 
   test("should not log in a user who doesnt exist", async () => {
     const res = await request(app).post("/auth/login").send({
-      username: "existingUser3",
-      password: "hashedpwd3",
+      username: "SantaClaus",
+      password: "password3",
     });
 
     expect(res.statusCode).toBe(400);
@@ -116,16 +116,9 @@ describe("User login", () => {
   });
 
   test("should not log in a user with a wrong password", async () => {
-    const hashedPassword = await bcrypt.hash("hashedpwd4", 10);
-    const { insertedId } = await db.collection("users").insertOne({
-      username: "existingUser",
-      password: hashedPassword,
-      isVerified: true,
-    });
-
     const res = await request(app).post("/auth/login").send({
-      username: "existingUser",
-      password: "wronghashedpwd",
+      username: "VerifiedUser",
+      password: "wrongPassword",
     });
 
     expect(res.statusCode).toBe(401);
