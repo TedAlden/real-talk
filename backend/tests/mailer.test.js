@@ -70,4 +70,14 @@ describe("User email verification", () => {
     expect(res.statusCode).toBe(400);
     expect(res.body.error).toBe("User not found");
   });
+
+  test("should not verify user if the token is invalid", async () => {
+    const res = await request(app).post("/auth/verify-email").send({
+      email: "test@example.com",
+      token: "TokenFromTheTokenFairy",
+    });
+
+    expect(res.statusCode).toBe(400);
+    expect(res.body.error).toBe("Invalid token");
+  });
 });
