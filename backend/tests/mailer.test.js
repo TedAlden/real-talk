@@ -44,4 +44,17 @@ describe("User email verification", () => {
     expect(mailData.to).toBe("test@example.com");
     expect(mailData.subject).toBe("RealTalk: Verify your account");
   });
+
+  test("the verification email token should verify the user", async () => {
+    const mailData = sendMailMock.mock.calls[0][0];
+    const token = mailData.html.match(/<br><br>([^<]+)<\/p>/)[1];
+
+    const res = await request(app).post("/auth/verify-email").send({
+      email: "test@example.com",
+      token: token,
+    });
+
+    expect(res.statusCode).toBe(200);
+    expect(res.body).toHaveProperty("message", "Email verified");
+  });
 });
