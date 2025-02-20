@@ -1,6 +1,6 @@
 # API Endpoints
 
-## Authentication Endpoints
+## Authentication
 
 | HTTP Method | Endpoint                | Description                                 |
 | ----------- | ----------------------- | ------------------------------------------- |
