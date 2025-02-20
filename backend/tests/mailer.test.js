@@ -57,4 +57,17 @@ describe("User email verification", () => {
     expect(res.statusCode).toBe(200);
     expect(res.body).toHaveProperty("message", "Email verified");
   });
+
+  test("should not verify user if their email does not exist", async () => {
+    const mailData = sendMailMock.mock.calls[0][0];
+    const token = mailData.html.match(/<br><br>([^<]+)<\/p>/)[1];
+
+    const res = await request(app).post("/auth/verify-email").send({
+      email: "wrongemail@example.com",
+      token: token,
+    });
+
+    expect(res.statusCode).toBe(400);
+    expect(res.body.error).toBe("User not found");
+  });
 });
