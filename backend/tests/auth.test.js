@@ -65,8 +65,9 @@ describe("User registration", () => {
 describe("User login", () => {
   beforeAll(async () => {
     await userCollection.deleteMany({});
-    const hashedPassword1 = await bcrypt.hash("password1", 10);
-    const hashedPassword2 = await bcrypt.hash("password2", 10);
+    const salt = "$2b$10$1234567891011121314151";
+    const hashedPassword1 = await bcrypt.hash("password1", salt);
+    const hashedPassword2 = await bcrypt.hash("password2", salt);
     await db.collection("users").insertMany([
       {
         username: "VerifiedUser",
