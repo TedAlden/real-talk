@@ -1,15 +1,17 @@
 import request from "supertest";
 import app from "../src/app.js";
-import db from "../src/db/connection.js";
+import { connectDB, closeDB } from "../src/db/connection.js";
 import transporter from "../src/util/mailer.js"; // Import the mailer
 import jest from "jest-mock";
 import { seedUsers, clearUsers } from "./testUtils.js";
 
-const userCollection = db.collection("users");
+let db;
 
 describe("User email verification", () => {
   let sendMailMock;
+
   beforeAll(async () => {
+    db = await connectDB();
     // Override sendMail to prevent actual email sending.
     sendMailMock = jest
       .spyOn(transporter, "sendMail")
@@ -31,6 +33,7 @@ describe("User email verification", () => {
 
   afterAll(async () => {
     sendMailMock.mockRestore();
+    await closeDB(db);
   });
 
   afterEach(async () => {
