@@ -3,6 +3,7 @@ import app from "../src/app.js";
 import db from "../src/db/connection.js";
 import transporter from "../src/util/mailer.js"; // Import the mailer
 import jest from "jest-mock";
+import { seedUsers, clearUsers } from "./testUtils.js";
 
 const userCollection = db.collection("users");
 
@@ -16,7 +17,7 @@ describe("User email verification", () => {
         // Immediately invoke the callback to simulate successful sending
         callback(null, { success: true });
       });
-    await userCollection.deleteMany({});
+    await clearUsers(db);
   });
 
   beforeEach(async () => {
@@ -33,7 +34,7 @@ describe("User email verification", () => {
   });
 
   afterEach(async () => {
-    await userCollection.deleteMany({});
+    await clearUsers(db);
     sendMailMock.mockClear();
   });
 
