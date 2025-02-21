@@ -1,4 +1,4 @@
-export default {
+module.exports = {
   mongodbMemoryServerOptions: {
     binary: {
       version: "4.0.3",
@@ -6,6 +6,7 @@ export default {
     },
     instance: {
       dbName: "jest",
+      replSet: {}, //
     },
     autoStart: false,
   },
