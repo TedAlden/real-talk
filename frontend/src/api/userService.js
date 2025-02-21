@@ -32,8 +32,8 @@ async function loginUser(user) {
   } catch (error) {
     if (error.response) {
       //If error has a response, it means the request reached the backend but it sent back an error.
-      console.error("Backend error:", error.response);
-      return { success: false, error: error.response };
+      console.error("Backend error:", error);
+      return { success: false, error: error.message };
     } else {
       //Otherwise, it's an error with the request
       console.error("Error:", error);
