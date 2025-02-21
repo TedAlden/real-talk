@@ -79,7 +79,7 @@ describe("User login", () => {
   test("should log in a user who is verified and exists", async () => {
     const res = await request(app).post("/auth/login").send({
       username: "VerifiedUser",
-      password: "password1",
+      password: "verified1",
     });
 
     expect(res.statusCode).toBe(200);
