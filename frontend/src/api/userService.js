@@ -24,7 +24,7 @@ async function getUsers() {
 async function loginUser(user) {
   try {
     //Makes a POST request to the "/users/login" endpoint. Auth stuff is usually POST because it's more secure.
-    const response = await axiosInstance.post("/users/login", user);
+    const response = await axiosInstance.post("/auth/login", user);
     //Log the response for debugging purposes and return the response
     //The response should contain a token which we can use to authenticate the user on protected endpoints.
     console.log(response);
@@ -45,7 +45,7 @@ async function loginUser(user) {
 async function registerUser(user) {
   try {
     //Makes a POST request to the "/users/register" endpoint. Auth stuff is usually POST because it's more secure.
-    const response = await axiosInstance.post("/users/register", user);
+    const response = await axiosInstance.post("/auth/register", user);
     //Log the response for debugging purposes and return the response.
     //Usually the response is the info of the newly registered user or maybe a token so they can be logged in immediately.
     console.log(response);
