@@ -1,25 +1,27 @@
 import request from "supertest";
 import app from "../src/app.js";
-import db from "../src/db/connection.js";
+import { closeDB, connectDB } from "../src/db/connection.js";
 import transporter from "../src/util/mailer.js"; // Import the mailer
 import jest from "jest-mock";
-import bcrypt from "bcrypt";
+import { seedUsers, clearUsers } from "./testUtils.js";
 
-const userCollection = db.collection("users");
+let db;
 
 describe("User registration", () => {
   beforeAll(async () => {
+    db = await connectDB();
     // Override sendMail to prevent actual email sending.
     transporter.sendMail = jest.fn((mailData, callback) => {
       callback(null, { response: "Test mode: Email not sent" });
     });
-    await userCollection.deleteMany({});
+    await clearUsers(db);
   });
 
   afterAll(async () => {
     // Restore original implementation after tests.
     transporter.sendMail.mockRestore();
-    await userCollection.deleteMany({});
+    await clearUsers(db);
+    await closeDB();
   });
 
   test("should register a new user", async () => {
@@ -64,26 +66,14 @@ describe("User registration", () => {
 
 describe("User login", () => {
   beforeAll(async () => {
-    await userCollection.deleteMany({});
-    const salt = "$2b$10$1234567891011121314151";
-    const hashedPassword1 = await bcrypt.hash("password1", salt);
-    const hashedPassword2 = await bcrypt.hash("password2", salt);
-    await db.collection("users").insertMany([
-      {
-        username: "VerifiedUser",
-        password: hashedPassword1,
-        isVerified: true,
-      },
-      {
-        username: "UnverifiedUser",
-        password: hashedPassword2,
-        isVerified: false,
-      },
-    ]);
+    db = await connectDB();
+    await clearUsers(db);
+    await seedUsers(db);
   });
 
   afterAll(async () => {
-    await userCollection.deleteMany({});
+    await clearUsers(db);
+    await closeDB();
   });
 
   test("should log in a user who is verified and exists", async () => {
@@ -130,25 +120,14 @@ describe("User login", () => {
 // We'll move this when the user routes are properly defined later
 describe("User operations", () => {
   beforeAll(async () => {
-    await userCollection.deleteMany({});
-    const hashedPassword1 = await bcrypt.hash("password1", 10);
-    const hashedPassword2 = await bcrypt.hash("password2", 10);
-    await db.collection("users").insertMany([
-      {
-        username: "testUser1",
-        password: hashedPassword1,
-        isVerified: true,
-      },
-      {
-        username: "testUser2",
-        password: hashedPassword2,
-        isVerified: true,
-      },
-    ]);
+    db = await connectDB();
+    await clearUsers(db);
+    await seedUsers(db);
   });
 
   afterAll(async () => {
-    await userCollection.deleteMany({});
+    await clearUsers(db);
+    await closeDB();
   });
 
   test("/GET should get an array of all users", async () => {
