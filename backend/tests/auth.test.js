@@ -116,23 +116,3 @@ describe("User login", () => {
     expect(res.body.error).toBe("Incorrect password");
   });
 });
-
-// We'll move this when the user routes are properly defined later
-describe("User operations", () => {
-  beforeAll(async () => {
-    db = await connectDB();
-    await clearUsers(db);
-    await seedUsers(db);
-  });
-
-  afterAll(async () => {
-    await clearUsers(db);
-    await closeDB();
-  });
-
-  test("/GET should get an array of all users", async () => {
-    const res = await request(app).get("/auth/");
-    expect(res.statusCode).toBe(200);
-    expect(res.body).toBeInstanceOf(Array);
-  });
-});
