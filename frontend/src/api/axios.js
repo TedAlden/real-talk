@@ -1,9 +1,9 @@
 import axios from "axios";
 
-const url = process.env.BACKEND_URI
-  ? process.env.BACKEND_URI
-  : process.env.PORT
-  ? `http://localhost:${process.env.PORT}`
+const url = import.meta.env.BACKEND_URI
+  ? import.meta.env.BACKEND_URI
+  : import.meta.env.PORT
+  ? `http://localhost:${import.meta.env.PORT}`
   : "http://localhost:5001";
 
 // Creates an axios instance with preset configuration to be shared across request configurations
