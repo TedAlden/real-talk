@@ -1,22 +1,30 @@
 import { MongoClient } from "mongodb";
 
-//These parameters are taken from the .env file, usually kept on your machine rather than the repo for security
-const connectionString =
-  process.env.MONGO_TEST_URI || process.env.DATABASE_URI || "";
-const databaseName =
-  process.env.MONGO_TEST_DB || process.env.DATABASE_NAME || "";
+let connString = process.env.DATABASE_URI || "";
+let databaseName = process.env.DATABASE_NAME || "";
+let client;
+let db;
 
-//Create a new MongoClient and connect to the database
-const client = new MongoClient(connectionString);
-let conn;
-try {
-  //Connect to the database
-  conn = await client.connect();
-} catch (e) {
-  //If there was an error, log it
-  console.error(e);
+if (process.env.MONGO_URL) {
+  connString = process.env.MONGO_URL;
+  databaseName = "jest";
 }
 
-//Get the database from the connection and export it for other modules to use
-let db = conn.db(databaseName);
-export default db;
+export async function connectDB() {
+  if (!client) {
+    client = new MongoClient(connString);
+    await client.connect();
+    db = client.db(databaseName);
+  }
+  return db;
+}
+
+export async function closeDB() {
+  if (client) {
+    await client.close(true); // Force close all connections
+    client = null;
+    db = null;
+  }
+}
+
+export default { connectDB, closeDB };
