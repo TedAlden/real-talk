@@ -1,7 +1,6 @@
-import reactLogo from "./assets/react.svg";
 import viteLogo from "/vite.svg";
 import "./App.css";
-import LoginWindow from "./components/LoginWindow";
+import AuthContainer from "./components/AuthContainer";
 function App() {
   return (
     <>
@@ -12,7 +11,7 @@ function App() {
       </div>
       <h1>REAL TALK</h1>
       <div className="card">
-        <LoginWindow></LoginWindow>
+        <AuthContainer></AuthContainer>
       </div>
     </>
   );
