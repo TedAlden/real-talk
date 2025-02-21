@@ -39,7 +39,7 @@ function AuthContainer() {
       </form>
       <div
         style={{
-          minHeight: "200px",
+          minHeight: "300px",
           display: "flex",
           justifyContent: "center",
           alignItems: "flex-start",

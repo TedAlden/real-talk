@@ -31,25 +31,12 @@ function LoginWindow() {
         alignItems: "center",
       }}
     >
-      {alert && (
-        <div
-          style={{
-            background: "red",
-            color: "white",
-            padding: "0.5em",
-            width: "100%",
-            margin: "1em",
-            borderRadius: "5px",
-          }}
-        >
-          {alert}
-        </div>
-      )}
       <div
         style={{
           display: "grid",
           gridTemplateColumns: "1fr 2fr",
           gap: "0.75em",
+          textAlign: "right",
         }}
       >
         <label>Username:</label>
@@ -58,6 +45,21 @@ function LoginWindow() {
         <label>Password:</label>
         <input type="password" onChange={(e) => setPassword(e.target.value)} />
       </div>
+      <div
+        style={{
+          background: "red",
+          color: "white",
+          padding: "0.5em",
+          width: "100%",
+          margin: "1em",
+          minHeight: "2em",
+          borderRadius: "5px",
+          visibility: alert ? "visible" : "hidden", // Keeps space reserved
+        }}
+      >
+        {alert}
+      </div>
+
       <button style={{ width: "96px", marginTop: "1em" }}>Login</button>
     </form>
   );
