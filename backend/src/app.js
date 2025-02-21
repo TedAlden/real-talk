@@ -1,8 +1,15 @@
-import "dotenv/config.js";
+import "dotenv/config";
+import path from "path";
 import express from "express";
 import cors from "cors";
 
 import authRouter from "./routes/auth.routes.js";
+
+// Secret key required for GitHub Actions testing workflow where a .env file
+// does not exist
+process.env.SECRET_KEY = process.env.SECRET_KEY
+  ? process.env.SECRET_KEY
+  : "secret-key";
 
 // Create Express app
 const app = express();
