@@ -6,7 +6,7 @@ module.exports = {
     },
     instance: {
       dbName: "jest",
-      replSet: {}, //
+      replSet: {},
     },
     autoStart: false,
   },

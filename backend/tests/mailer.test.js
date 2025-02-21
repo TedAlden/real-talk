@@ -1,14 +1,13 @@
 import request from "supertest";
+import jest from "jest-mock";
+
 import app from "../src/app.js";
 import { connectDB, closeDB } from "../src/db/connection.js";
-import transporter from "../src/util/mailer.js"; // Import the mailer
-import jest from "jest-mock";
-import { seedUsers, clearUsers } from "./testUtils.js";
-
-let db;
+import transporter from "../src/util/mailer.js";
 
 describe("User email verification", () => {
   let sendMailMock;
+  let db;
 
   beforeAll(async () => {
     db = await connectDB();
@@ -19,7 +18,7 @@ describe("User email verification", () => {
         // Immediately invoke the callback to simulate successful sending
         callback(null, { success: true });
       });
-    await clearUsers(db);
+    await db.collection("users").deleteMany({}); // Delete all users from table
   });
 
   beforeEach(async () => {
@@ -37,7 +36,7 @@ describe("User email verification", () => {
   });
 
   afterEach(async () => {
-    await clearUsers(db);
+    await db.collection("users").deleteMany({});
     sendMailMock.mockClear();
   });
 

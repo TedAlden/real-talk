@@ -1,26 +1,27 @@
 import request from "supertest";
-import app from "../src/app.js";
-import { closeDB, connectDB } from "../src/db/connection.js";
-import transporter from "../src/util/mailer.js"; // Import the mailer
 import jest from "jest-mock";
-import { seedUsers, clearUsers } from "./testUtils.js";
+import bcrypt from "bcrypt";
 
-let db;
+import app from "../src/app.js";
+import { connectDB, closeDB } from "../src/db/connection.js";
+import transporter from "../src/util/mailer.js";
 
 describe("User registration", () => {
+  let db;
+
   beforeAll(async () => {
     db = await connectDB();
-    // Override sendMail to prevent actual email sending.
+    // Mock sendMail to prevent actual email sending.
     transporter.sendMail = jest.fn((mailData, callback) => {
       callback(null, { response: "Test mode: Email not sent" });
     });
-    await clearUsers(db);
+    await db.collection("users").deleteMany({}); // Clear users table
   });
 
   afterAll(async () => {
     // Restore original implementation after tests.
     transporter.sendMail.mockRestore();
-    await clearUsers(db);
+    await db.collection("users").deleteMany({}); // Clear users table
     await closeDB();
   });
 
@@ -50,7 +51,7 @@ describe("User registration", () => {
     });
 
     expect(res.statusCode).toBe(409);
-    expect(res.body.error).toBe("That username is already taken");
+    expect(res.body.error).toBe("Username is already registered.");
   });
 
   test("should not register a user with missing fields", async () => {
@@ -65,14 +66,47 @@ describe("User registration", () => {
 });
 
 describe("User login", () => {
+  let db;
+  let testUsers;
+  const staticSalt = "$2b$12$abcdefghijklmnopqrstuv";
+
   beforeAll(async () => {
     db = await connectDB();
-    await clearUsers(db);
-    await seedUsers(db);
+    testUsers = [
+      {
+        username: "ExistingUser",
+        email: "test.email@gmail.com",
+        password: await bcrypt.hash("existing1", staticSalt),
+        isVerified: true,
+      },
+      {
+        username: "UnverifiedUser",
+        email: "unverified.email@gmail.com",
+        password: await bcrypt.hash("unverified1", staticSalt),
+        isVerified: false,
+      },
+      {
+        username: "VerifiedUser",
+        email: "verified.email@gmail.com",
+        password: await bcrypt.hash("verified1", staticSalt),
+        isVerified: true,
+      },
+      {
+        username: "unverifiedUser",
+        email: "unverified.email@gmail.com",
+        password: await bcrypt.hash("unverifiedPassword", staticSalt),
+        isVerified: false,
+      },
+    ];
+
+    // Delete all users from table and then insert test users
+    await db.collection("users").deleteMany({});
+    await db.collection("users").insertMany(testUsers);
   });
 
   afterAll(async () => {
-    await clearUsers(db);
+    // Delete all users from table
+    await db.collection("users").deleteMany({});
     await closeDB();
   });
 

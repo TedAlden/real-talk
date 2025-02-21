@@ -2,28 +2,11 @@ import express from "express";
 import { connectDB } from "../db/connection.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-
 import { ObjectId } from "mongodb";
 
 import transporter from "../util/mailer.js";
 
-const secret_key = process.env.SECRET_KEY || "use_env_key_in_production";
-
 const authRouter = express.Router();
-
-/**
- * GET /auth
- *
- * Get all users.
- */
-authRouter.get("/", async (req, res) => {
-  // TODO: move this to users router when created
-
-  // Find all users in the collection
-  const results = await userCollection.find().toArray();
-
-  res.send(results).status(200);
-});
 
 /**
  * POST /auth/register
@@ -43,13 +26,20 @@ authRouter.post("/register", async (req, res) => {
     const db = await connectDB();
     const userCollection = db.collection("users");
 
-    // Check if user exists
-    const existingUser = await userCollection.findOne({ username });
-    if (existingUser) {
+    // Check if username is already registered
+    const existingUsername = await userCollection.findOne({ username });
+    if (existingUsername) {
       // HTTP status 409 means conflict
-      return res.status(409).json({ error: "That username is already taken" });
+      return res.status(409).json({ error: "Username is already registered." });
     }
 
+    // Check if email is already registered
+    const existingEmail = await userCollection.findOne({ email });
+    if (existingEmail) {
+      return res.status(409).json({ error: "Email is already registered." });
+    }
+
+    // Check all fields are supplied
     if (!(username && email && password)) {
       return res
         .status(400)
@@ -57,42 +47,41 @@ authRouter.post("/register", async (req, res) => {
     }
 
     // Hash the password
-    bcrypt.hash(password, 10, async (err, hash) => {
-      if (err) throw err;
+    const hash = await bcrypt.hash(password, 10);
 
-      // Insert the new user into the collection
-      const newUser = {
-        username,
-        email,
-        password: hash,
-        isVerified: false,
-        isAdmin: false,
-      };
-      const { insertedId } = await userCollection.insertOne(newUser);
-      // Generate verification token
-      const token = jwt.sign({ userId: insertedId }, secret_key, {
-        expiresIn: "1d",
-      });
+    // Insert the new user into the collection
+    const newUser = {
+      username,
+      email,
+      password: hash,
+      isVerified: false,
+      isAdmin: false,
+    };
+    const { insertedId } = await userCollection.insertOne(newUser);
 
-      // Generate the 'verify your account' email
-      const mailData = {
-        from: process.env.NODEMAILER_USER,
-        to: email,
-        subject: "RealTalk: Verify your account",
-        html: `<h1>Verify your account</h1><p>Your token:<br><br>${token}</p>`,
-      };
-
-      // Send the email
-      transporter.sendMail(mailData, (err, info) => {
-        if (err) throw err;
-      });
-
-      // 201 status means the user was created successfully
-      res.status(201).json({ message: "User registered successfully." });
+    // Generate verification token
+    const token = jwt.sign({ userId: insertedId }, process.env.SECRET_KEY, {
+      expiresIn: "1d",
     });
+
+    // Generate the 'verify your account' email
+    const mailData = {
+      from: process.env.NODEMAILER_USER,
+      to: email,
+      subject: "RealTalk: Verify your account",
+      html: `<h1>Verify your account</h1><p>Your token:<br><br>${token}</p>`,
+    };
+
+    // Send the email
+    transporter.sendMail(mailData, (err, info) => {
+      if (err) throw err;
+    });
+
+    // 201 status means the user was created successfully
+    res.status(201).json({ message: "User registered successfully." });
   } catch (error) {
     console.error("Registration error:", error);
-    res.status(500).json({ error: "Server error." });
+    return res.status(500).json({ error: "Server error." });
   }
 });
 
@@ -113,6 +102,7 @@ authRouter.post("/login", async (req, res) => {
     const { username, password } = req.body;
     const db = await connectDB();
     const userCollection = db.collection("users");
+
     // Check if user exists
     const user = await userCollection.findOne({ username });
     if (!user) {
@@ -130,7 +120,7 @@ authRouter.post("/login", async (req, res) => {
 
       if (result) {
         // If the password is correct, create a token and send it to the user
-        const token = jwt.sign({ userId: user._id }, secret_key, {
+        const token = jwt.sign({ userId: user._id }, process.env.SECRET_KEY, {
           expiresIn: "1h",
         });
         return res.status(200).json({ token });
@@ -161,6 +151,7 @@ authRouter.post("/verify-email", async (req, res) => {
     const { email, token } = req.body;
     const db = await connectDB();
     const userCollection = db.collection("users");
+
     // Check if user exists
     const user = await userCollection.findOne({ email });
     if (!user) {
@@ -168,7 +159,7 @@ authRouter.post("/verify-email", async (req, res) => {
     }
 
     // Verify token
-    jwt.verify(token, secret_key, async (err, decoded) => {
+    jwt.verify(token, process.env.SECRET_KEY, async (err, decoded) => {
       if (err) {
         return res.status(400).json({ error: "Invalid token" });
       }
@@ -202,6 +193,7 @@ authRouter.post("/forgot-password", async (req, res) => {
     const { email } = req.body;
     const db = await connectDB();
     const userCollection = db.collection("users");
+
     // Check if user exists
     const user = await userCollection.findOne({ email });
     if (!user) {
@@ -214,7 +206,7 @@ authRouter.post("/forgot-password", async (req, res) => {
         type: "password-reset",
         userId: user._id,
       },
-      secret_key,
+      process.env.SECRET_KEY,
       {
         expiresIn: "15m",
       }
@@ -257,8 +249,9 @@ authRouter.post("/reset-password", async (req, res) => {
     const { token, password } = req.body;
     const db = await connectDB();
     const userCollection = db.collection("users");
+
     // Verify token to check user is authorised to reset the password
-    jwt.verify(token, secret_key, async (err, decoded) => {
+    jwt.verify(token, process.env.SECRET_KEY, async (err, decoded) => {
       if (err) {
         return res.status(400).json({ error: "Invalid token" });
       }
