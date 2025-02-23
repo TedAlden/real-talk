@@ -11,7 +11,7 @@ const __dirname = path.dirname(__filename);
 export const templates = {
   verifyEmail: (username, token) => {
     const source = fs.readFileSync(
-      path.join(__dirname, "./templates/verify_email.hbs"),
+      path.join(__dirname, "templates/verify_email.hbs"),
       "utf8"
     );
     const template = handlebars.compile(source);
@@ -19,7 +19,7 @@ export const templates = {
   },
   forgotPassword: (username, token) => {
     const source = fs.readFileSync(
-      path.join(dirname, "templates/forgot_password.hbs"),
+      path.join(__dirname, "templates/forgot_password.hbs"),
       "utf8"
     );
     const template = handlebars.compile(source);
