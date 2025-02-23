@@ -3,8 +3,8 @@ import jest from "jest-mock";
 import bcrypt from "bcrypt";
 
 import app from "../src/app.js";
-import { connectDB, closeDB } from "../src/db/connection.js";
-import transporter from "../src/util/mailer.js";
+import { connectDB, closeDB } from "../src/database/connection.js";
+import transporter from "../src/mail/mailer.js";
 
 describe("User registration", () => {
   let db;
@@ -38,20 +38,37 @@ describe("User registration", () => {
   });
 
   test("should not register a user with existing username", async () => {
-    await db.collection("users").insertOne({
+    await request(app).post("/auth/register").send({
       username: "existingUser",
-      email: "test.email@gmail.com",
-      password: "hashedpwd",
+      email: "test1.email@gmail.com",
+      password: "securepassword1",
     });
 
     const res = await request(app).post("/auth/register").send({
       username: "existingUser",
-      email: "test.email@gmail.com",
-      password: "securepassword",
+      email: "test2.email@gmail.com",
+      password: "securepassword2",
     });
 
     expect(res.statusCode).toBe(409);
     expect(res.body.error).toBe("Username is already registered.");
+  });
+
+  test("should not register a user with existing email", async () => {
+    await request(app).post("/auth/register").send({
+      username: "newUser",
+      email: "test@gmail.com",
+      password: "securepassword1",
+    });
+
+    const res = await request(app).post("/auth/register").send({
+      username: "newUser2",
+      email: "test@gmail.com",
+      password: "securepassword2",
+    });
+
+    expect(res.statusCode).toBe(409);
+    expect(res.body.error).toBe("Email is already registered.");
   });
 
   test("should not register a user with missing fields", async () => {

@@ -2,8 +2,8 @@ import request from "supertest";
 import jest from "jest-mock";
 
 import app from "../src/app.js";
-import { connectDB, closeDB } from "../src/db/connection.js";
-import transporter from "../src/util/mailer.js";
+import { connectDB, closeDB } from "../src/database/connection.js";
+import transporter from "../src/mail/mailer.js";
 
 describe("User email verification", () => {
   let sendMailMock;
