@@ -226,7 +226,7 @@ export const forgotPassword = async (req, res) => {
       if (err) throw err;
     });
 
-    return res.status(200);
+    return res.status(200).json({ message: "Email sent" });
   } catch (err) {
     console.error("Forgot password error:", err);
     return res.status(500).json({ error: "Server error." });
