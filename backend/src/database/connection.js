@@ -1,14 +1,18 @@
 import { MongoClient } from "mongodb";
 
-let databaseURI = process.env.DATABASE_URI || "";
+let connString = process.env.DATABASE_URI || "";
 let databaseName = process.env.DATABASE_NAME || "";
-
 let client;
 let db;
 
+if (process.env.MONGO_URL) {
+  connString = process.env.MONGO_URL;
+  databaseName = "jest";
+}
+
 export async function connectDB() {
   if (!client) {
-    client = new MongoClient(databaseURI);
+    client = new MongoClient(connString);
     await client.connect();
     db = client.db(databaseName);
   }
@@ -22,3 +26,5 @@ export async function closeDB() {
     db = null;
   }
 }
+
+export default { connectDB, closeDB };
