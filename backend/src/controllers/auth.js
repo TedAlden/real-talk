@@ -1,9 +1,10 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import transporter from "../mail/mailer.js";
+import transporter from "../services/mail/mailer.js";
 import { ObjectId } from "mongodb";
 
 import { connectDB } from "../database/connection.js";
+import { templates } from "../services/mail/templater.js";
 
 /**
  * POST /auth/register
@@ -62,11 +63,12 @@ export const register = async (req, res) => {
     });
 
     // Generate the 'verify your account' email
+    const htmlContent = templates.verifyEmail(username, token);
     const mailData = {
       from: process.env.NODEMAILER_USER,
       to: email,
       subject: "RealTalk: Verify your account",
-      html: `<h1>Verify your account</h1><p>Your token:<br><br>${token}</p>`,
+      html: htmlContent,
     };
 
     // Send the email
@@ -210,12 +212,13 @@ export const forgotPassword = async (req, res) => {
     );
 
     // Generate 'forgot password' email
+    const username = user.username;
+    const htmlContent = templates.forgotPassword(username, token);
     const mailData = {
       from: process.env.NODEMAILER_USER,
       to: email,
       subject: "RealTalk: Forgotten password",
-      text: "That was easy!",
-      html: `<h1>Reset your password</h1><p>Your token is:<br><br>${token}</p>`,
+      html: htmlContent,
     };
 
     // Send email
