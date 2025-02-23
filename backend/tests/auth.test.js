@@ -4,7 +4,7 @@ import bcrypt from "bcrypt";
 
 import app from "../src/app.js";
 import { connectDB, closeDB } from "../src/database/connection.js";
-import transporter from "../src/mail/mailer.js";
+import transporter from "../src/services/mail/mailer.js";
 
 describe("User registration", () => {
   let db;

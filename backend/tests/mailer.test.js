@@ -3,7 +3,7 @@ import jest from "jest-mock";
 
 import app from "../src/app.js";
 import { connectDB, closeDB } from "../src/database/connection.js";
-import transporter from "../src/mail/mailer.js";
+import transporter from "../src/services/mail/mailer.js";
 
 describe("User email verification", () => {
   let sendMailMock;
@@ -50,7 +50,7 @@ describe("User email verification", () => {
 
   test("the verification email token should verify the user", async () => {
     const mailData = sendMailMock.mock.calls[0][0];
-    const token = mailData.html.match(/<br><br>([^<]+)<\/p>/)[1];
+    const token = mailData.html.match(/<span id="token">([^<]+)<\/span>/)[1];
 
     const res = await request(app).post("/auth/verify-email").send({
       email: "test@example.com",
@@ -63,7 +63,7 @@ describe("User email verification", () => {
 
   test("should not verify user if their email does not exist", async () => {
     const mailData = sendMailMock.mock.calls[0][0];
-    const token = mailData.html.match(/<br><br>([^<]+)<\/p>/)[1];
+    const token = mailData.html.match(/<span id="token">([^<]+)<\/span>/)[1];
 
     const res = await request(app).post("/auth/verify-email").send({
       email: "wrongemail@example.com",
