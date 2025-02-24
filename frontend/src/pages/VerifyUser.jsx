@@ -15,18 +15,20 @@ function VerifyUser() {
       navigate("/"); // Redirect immediately if no token is found
       return;
     }
-    const submittedUser = {
-      token,
-      email,
-    };
-    const response = verifyEmail(submittedUser);
 
-    if (response.success !== false) {
-      setAlert("Congratulations you are now verified!");
-    } else {
-      console.log(response);
-      setAlert("Verification failed! " + response.error);
-    }
+    const verifyUser = async () => {
+      const submittedUser = { token, email };
+      const response = await verifyEmail(submittedUser); // Await the API call
+
+      if (response.success !== false) {
+        setAlert("Congratulations! You are now verified!");
+      } else {
+        console.error(response);
+        setAlert("Verification failed! " + (response.error || "Unknown error"));
+      }
+    };
+
+    verifyUser();
   }, [token, email, navigate]);
 
   return (
