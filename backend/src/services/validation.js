@@ -3,9 +3,14 @@ import { validationResult } from "express-validator";
 import { ErrorMsg } from "./responseMessages";
 
 const validatorMap = {
-  email: () => body("email").isEmail().withMessage(ErrorMsg.NEEDS_EMAIL),
+  email: () =>
+    body("email").isEmail().withMessage(ErrorMsg.NEEDS_EMAIL).normalizeEmail(),
   username: () =>
-    body("username").trim().notEmpty().withMessage(ErrorMsg.NEEDS_USERNAME),
+    body("username")
+      .trim()
+      .escape()
+      .notEmpty()
+      .withMessage(ErrorMsg.NEEDS_USERNAME),
   password: () =>
     body("password").trim().notEmpty().withMessage(ErrorMsg.NEEDS_PASSWORD),
   token: () => body("token").notEmpty().withMessage(ErrorMsg.NEEDS_TOKEN),
