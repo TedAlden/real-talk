@@ -2,7 +2,7 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import transporter from "../services/mail/mailer.js";
 import { ObjectId } from "mongodb";
-import { ErrorMessages } from "../services/validation.js";
+import { ErrorMsg } from "../services/validation.js";
 import { connectDB } from "../database/connection.js";
 import { templates } from "../services/mail/templater.js";
 
@@ -28,17 +28,13 @@ export const register = async (req, res) => {
     const existingUsername = await userCollection.findOne({ username });
     if (existingUsername) {
       // HTTP status 409 means conflict
-      return res
-        .status(409)
-        .json({ error: ErrorMessages.USERNAME_ALREADY_REGISTERED });
+      return res.status(409).json({ error: ErrorMsg.USERNAME_TAKEN });
     }
 
     // Check if email is already registered
     const existingEmail = await userCollection.findOne({ email });
     if (existingEmail) {
-      return res
-        .status(409)
-        .json({ error: ErrorMessages.EMAIL_ALREADY_REGISTERED });
+      return res.status(409).json({ error: ErrorMsg.EMAIL_TAKEN });
     }
 
     // Hash the password
@@ -77,7 +73,7 @@ export const register = async (req, res) => {
     res.status(201).json({ message: "User registered successfully." });
   } catch (error) {
     console.error("Registration error:", error);
-    return res.status(500).json({ error: ErrorMessages.SERVER_ERROR });
+    return res.status(500).json({ error: ErrorMsg.SERVER_ERROR });
   }
 };
 
@@ -102,12 +98,12 @@ export const login = async (req, res) => {
     // Check if user exists
     const user = await userCollection.findOne({ username });
     if (!user) {
-      return res.status(400).json({ error: ErrorMessages.USER_NOT_FOUND });
+      return res.status(400).json({ error: ErrorMsg.NO_SUCH_USERNAME });
     }
 
     // Check if user is verified
     if (!user.isVerified) {
-      return res.status(401).json({ error: ErrorMessages.USER_NOT_VERIFIED });
+      return res.status(401).json({ error: ErrorMsg.UNVERIFIED_USER });
     }
 
     // Compare password attempt against the password in the database
@@ -122,14 +118,12 @@ export const login = async (req, res) => {
         return res.status(200).json({ token });
       } else {
         // Else if the password is incorrect, return 401 meaning unauthorized
-        return res
-          .status(401)
-          .json({ error: ErrorMessages.INCORRECT_PASSWORD });
+        return res.status(401).json({ error: ErrorMsg.WRONG_PASSWORD });
       }
     });
   } catch (err) {
     console.error("Login error:", err);
-    return res.status(500).json({ error: ErrorMessages.SERVER_ERROR });
+    return res.status(500).json({ error: ErrorMsg.SERVER_ERROR });
   }
 };
 
@@ -153,13 +147,13 @@ export const verifyEmail = async (req, res) => {
     // Check if user exists
     const user = await userCollection.findOne({ email });
     if (!user) {
-      return res.status(400).json({ error: ErrorMessages.USER_NOT_FOUND });
+      return res.status(400).json({ error: ErrorMsg.NO_SUCH_EMAIL });
     }
 
     // Verify token
     jwt.verify(token, process.env.SECRET_KEY, async (err, decoded) => {
       if (err) {
-        return res.status(400).json({ error: ErrorMessages.INVALID_TOKEN });
+        return res.status(400).json({ error: ErrorMsg.INVALID_TOKEN });
       }
 
       // Update user's verification status to true
@@ -172,7 +166,7 @@ export const verifyEmail = async (req, res) => {
     });
   } catch (err) {
     console.error("Verification error:", err);
-    return res.status(500).json({ error: ErrorMessages.INVALID_TOKEN });
+    return res.status(500).json({ error: ErrorMsg.INVALID_TOKEN });
   }
 };
 
@@ -195,7 +189,7 @@ export const forgotPassword = async (req, res) => {
     // Check if user exists
     const user = await userCollection.findOne({ email });
     if (!user) {
-      return res.status(400).json({ error: ErrorMessages.USER_NOT_FOUND });
+      return res.status(400).json({ error: ErrorMsg.NO_SUCH_EMAIL });
     }
 
     // Generate password reset token
@@ -228,7 +222,7 @@ export const forgotPassword = async (req, res) => {
     return res.status(200).json({ message: "Email sent" });
   } catch (err) {
     console.error("Forgot password error:", err);
-    return res.status(500).json({ error: ErrorMessages.SERVER_ERROR });
+    return res.status(500).json({ error: ErrorMsg.SERVER_ERROR });
   }
 };
 
@@ -252,7 +246,7 @@ export const resetPassword = async (req, res) => {
     // Verify token to check user is authorised to reset the password
     jwt.verify(token, process.env.SECRET_KEY, async (err, decoded) => {
       if (err) {
-        return res.status(400).json({ error: ErrorMessages.INVALID_TOKEN });
+        return res.status(400).json({ error: ErrorMsg.INVALID_TOKEN });
       }
 
       // Update (reset) password with new requested password
@@ -266,6 +260,6 @@ export const resetPassword = async (req, res) => {
     });
   } catch (err) {
     console.error("Reset password error:", err);
-    return res.status(500).json({ error: ErrorMessages.SERVER_ERROR });
+    return res.status(500).json({ error: ErrorMsg.SERVER_ERROR });
   }
 };

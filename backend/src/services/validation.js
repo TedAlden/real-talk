@@ -1,25 +1,36 @@
 import { body } from "express-validator";
 import { validationResult } from "express-validator";
 
-export const ErrorMessages = Object.freeze({
-  USERNAME_ALREADY_REGISTERED: "Username is already registered.",
-  EMAIL_ALREADY_REGISTERED: "Email is already registered.",
+export const ErrorMsg = Object.freeze({
+  USERNAME_TAKEN: "Username is already registered.",
+  EMAIL_TAKEN: "Email is already registered.",
 
-  USER_NOT_FOUND: "User doesn't exist.",
-  USER_NOT_VERIFIED: "User is not verified. ",
-  INCORRECT_PASSWORD: "Incorrect password. ",
+  NO_SUCH_USERNAME: "No registered user with that username.",
+  NO_SUCH_EMAIL: "No registered user with that email.",
+  UNVERIFIED_USER: "User is not verified. ",
 
+  NEEDS_EMAIL: "A valid email is required but missing.",
+  NEEDS_USERNAME: "Username is required.",
+  NEEDS_PASSWORD: "Password is required.",
+  NEEDS_TOKEN: "Token is required.",
   INVALID_TOKEN: "Invalid token.",
+  WRONG_PASSWORD: "Incorrect password. ",
   SERVER_ERROR: "Server error.",
 });
 
 const validatorMap = {
-  email: () => body("email").isEmail().withMessage("A valid email is required"),
+  email: () => body("email").isEmail().withMessage(ErrorMessages.NEEDS_EMAIL),
   username: () =>
-    body("username").trim().notEmpty().withMessage("Username is required"),
+    body("username")
+      .trim()
+      .notEmpty()
+      .withMessage(ErrorMessages.NEEDS_USERNAME),
   password: () =>
-    body("password").trim().notEmpty().withMessage("Password is required"),
-  token: () => body("token").notEmpty().withMessage("Token is required"),
+    body("password")
+      .trim()
+      .notEmpty()
+      .withMessage(ErrorMessages.NEEDS_PASSWORD),
+  token: () => body("token").notEmpty().withMessage(ErrorMessages.NEEDS_TOKEN),
   // Add additional fields as needed
 };
 
