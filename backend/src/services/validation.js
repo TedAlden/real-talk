@@ -1,19 +1,14 @@
 import { body } from "express-validator";
 import { validationResult } from "express-validator";
+import { ErrorMsg } from "./responseMessages";
 
 const validatorMap = {
-  email: () => body("email").isEmail().withMessage(ErrorMessages.NEEDS_EMAIL),
+  email: () => body("email").isEmail().withMessage(ErrorMsg.NEEDS_EMAIL),
   username: () =>
-    body("username")
-      .trim()
-      .notEmpty()
-      .withMessage(ErrorMessages.NEEDS_USERNAME),
+    body("username").trim().notEmpty().withMessage(ErrorMsg.NEEDS_USERNAME),
   password: () =>
-    body("password")
-      .trim()
-      .notEmpty()
-      .withMessage(ErrorMessages.NEEDS_PASSWORD),
-  token: () => body("token").notEmpty().withMessage(ErrorMessages.NEEDS_TOKEN),
+    body("password").trim().notEmpty().withMessage(ErrorMsg.NEEDS_PASSWORD),
+  token: () => body("token").notEmpty().withMessage(ErrorMsg.NEEDS_TOKEN),
   // Add additional fields as needed
 };
 
