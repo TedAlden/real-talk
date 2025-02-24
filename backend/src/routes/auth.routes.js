@@ -1,5 +1,5 @@
 import express from "express";
-import { body } from "express-validator";
+import { useValidators } from "../services/validation";
 import {
   login,
   register,
@@ -12,40 +12,15 @@ const authRouter = express.Router();
 
 authRouter.post(
   "/register",
-  [
-    body("username").trim().notEmpty().withMessage("Username is required"),
-    body("email").isEmail().withMessage("A valid email is required"),
-    body("password").trim().notEmpty().withMessage("Password is required"),
-  ],
+  useValidators("username", "email", "password"),
   register
 );
-authRouter.post(
-  "/login",
-  [
-    body("username").trim().notEmpty().withMessage("Username is required"),
-    body("password").trim().notEmpty().withMessage("Password is required"),
-  ],
-  login
-);
-authRouter.post(
-  "/verify-email",
-  [
-    body("email").isEmail().withMessage("A valid email is required"),
-    body("token").notEmpty().withMessage("Token is required"),
-  ],
-  verifyEmail
-);
-authRouter.post(
-  "/forgot-password",
-  [body("email").isEmail().withMessage("A valid email is required")],
-  forgotPassword
-);
+authRouter.post("/login", useValidators("username", "password"), login);
+authRouter.post("/verify-email", useValidators("email", "token"), verifyEmail);
+authRouter.post("/forgot-password", useValidators("email"), forgotPassword);
 authRouter.post(
   "/reset-password",
-  [
-    body("token").notEmpty().withMessage("Token is required"),
-    body("password").trim().notEmpty().withMessage("Password is required"),
-  ],
+  useValidators("token", "password"),
   resetPassword
 );
 
