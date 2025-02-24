@@ -1,5 +1,5 @@
 import { useState } from "react";
-//import { forgotPassword } from "../api/userService";
+import { sendResetEmail } from "../api/authService";
 
 function ForgotPasswordWindow() {
   const [email, setEmail] = useState("");
@@ -10,7 +10,7 @@ function ForgotPasswordWindow() {
     const submittedUser = {
       email,
     };
-    const response = "hi"; // await forgotPassword(submittedUser);
+    const response = await sendResetEmail(submittedUser);
 
     if (response.success !== false) {
       setAlert("Password reset email sent!");

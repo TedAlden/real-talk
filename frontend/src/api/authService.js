@@ -43,4 +43,24 @@ async function registerUser(user) {
   }
 }
 
-export { loginUser, registerUser };
+async function sendResetEmail(user) {
+  try {
+    //Makes a POST request to the "/users/register" endpoint. Auth stuff is usually POST because it's more secure.
+    const response = await axiosInstance.post("/auth/forgot-password", user);
+    //Log the response for debugging purposes and return the response.
+    console.log(response);
+    return response;
+  } catch (error) {
+    if (error.response) {
+      //If error has a response, it means the request reached the backend but it sent back an error.
+      console.error("Backend error:", error);
+      return { success: false, error: error.message };
+    } else {
+      //Otherwise, it's an error with the request
+      console.error("Error:", error);
+      return { success: false, error: error };
+    }
+  }
+}
+
+export { sendResetEmail, loginUser, registerUser };
