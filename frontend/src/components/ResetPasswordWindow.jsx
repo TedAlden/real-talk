@@ -1,15 +1,13 @@
 import { useState, useEffect } from "react";
-import { useSearchParams, useNavigate } from "react-router-dom";
+import PropTypes from "prop-types";
+import { useNavigate } from "react-router-dom";
 import { resetPassword } from "../api/authService";
 
-const ResetPassword = () => {
-  const [searchParams] = useSearchParams();
+const ResetPassword = ({ token }) => {
   const navigate = useNavigate();
   const [newPassword, setNewPassword] = useState("");
   const [confirmedPassword, setConfirmedPassword] = useState("");
   const [alert, setAlert] = useState("");
-
-  const token = searchParams.get("token");
 
   useEffect(() => {
     if (!token) {
@@ -86,6 +84,9 @@ const ResetPassword = () => {
       <button style={{ width: "96px", marginTop: "1em" }}>Register</button>
     </form>
   );
+};
+ResetPassword.propTypes = {
+  token: PropTypes.string.isRequired,
 };
 
 export default ResetPassword;
