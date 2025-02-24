@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { registerUser } from "../api/userService";
+import { registerUser } from "../api/authService";
 
 function RegisterWindow() {
   const [username, setUsername] = useState("");

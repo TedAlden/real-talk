@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { loginUser } from "../api/userService";
+import { loginUser } from "../api/authService";
 import Cookies from "js-cookie";
 
 function LoginWindow() {
