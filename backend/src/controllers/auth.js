@@ -2,7 +2,7 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import transporter from "../services/mail/mailer.js";
 import { ObjectId } from "mongodb";
-import { ErrorMsg } from "../services/validation.js";
+import { ErrorMsg } from "../services/responseMessages.js";
 import { connectDB } from "../database/connection.js";
 import { templates } from "../services/mail/templater.js";
 
