@@ -70,6 +70,17 @@ function LoginWindow() {
           </div>
           <div
             style={{
+              textAlign: "right",
+
+              width: "100%",
+            }}
+          >
+            <a href="/forgot-password">
+              <small>Forgot Password</small>
+            </a>
+          </div>
+          <div
+            style={{
               background: "red",
               color: "white",
               padding: "0.5em",

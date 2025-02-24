@@ -10,7 +10,7 @@ function ForgotPasswordWindow() {
     const submittedUser = {
       email,
     };
-    const response = // await forgotPassword(submittedUser);
+    const response = "hi"; // await forgotPassword(submittedUser);
 
     if (response.success !== false) {
       setAlert("Password reset email sent!");
@@ -29,7 +29,9 @@ function ForgotPasswordWindow() {
         alignItems: "center",
       }}
     >
-      <p>Enter your email to receive a password reset link.</p>
+      <p>
+        Enter your email to receive a password <br></br>reset link.
+      </p>
       <div
         style={{
           display: "grid",
@@ -41,6 +43,14 @@ function ForgotPasswordWindow() {
         <label>Email:</label>
         <input type="text" onChange={(e) => setEmail(e.target.value)} />
       </div>
+      <a
+        style={{
+          margin: "0.5em",
+        }}
+        href="/login"
+      >
+        <small>Back to Login </small>
+      </a>
       <div
         style={{
           background: "red",
