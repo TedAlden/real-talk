@@ -1,6 +1,18 @@
 import { body } from "express-validator";
 import { validationResult } from "express-validator";
 
+export const ErrorMessages = Object.freeze({
+  USERNAME_ALREADY_REGISTERED: "Username is already registered.",
+  EMAIL_ALREADY_REGISTERED: "Email is already registered.",
+
+  USER_NOT_FOUND: "User doesn't exist.",
+  USER_NOT_VERIFIED: "User is not verified. ",
+  INCORRECT_PASSWORD: "Incorrect password. ",
+
+  INVALID_TOKEN: "Invalid token.",
+  SERVER_ERROR: "Server error.",
+});
+
 const validatorMap = {
   email: () => body("email").isEmail().withMessage("A valid email is required"),
   username: () =>
