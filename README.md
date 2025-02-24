@@ -118,7 +118,7 @@ To build the project for production, follow these instructions.
 [stars-url]: https://github.com/tedalden/real-talk/stargazers
 [issues-shield]: https://img.shields.io/github/issues/tedalden/real-talk.svg?style=flat
 [issues-url]: https://github.com/tedalden/real-talk/issues
-[tests-shield]: https://img.shields.io/github/actions/workflow/status/TedAlden/real-talk/test.yml?style=flat
+[tests-shield]: https://img.shields.io/github/actions/workflow/status/TedAlden/real-talk/test_backend.yml?style=flat
 [tests-url]: https://github.com/TedAlden/real-talk/actions/workflows/test.yml
 [license-shield]: https://img.shields.io/github/license/tedalden/real-talk?style=flat
 [license-url]: https://github.com/tedalden/real-talk/blob/main/LICENSE.txt

@@ -1,13 +1,10 @@
-import express from "express";
-import db from "../db/connection.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import transporter from "../services/mail/mailer.js";
 import { ObjectId } from "mongodb";
 
-import transporter from "../util/mailer.js";
-
-const authRouter = express.Router();
-const userCollection = db.collection("users");
+import { connectDB } from "../database/connection.js";
+import { templates } from "../services/mail/templater.js";
 
 /**
  * POST /auth/register
@@ -21,9 +18,11 @@ const userCollection = db.collection("users");
  *  password: string
  * }
  */
-authRouter.post("/register", async (req, res) => {
+export const register = async (req, res) => {
   try {
     const { username, email, password } = req.body;
+    const db = await connectDB();
+    const userCollection = db.collection("users");
 
     // Check if username is already registered
     const existingUsername = await userCollection.findOne({ username });
@@ -64,11 +63,12 @@ authRouter.post("/register", async (req, res) => {
     });
 
     // Generate the 'verify your account' email
+    const htmlContent = templates.verifyEmail(username, token);
     const mailData = {
       from: process.env.NODEMAILER_USER,
       to: email,
       subject: "RealTalk: Verify your account",
-      html: `<h1>Verify your account</h1><p>Your token:<br><br>${token}</p>`,
+      html: htmlContent,
     };
 
     // Send the email
@@ -82,7 +82,7 @@ authRouter.post("/register", async (req, res) => {
     console.error("Registration error:", error);
     return res.status(500).json({ error: "Server error." });
   }
-});
+};
 
 /**
  * POST /auth/login
@@ -96,9 +96,11 @@ authRouter.post("/register", async (req, res) => {
  *  password: string
  * }
  */
-authRouter.post("/login", async (req, res) => {
+export const login = async (req, res) => {
   try {
     const { username, password } = req.body;
+    const db = await connectDB();
+    const userCollection = db.collection("users");
 
     // Check if user exists
     const user = await userCollection.findOne({ username });
@@ -130,7 +132,7 @@ authRouter.post("/login", async (req, res) => {
     console.error("Login error:", err);
     return res.status(500).json({ error: "Server error." });
   }
-});
+};
 
 /**
  * POST /auth/verify-email
@@ -143,9 +145,11 @@ authRouter.post("/login", async (req, res) => {
  *  token: string
  * }
  */
-authRouter.post("/verify-email", async (req, res) => {
+export const verifyEmail = async (req, res) => {
   try {
     const { email, token } = req.body;
+    const db = await connectDB();
+    const userCollection = db.collection("users");
 
     // Check if user exists
     const user = await userCollection.findOne({ email });
@@ -171,7 +175,7 @@ authRouter.post("/verify-email", async (req, res) => {
     console.error("Verification error:", err);
     return res.status(500).json({ error: "Server error." });
   }
-});
+};
 
 /**
  * POST /auth/forgot-password
@@ -183,9 +187,11 @@ authRouter.post("/verify-email", async (req, res) => {
  *  email: string
  * }
  */
-authRouter.post("/forgot-password", async (req, res) => {
+export const forgotPassword = async (req, res) => {
   try {
     const { email } = req.body;
+    const db = await connectDB();
+    const userCollection = db.collection("users");
 
     // Check if user exists
     const user = await userCollection.findOne({ email });
@@ -206,12 +212,13 @@ authRouter.post("/forgot-password", async (req, res) => {
     );
 
     // Generate 'forgot password' email
+    const username = user.username;
+    const htmlContent = templates.forgotPassword(username, token);
     const mailData = {
       from: process.env.NODEMAILER_USER,
       to: email,
       subject: "RealTalk: Forgotten password",
-      text: "That was easy!",
-      html: `<h1>Reset your password</h1><p>Your token is:<br><br>${token}</p>`,
+      html: htmlContent,
     };
 
     // Send email
@@ -219,12 +226,12 @@ authRouter.post("/forgot-password", async (req, res) => {
       if (err) throw err;
     });
 
-    return res.status(200);
+    return res.status(200).json({ message: "Email sent" });
   } catch (err) {
     console.error("Forgot password error:", err);
     return res.status(500).json({ error: "Server error." });
   }
-});
+};
 
 /**
  * POST /auth/reset-password
@@ -237,9 +244,11 @@ authRouter.post("/forgot-password", async (req, res) => {
  *  password: string
  * }
  */
-authRouter.post("/reset-password", async (req, res) => {
+export const resetPassword = async (req, res) => {
   try {
     const { token, password } = req.body;
+    const db = await connectDB();
+    const userCollection = db.collection("users");
 
     // Verify token to check user is authorised to reset the password
     jwt.verify(token, process.env.SECRET_KEY, async (err, decoded) => {
@@ -260,6 +269,4 @@ authRouter.post("/reset-password", async (req, res) => {
     console.error("Reset password error:", err);
     return res.status(500).json({ error: "Server error." });
   }
-});
-
-export default authRouter;
+};
