@@ -5,6 +5,7 @@ import bcrypt from "bcrypt";
 import app from "../src/app.js";
 import { connectDB, closeDB } from "../src/database/connection.js";
 import transporter from "../src/services/mail/mailer.js";
+import { ErrorMsg, SuccessMsg } from "../src/services/responseMessages.js";
 
 describe("User registration", () => {
   let db;
@@ -33,7 +34,7 @@ describe("User registration", () => {
     });
 
     expect(res.statusCode).toBe(201);
-    expect(res.body).toHaveProperty("message", "User registered successfully.");
+    expect(res.body).toHaveProperty("message", SuccessMsg.REGISTRATION_OK);
     expect(transporter.sendMail).toHaveBeenCalled();
   });
 
@@ -51,7 +52,7 @@ describe("User registration", () => {
     });
 
     expect(res.statusCode).toBe(409);
-    expect(res.body.error).toBe("Username is already registered.");
+    expect(res.body.error).toBe(ErrorMsg.USERNAME_TAKEN);
   });
 
   test("should not register a user with existing email", async () => {
@@ -68,7 +69,7 @@ describe("User registration", () => {
     });
 
     expect(res.statusCode).toBe(409);
-    expect(res.body.error).toBe("Email is already registered.");
+    expect(res.body.error).toBe(ErrorMsg.EMAIL_TAKEN);
   });
 
   test("should not register a user with missing fields", async () => {
@@ -78,7 +79,7 @@ describe("User registration", () => {
     });
 
     expect(res.statusCode).toBe(400);
-    expect(res.body.error).toBe("Username, email or password is missing.");
+    expect(res.body.error).toBe(ErrorMsg.NEEDS_PASSWORD);
   });
 });
 
@@ -144,7 +145,7 @@ describe("User login", () => {
     });
 
     expect(res.statusCode).toBe(401);
-    expect(res.body.error).toBe("User is not verified");
+    expect(res.body.error).toBe(ErrorMsg.UNVERIFIED_USER);
   });
 
   test("should not log in a user who doesnt exist", async () => {
@@ -154,7 +155,7 @@ describe("User login", () => {
     });
 
     expect(res.statusCode).toBe(400);
-    expect(res.body.error).toBe("User doesn't exist");
+    expect(res.body.error).toBe(ErrorMsg.NO_SUCH_USERNAME);
   });
 
   test("should not log in a user with a wrong password", async () => {
@@ -164,6 +165,6 @@ describe("User login", () => {
     });
 
     expect(res.statusCode).toBe(401);
-    expect(res.body.error).toBe("Incorrect password");
+    expect(res.body.error).toBe(ErrorMsg.WRONG_PASSWORD);
   });
 });
