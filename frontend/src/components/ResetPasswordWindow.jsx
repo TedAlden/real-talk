@@ -26,7 +26,7 @@ const ResetPassword = ({ token }) => {
 
     const submittedUser = {
       token,
-      newPassword,
+      password: newPassword,
     };
 
     const response = await resetPassword(submittedUser); // Await the API call
