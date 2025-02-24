@@ -9,13 +9,13 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 export const templates = {
-  verifyEmail: (username, token) => {
+  verifyEmail: (username, email, token) => {
     const source = fs.readFileSync(
       path.join(__dirname, "templates/verify_email.hbs"),
       "utf8"
     );
     const template = handlebars.compile(source);
-    return template({ username, token });
+    return template({ username, email, token });
   },
   forgotPassword: (username, token) => {
     const source = fs.readFileSync(

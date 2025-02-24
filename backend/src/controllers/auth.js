@@ -63,7 +63,7 @@ export const register = async (req, res) => {
     });
 
     // Generate the 'verify your account' email
-    const htmlContent = templates.verifyEmail(username, token);
+    const htmlContent = templates.verifyEmail(username, email, token);
     const mailData = {
       from: process.env.NODEMAILER_USER,
       to: email,
