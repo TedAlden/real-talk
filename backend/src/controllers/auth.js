@@ -2,7 +2,7 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import transporter from "../services/mail/mailer.js";
 import { ObjectId } from "mongodb";
-import { ErrorMsg } from "../services/responseMessages.js";
+import { ErrorMsg, SuccessMsg } from "../services/responseMessages.js";
 import { connectDB } from "../database/connection.js";
 import { templates } from "../services/mail/templater.js";
 
@@ -70,7 +70,7 @@ export const register = async (req, res) => {
     });
 
     // 201 status means the user was created successfully
-    res.status(201).json({ message: "User registered successfully." });
+    res.status(201).json({ message: SuccessMsg.REGISTRATION_OK });
   } catch (error) {
     console.error("Registration error:", error);
     return res.status(500).json({ error: ErrorMsg.SERVER_ERROR });
@@ -162,7 +162,7 @@ export const verifyEmail = async (req, res) => {
         { $set: { isVerified: true } }
       );
 
-      return res.status(200).json({ message: "Email verified" });
+      return res.status(200).json({ message: SuccessMsg.VERIFICATION_OK });
     });
   } catch (err) {
     console.error("Verification error:", err);
@@ -219,7 +219,7 @@ export const forgotPassword = async (req, res) => {
       if (err) throw err;
     });
 
-    return res.status(200).json({ message: "Email sent" });
+    return res.status(200).json({ message: SuccessMsg.RESET_EMAIL_OK });
   } catch (err) {
     console.error("Forgot password error:", err);
     return res.status(500).json({ error: ErrorMsg.SERVER_ERROR });
@@ -256,7 +256,7 @@ export const resetPassword = async (req, res) => {
         { $set: { password: hash } }
       );
 
-      return res.status(200).json({ message: "Password updated" });
+      return res.status(200).json({ message: SuccessMsg.PASSWORD_UPDATE_OK });
     });
   } catch (err) {
     console.error("Reset password error:", err);

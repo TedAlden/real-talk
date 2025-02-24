@@ -14,3 +14,10 @@ export const ErrorMsg = Object.freeze({
   WRONG_PASSWORD: "Incorrect password. ",
   SERVER_ERROR: "Server error.",
 });
+
+export const SuccessMsg = Object.freeze({
+  REGISTRATION_OK: "User registered successfully.",
+  VERIFICATION_OK: "Email verified.",
+  RESET_EMAIL_OK: "Password reset email sent.",
+  PASSWORD_UPDATE_OK: "Password successfully updated.",
+});
