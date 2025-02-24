@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
+import { resetPassword } from "../api/authService";
 
 const ResetPassword = () => {
   const [searchParams] = useSearchParams();
@@ -30,7 +31,7 @@ const ResetPassword = () => {
       newPassword,
     };
 
-    const response = await verifyEmail(submittedUser); // Await the API call
+    const response = await resetPassword(submittedUser); // Await the API call
 
     if (response.success !== false) {
       setAlert("Password has been successfully changed.");
