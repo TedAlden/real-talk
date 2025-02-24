@@ -50,7 +50,9 @@ describe("User email verification", () => {
 
   test("the verification email token should verify the user", async () => {
     const mailData = sendMailMock.mock.calls[0][0];
-    const token = mailData.html.match(/<span id="token">([^<]+)<\/span>/)[1];
+    const token = mailData.html.match(
+      /<a[^>]+id="token"[^>]+href="[^"]*\?token=([^"&]+)[^"]*"/
+    )[1];
 
     const res = await request(app).post("/auth/verify-email").send({
       email: "test@example.com",
@@ -63,7 +65,9 @@ describe("User email verification", () => {
 
   test("should not verify user if their email does not exist", async () => {
     const mailData = sendMailMock.mock.calls[0][0];
-    const token = mailData.html.match(/<span id="token">([^<]+)<\/span>/)[1];
+    const token = mailData.html.match(
+      /<a[^>]+id="token"[^>]+href="[^"]*\?token=([^"&]+)[^"]*"/
+    )[1];
 
     const res = await request(app).post("/auth/verify-email").send({
       email: "wrongemail@example.com",
