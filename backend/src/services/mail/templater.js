@@ -8,6 +8,8 @@ import { fileURLToPath } from "url";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+const frontendUri = process.env.FRONTEND_URI || "http://localhost:5174";
+
 export const templates = {
   verifyEmail: (username, email, token) => {
     const source = fs.readFileSync(
@@ -15,7 +17,7 @@ export const templates = {
       "utf8"
     );
     const template = handlebars.compile(source);
-    return template({ username, email, token });
+    return template({ username, email, token, frontendUri });
   },
   forgotPassword: (username, token) => {
     const source = fs.readFileSync(
@@ -23,6 +25,6 @@ export const templates = {
       "utf8"
     );
     const template = handlebars.compile(source);
-    return template({ username, token });
+    return template({ username, token, frontendUri });
   },
 };
