@@ -1,9 +1,17 @@
 import express from "express";
 
-import { getUsers } from "../controllers/users.js";
+import {
+  getUsersByQuery,
+  getUserById,
+  updateUserById,
+  deleteUserById,
+} from "../controllers/users.js";
 
 const usersRouter = express.Router();
 
-usersRouter.get("/", getUsers);
+usersRouter.get("/", getUsersByQuery);
+usersRouter.get("/:id", getUserById);
+usersRouter.put("/:id", updateUserById);
+usersRouter.delete("/:id", deleteUserById);
 
 export default usersRouter;
