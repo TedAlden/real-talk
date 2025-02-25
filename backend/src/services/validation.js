@@ -14,6 +14,10 @@ const validatorMap = {
   password: () =>
     body("password").trim().notEmpty().withMessage(ErrorMsg.NEEDS_PASSWORD),
   token: () => body("token").notEmpty().withMessage(ErrorMsg.NEEDS_TOKEN),
+  id: () => query("id").isMongoId().withMessage("Invalid ID format"),
+  search_query: () =>
+    query(["username", "email", "id"]).optional().trim().escape(),
+
   // Add additional fields as needed
 };
 
