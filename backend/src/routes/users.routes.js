@@ -1,5 +1,5 @@
 import express from "express";
-
+import { useValidators } from "../services/validation.js";
 import {
   getUsersByQuery,
   getUserById,
@@ -9,9 +9,9 @@ import {
 
 const usersRouter = express.Router();
 
-usersRouter.get("/", getUsersByQuery);
-usersRouter.get("/:id", getUserById);
-usersRouter.put("/:id", updateUserById);
-usersRouter.delete("/:id", deleteUserById);
+usersRouter.get("/", useValidators("search_query"), getUsersByQuery);
+usersRouter.get("/:id", useValidators("id"), getUserById);
+usersRouter.put("/:id", useValidators("id"), updateUserById);
+usersRouter.delete("/:id", useValidators("id"), deleteUserById);
 
 export default usersRouter;

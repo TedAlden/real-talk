@@ -1,6 +1,6 @@
 import { connectDB } from "../database/connection.js";
 import { ObjectId } from "mongodb";
-
+import { ErrorMsg, SuccessMsg } from "../services/responseMessages.js";
 /**
  * GET /users?id={}&username={}&email={}
  *
@@ -51,7 +51,7 @@ export const getUserById = async (req, res) => {
   const user = await userCollection.findOne({ _id: new ObjectId(id) });
 
   if (!user) {
-    return res.status(404).json({ error: "User not found." });
+    return res.status(404).json({ error: ErrorMsg.NO_SUCH_ID });
   }
 
   res.status(200).json(user);
@@ -84,7 +84,7 @@ export const updateUserById = async (req, res) => {
   const user = await userCollection.findOne({ _id: new ObjectId(id) });
 
   if (!user) {
-    return res.status(404).json({ error: "User not found." });
+    return res.status(404).json({ error: ErrorMsg.NO_SUCH_ID });
   }
 
   const updatedUser = {
@@ -100,7 +100,7 @@ export const updateUserById = async (req, res) => {
     { $set: updatedUser }
   );
 
-  res.status(200).json({ message: "User updated." });
+  res.status(200).json({ message: SuccessMsg.USER_UPDATE_OK });
 };
 
 /**
@@ -121,10 +121,10 @@ export const deleteUserById = async (req, res) => {
   const user = await userCollection.findOne({ _id: new ObjectId(id) });
 
   if (!user) {
-    return res.status(404).json({ error: "User not found." });
+    return res.status(404).json({ error: ErrorMsg.NO_SUCH_ID });
   }
 
   await userCollection.deleteOne({ _id: new ObjectId(id) });
 
-  res.status(200).json({ message: "User deleted." });
+  res.status(200).json({ message: SuccessMsg.USER_DELETE_OK });
 };

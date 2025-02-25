@@ -1,5 +1,5 @@
 import express from "express";
-import { useValidators } from "../services/validation";
+import { useValidators } from "../services/validation.js";
 import {
   login,
   register,

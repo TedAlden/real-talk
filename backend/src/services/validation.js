@@ -1,6 +1,6 @@
 import { body } from "express-validator";
 import { validationResult } from "express-validator";
-import { ErrorMsg } from "./responseMessages";
+import { ErrorMsg } from "./responseMessages.js";
 
 const validatorMap = {
   email: () =>
@@ -14,7 +14,7 @@ const validatorMap = {
   password: () =>
     body("password").trim().notEmpty().withMessage(ErrorMsg.NEEDS_PASSWORD),
   token: () => body("token").notEmpty().withMessage(ErrorMsg.NEEDS_TOKEN),
-  id: () => query("id").isMongoId().withMessage("Invalid ID format"),
+  id: () => query("id").isMongoId().withMessage(ErrorMsg.INVALID_ID),
   search_query: () =>
     query(["username", "email", "id"]).optional().trim().escape(),
 
