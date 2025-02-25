@@ -10,8 +10,8 @@ import {
 const usersRouter = express.Router();
 
 usersRouter.get("/", useValidators("search_query"), getUsersByQuery);
-usersRouter.get("/:id", useValidators("id"), getUserById);
-usersRouter.put("/:id", useValidators("id"), updateUserById);
-usersRouter.delete("/:id", useValidators("id"), deleteUserById);
+usersRouter.get("/:id", getUserById);
+usersRouter.put("/:id", updateUserById);
+usersRouter.delete("/:id", deleteUserById);
 
 export default usersRouter;
