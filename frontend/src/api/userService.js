@@ -1,23 +1,49 @@
 import axiosInstance from "./axios";
+import { apiErrorResponse } from "./apiUtils";
 
 //Gets a list of all users from the backend
-async function getUsers() {
+async function getUsersByQuery(query_type, query) {
   try {
-    //Makes a GET request to the "/users" endpoint.
-    const response = await axiosInstance.get("/users");
-    //Log the response for debugging purposes and return the response
+    const response = await axiosInstance.get(
+      `/api/users?${query_type}=${query}`
+    );
     //The response is expected to be a list of user objects
     console.log(response);
     return response;
   } catch (error) {
-    //If error has a response, it means the request reached the backend but it sent back an error.
-    if (error.response) {
-      console.error("Backend error:", error.response.data);
-    } else {
-      //Otherwise, it's an error with the request
-      console.error("Error:", error.message);
-    }
+    return apiErrorResponse(error);
   }
 }
 
-export { getUsers };
+async function getUserById(_id) {
+  try {
+    const response = await axiosInstance.get(`/api/users/${_id}`);
+    console.log(response);
+    return response;
+  } catch (error) {
+    return apiErrorResponse(error);
+  }
+}
+
+async function updateUser(user) {
+  try {
+    const { _id } = user;
+    const response = await axiosInstance.put(`/api/users/${_id}`, user);
+    console.log(response);
+    return response;
+  } catch (error) {
+    return apiErrorResponse(error);
+  }
+}
+
+async function deleteUserById(_id) {
+  try {
+    const response = await axiosInstance.delete(`/api/users/${_id}`);
+    console.log(response);
+    return response;
+  } catch (error) {
+    return apiErrorResponse(error);
+  }
+}
+
+export { getUsersByQuery, getUserById, updateUser, deleteUserById };
