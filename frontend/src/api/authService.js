@@ -1,5 +1,5 @@
 import axiosInstance from "./axios";
-
+import { apiErrorResponse } from "./apiUtils";
 //Logs in the given user
 async function loginUser(user) {
   try {
@@ -10,17 +10,7 @@ async function loginUser(user) {
     console.log(response);
     return response;
   } catch (error) {
-    if (error.response) {
-      //If error has a response, it means the request reached the backend but it sent back an error.
-      console.error("Backend error:", error);
-      const code = error.response.status;
-      const message = error.response.data.error;
-      return { success: false, error: `Status ${code}: ${message}` };
-    } else {
-      //Otherwise, it's an error with the request
-      console.error("Error:", error);
-      return { success: false, error: error };
-    }
+    return apiErrorResponse(error);
   }
 }
 
@@ -33,17 +23,7 @@ async function registerUser(user) {
     console.log(response);
     return response;
   } catch (error) {
-    if (error.response) {
-      //If error has a response, it means the request reached the backend but it sent back an error.
-      console.error("Backend error:", error);
-      const code = error.response.status;
-      const message = error.response.data.error;
-      return { success: false, error: `Status ${code}: ${message}` };
-    } else {
-      //Otherwise, it's an error with the request
-      console.error("Error:", error);
-      return { success: false, error: error };
-    }
+    return apiErrorResponse(error);
   }
 }
 
@@ -55,17 +35,7 @@ async function sendResetEmail(user) {
     console.log(response);
     return response;
   } catch (error) {
-    if (error.response) {
-      //If error has a response, it means the request reached the backend but it sent back an error.
-      console.error("Backend error:", error);
-      const code = error.response.status;
-      const message = error.response.data.error;
-      return { success: false, error: `Status ${code}: ${message}` };
-    } else {
-      //Otherwise, it's an error with the request
-      console.error("Error:", error);
-      return { success: false, error: error };
-    }
+    return apiErrorResponse(error);
   }
 }
 
@@ -77,17 +47,7 @@ async function verifyEmail(user) {
     console.log(response);
     return response;
   } catch (error) {
-    if (error.response) {
-      //If error has a response, it means the request reached the backend but it sent back an error.
-      console.error("Backend error:", error);
-      const code = error.response.status;
-      const message = error.response.data.error;
-      return { success: false, error: `Status ${code}: ${message}` };
-    } else {
-      //Otherwise, it's an error with the request
-      console.error("Error:", error);
-      return { success: false, error: error };
-    }
+    return apiErrorResponse(error);
   }
 }
 
@@ -99,17 +59,7 @@ async function resetPassword(user) {
     console.log(response);
     return response;
   } catch (error) {
-    if (error.response) {
-      //If error has a response, it means the request reached the backend but it sent back an error.
-      console.error("Backend error:", error);
-      const code = error.response.status;
-      const message = error.response.data.error;
-      return { success: false, error: `Status ${code}: ${message}` };
-    } else {
-      //Otherwise, it's an error with the request
-      console.error("Error:", error);
-      return { success: false, error: error };
-    }
+    return apiErrorResponse(error);
   }
 }
 
