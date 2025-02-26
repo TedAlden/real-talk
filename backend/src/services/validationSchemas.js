@@ -64,7 +64,7 @@ export const userUpdateSchema = {
   password: {
     in: ["body"],
     optional: true,
-/*     isStrongPassword: {
+    /*     isStrongPassword: {
       options: {
         minLength: 8,
         minLowercase: 1,
@@ -93,10 +93,6 @@ export const userUpdateSchema = {
   phone: {
     in: ["body"],
     optional: true,
-    matches: {
-      options: [/^\d{3}-\d{4}-\d{3}$/],
-      errorMessage: "Phone number must be in the format xxx-xxxx-xxx",
-    },
     trim: true,
     escape: true,
   },
