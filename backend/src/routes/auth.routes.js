@@ -1,5 +1,5 @@
 import express from "express";
-
+import { useValidators } from "../services/validation.js";
 import {
   login,
   register,
@@ -10,10 +10,18 @@ import {
 
 const authRouter = express.Router();
 
-authRouter.post("/register", register);
-authRouter.post("/login", login);
-authRouter.post("/verify-email", verifyEmail);
-authRouter.post("/forgot-password", forgotPassword);
-authRouter.post("/reset-password", resetPassword);
+authRouter.post(
+  "/register",
+  useValidators("username", "email", "password"),
+  register
+);
+authRouter.post("/login", useValidators("username", "password"), login);
+authRouter.post("/verify-email", useValidators("email", "token"), verifyEmail);
+authRouter.post("/forgot-password", useValidators("email"), forgotPassword);
+authRouter.post(
+  "/reset-password",
+  useValidators("token", "password"),
+  resetPassword
+);
 
 export default authRouter;

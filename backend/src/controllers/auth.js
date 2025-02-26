@@ -2,7 +2,7 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import transporter from "../services/mail/mailer.js";
 import { ObjectId } from "mongodb";
-
+import { ErrorMsg, SuccessMsg } from "../services/responseMessages.js";
 import { connectDB } from "../database/connection.js";
 import { templates } from "../services/mail/templater.js";
 
@@ -28,20 +28,13 @@ export const register = async (req, res) => {
     const existingUsername = await userCollection.findOne({ username });
     if (existingUsername) {
       // HTTP status 409 means conflict
-      return res.status(409).json({ error: "Username is already registered." });
+      return res.status(409).json({ error: ErrorMsg.USERNAME_TAKEN });
     }
 
     // Check if email is already registered
     const existingEmail = await userCollection.findOne({ email });
     if (existingEmail) {
-      return res.status(409).json({ error: "Email is already registered." });
-    }
-
-    // Check all fields are supplied
-    if (!(username && email && password)) {
-      return res
-        .status(400)
-        .json({ error: "Username, email or password is missing." });
+      return res.status(409).json({ error: ErrorMsg.EMAIL_TAKEN });
     }
 
     // Hash the password
@@ -77,10 +70,10 @@ export const register = async (req, res) => {
     });
 
     // 201 status means the user was created successfully
-    res.status(201).json({ message: "User registered successfully." });
+    res.status(201).json({ message: SuccessMsg.REGISTRATION_OK });
   } catch (error) {
     console.error("Registration error:", error);
-    return res.status(500).json({ error: "Server error." });
+    return res.status(500).json({ error: ErrorMsg.SERVER_ERROR });
   }
 };
 
@@ -105,12 +98,12 @@ export const login = async (req, res) => {
     // Check if user exists
     const user = await userCollection.findOne({ username });
     if (!user) {
-      return res.status(400).json({ error: "User doesn't exist" });
+      return res.status(400).json({ error: ErrorMsg.NO_SUCH_USERNAME });
     }
 
     // Check if user is verified
     if (!user.isVerified) {
-      return res.status(401).json({ error: "User is not verified" });
+      return res.status(401).json({ error: ErrorMsg.UNVERIFIED_USER });
     }
 
     // Compare password attempt against the password in the database
@@ -125,12 +118,12 @@ export const login = async (req, res) => {
         return res.status(200).json({ token });
       } else {
         // Else if the password is incorrect, return 401 meaning unauthorized
-        return res.status(401).json({ error: "Incorrect password" });
+        return res.status(401).json({ error: ErrorMsg.WRONG_PASSWORD });
       }
     });
   } catch (err) {
     console.error("Login error:", err);
-    return res.status(500).json({ error: "Server error." });
+    return res.status(500).json({ error: ErrorMsg.SERVER_ERROR });
   }
 };
 
@@ -154,13 +147,13 @@ export const verifyEmail = async (req, res) => {
     // Check if user exists
     const user = await userCollection.findOne({ email });
     if (!user) {
-      return res.status(400).json({ error: "User not found" });
+      return res.status(400).json({ error: ErrorMsg.NO_SUCH_EMAIL });
     }
 
     // Verify token
     jwt.verify(token, process.env.SECRET_KEY, async (err, decoded) => {
       if (err) {
-        return res.status(400).json({ error: "Invalid token" });
+        return res.status(400).json({ error: ErrorMsg.INVALID_TOKEN });
       }
 
       // Update user's verification status to true
@@ -169,11 +162,11 @@ export const verifyEmail = async (req, res) => {
         { $set: { isVerified: true } }
       );
 
-      return res.status(200).json({ message: "Email verified" });
+      return res.status(200).json({ message: SuccessMsg.VERIFICATION_OK });
     });
   } catch (err) {
     console.error("Verification error:", err);
-    return res.status(500).json({ error: "Server error." });
+    return res.status(500).json({ error: ErrorMsg.INVALID_TOKEN });
   }
 };
 
@@ -196,7 +189,7 @@ export const forgotPassword = async (req, res) => {
     // Check if user exists
     const user = await userCollection.findOne({ email });
     if (!user) {
-      return res.status(400).json({ error: "User not found" });
+      return res.status(400).json({ error: ErrorMsg.NO_SUCH_EMAIL });
     }
 
     // Generate password reset token
@@ -226,10 +219,10 @@ export const forgotPassword = async (req, res) => {
       if (err) throw err;
     });
 
-    return res.status(200).json({ message: "Email sent" });
+    return res.status(200).json({ message: SuccessMsg.RESET_EMAIL_OK });
   } catch (err) {
     console.error("Forgot password error:", err);
-    return res.status(500).json({ error: "Server error." });
+    return res.status(500).json({ error: ErrorMsg.SERVER_ERROR });
   }
 };
 
@@ -253,7 +246,7 @@ export const resetPassword = async (req, res) => {
     // Verify token to check user is authorised to reset the password
     jwt.verify(token, process.env.SECRET_KEY, async (err, decoded) => {
       if (err) {
-        return res.status(400).json({ error: "Invalid token" });
+        return res.status(400).json({ error: ErrorMsg.INVALID_TOKEN });
       }
 
       // Update (reset) password with new requested password
@@ -263,10 +256,10 @@ export const resetPassword = async (req, res) => {
         { $set: { password: hash } }
       );
 
-      return res.status(200).json({ message: "Password updated" });
+      return res.status(200).json({ message: SuccessMsg.PASSWORD_UPDATE_OK });
     });
   } catch (err) {
     console.error("Reset password error:", err);
-    return res.status(500).json({ error: "Server error." });
+    return res.status(500).json({ error: ErrorMsg.SERVER_ERROR });
   }
 };

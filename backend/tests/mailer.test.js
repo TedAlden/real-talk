@@ -4,6 +4,7 @@ import jest from "jest-mock";
 import app from "../src/app.js";
 import { connectDB, closeDB } from "../src/database/connection.js";
 import transporter from "../src/services/mail/mailer.js";
+import { ErrorMsg, SuccessMsg } from "../src/services/responseMessages.js";
 
 describe("User email verification", () => {
   let sendMailMock;
@@ -60,7 +61,7 @@ describe("User email verification", () => {
     });
 
     expect(res.statusCode).toBe(200);
-    expect(res.body).toHaveProperty("message", "Email verified");
+    expect(res.body).toHaveProperty("message", SuccessMsg.VERIFICATION_OK);
   });
 
   test("should not verify user if their email does not exist", async () => {
@@ -75,7 +76,7 @@ describe("User email verification", () => {
     });
 
     expect(res.statusCode).toBe(400);
-    expect(res.body.error).toBe("User not found");
+    expect(res.body.error).toBe(ErrorMsg.NO_SUCH_EMAIL);
   });
 
   test("should not verify user if the token is invalid", async () => {
@@ -85,6 +86,6 @@ describe("User email verification", () => {
     });
 
     expect(res.statusCode).toBe(400);
-    expect(res.body.error).toBe("Invalid token");
+    expect(res.body.error).toBe(ErrorMsg.INVALID_TOKEN);
   });
 });
