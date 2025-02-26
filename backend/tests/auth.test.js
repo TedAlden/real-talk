@@ -33,8 +33,8 @@ describe("User registration", () => {
       password: "password123",
     });
 
-    expect(res.statusCode).toBe(201);
     expect(res.body).toHaveProperty("message", SuccessMsg.REGISTRATION_OK);
+    expect(res.statusCode).toBe(201);
     expect(transporter.sendMail).toHaveBeenCalled();
   });
 
@@ -51,8 +51,8 @@ describe("User registration", () => {
       password: "securepassword2",
     });
 
-    expect(res.statusCode).toBe(409);
     expect(res.body.error).toBe(ErrorMsg.USERNAME_TAKEN);
+    expect(res.statusCode).toBe(409);
   });
 
   test("should not register a user with existing email", async () => {
@@ -68,8 +68,8 @@ describe("User registration", () => {
       password: "securepassword2",
     });
 
-    expect(res.statusCode).toBe(409);
     expect(res.body.error).toBe(ErrorMsg.EMAIL_TAKEN);
+    expect(res.statusCode).toBe(409);
   });
 
   test("should not register a user with missing fields", async () => {
@@ -78,8 +78,8 @@ describe("User registration", () => {
       email: "test2.email@gmail.com",
     });
 
-    expect(res.statusCode).toBe(400);
     expect(res.body.error).toBe(ErrorMsg.NEEDS_PASSWORD);
+    expect(res.statusCode).toBe(400);
   });
 });
 
@@ -144,8 +144,8 @@ describe("User login", () => {
       password: "password2",
     });
 
-    expect(res.statusCode).toBe(401);
     expect(res.body.error).toBe(ErrorMsg.UNVERIFIED_USER);
+    expect(res.statusCode).toBe(401);
   });
 
   test("should not log in a user who doesnt exist", async () => {
@@ -154,8 +154,8 @@ describe("User login", () => {
       password: "password3",
     });
 
-    expect(res.statusCode).toBe(400);
     expect(res.body.error).toBe(ErrorMsg.NO_SUCH_USERNAME);
+    expect(res.statusCode).toBe(400);
   });
 
   test("should not log in a user with a wrong password", async () => {
@@ -164,7 +164,7 @@ describe("User login", () => {
       password: "wrongPassword",
     });
 
-    expect(res.statusCode).toBe(401);
     expect(res.body.error).toBe(ErrorMsg.WRONG_PASSWORD);
+    expect(res.statusCode).toBe(401);
   });
 });
