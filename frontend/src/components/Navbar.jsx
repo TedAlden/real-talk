@@ -12,6 +12,9 @@ function Navbar() {
       <div className="navbarItem">
         <Link to="/register">Register</Link>
       </div>
+      <div className="navbarItem">
+        <Link to="/profile">Profile</Link>
+      </div>
     </div>
   );
 }
