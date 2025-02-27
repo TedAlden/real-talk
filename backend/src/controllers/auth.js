@@ -115,7 +115,7 @@ export const login = async (req, res) => {
         const token = jwt.sign({ userId: user._id }, process.env.SECRET_KEY, {
           expiresIn: "1h",
         });
-        return res.status(200).json({ token });
+        return res.status(200).json({ token, _id: user._id });
       } else {
         // Else if the password is incorrect, return 401 meaning unauthorized
         return res.status(401).json({ error: ErrorMsg.WRONG_PASSWORD });

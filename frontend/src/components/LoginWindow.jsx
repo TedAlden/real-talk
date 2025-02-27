@@ -23,6 +23,11 @@ function LoginWindow() {
         secure: true,
         sameSite: "strict",
       });
+      Cookies.set("authUser", response.data._id, {
+        expires: 7,
+        secure: true,
+        sameSite: "strict",
+      });
       setToken(response.data.token);
     } else {
       console.log(response);
@@ -49,16 +54,14 @@ function LoginWindow() {
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
-          }}
-        >
+          }}>
           <div
             style={{
               display: "grid",
               gridTemplateColumns: "1fr 2fr",
               gap: "0.75em",
               textAlign: "right",
-            }}
-          >
+            }}>
             <label>Username:</label>
             <input type="text" onChange={(e) => setUsername(e.target.value)} />
 
@@ -73,8 +76,7 @@ function LoginWindow() {
               textAlign: "right",
 
               width: "100%",
-            }}
-          >
+            }}>
             <a href="/forgot-password">
               <small>Forgot Password</small>
             </a>
@@ -89,8 +91,7 @@ function LoginWindow() {
               minHeight: "2em",
               borderRadius: "5px",
               visibility: alert ? "visible" : "hidden",
-            }}
-          >
+            }}>
             {alert}
           </div>
 

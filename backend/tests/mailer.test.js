@@ -60,8 +60,8 @@ describe("User email verification", () => {
       token: token,
     });
 
-    expect(res.statusCode).toBe(200);
     expect(res.body).toHaveProperty("message", SuccessMsg.VERIFICATION_OK);
+    expect(res.statusCode).toBe(200);
   });
 
   test("should not verify user if their email does not exist", async () => {
@@ -75,8 +75,8 @@ describe("User email verification", () => {
       token: token,
     });
 
-    expect(res.statusCode).toBe(400);
     expect(res.body.error).toBe(ErrorMsg.NO_SUCH_EMAIL);
+    expect(res.statusCode).toBe(400);
   });
 
   test("should not verify user if the token is invalid", async () => {
@@ -85,7 +85,7 @@ describe("User email verification", () => {
       token: "TokenFromTheTokenFairy",
     });
 
-    expect(res.statusCode).toBe(400);
     expect(res.body.error).toBe(ErrorMsg.INVALID_TOKEN);
+    expect(res.statusCode).toBe(400);
   });
 });

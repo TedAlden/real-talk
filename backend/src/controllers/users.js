@@ -1,6 +1,8 @@
 import { connectDB } from "../database/connection.js";
 import { ObjectId } from "mongodb";
 import { ErrorMsg, SuccessMsg } from "../services/responseMessages.js";
+import { matchedData } from "express-validator";
+
 /**
  * GET /users?id={}&username={}&email={}
  *
@@ -76,7 +78,6 @@ export const getUserById = async (req, res) => {
  */
 export const updateUserById = async (req, res) => {
   const { id } = req.params;
-  const { username, email, password } = req.body;
 
   const db = await connectDB();
   const userCollection = db.collection("users");
@@ -87,13 +88,7 @@ export const updateUserById = async (req, res) => {
     return res.status(404).json({ error: ErrorMsg.NO_SUCH_ID });
   }
 
-  const updatedUser = {
-    username: username || user.username,
-    email: email || user.email,
-    password: password || user.password,
-    isVerified: user.isVerified,
-    isAdmin: user.isAdmin,
-  };
+  const updatedUser = matchedData(req);
 
   await userCollection.updateOne(
     { _id: new ObjectId(id) },
