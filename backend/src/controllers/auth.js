@@ -1,5 +1,7 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import * as crypto from "crypto";
+import * as base32 from "hi-base32";
 import transporter from "../services/mail/mailer.js";
 import { ObjectId } from "mongodb";
 import { ErrorMsg, SuccessMsg } from "../services/responseMessages.js";
@@ -40,6 +42,9 @@ export const register = async (req, res) => {
     // Hash the password
     const hash = await bcrypt.hash(password, 10);
 
+    // Generate a random base-32 token for MFA (two-factor authentication)
+    const mfaSecret = base32.encode(crypto.randomBytes(32).toString("hex"));
+
     // Insert the new user into the collection
     const newUser = {
       username,
@@ -47,6 +52,7 @@ export const register = async (req, res) => {
       password: hash,
       isVerified: false,
       isAdmin: false,
+      mfaSecret,
     };
     const { insertedId } = await userCollection.insertOne(newUser);
 
