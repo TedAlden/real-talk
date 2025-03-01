@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { loginUser } from "../api/authService";
 import Cookies from "js-cookie";
 
@@ -7,6 +7,12 @@ export default function useLogin() {
   const [password, setPassword] = useState("");
   const [loggedIn, setLoggedIn] = useState(false);
   const [alertMessage, setAlertMessage] = useState("");
+
+  useEffect(() => {
+    if (Cookies.get("authToken")) {
+      setLoggedIn(true);
+    }
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
