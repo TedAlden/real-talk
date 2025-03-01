@@ -3,7 +3,7 @@ import useRegister from "../hooks/useRegister";
 
 function Register() {
   const {
-    handleSubmit,
+    handleRegister,
     handleLogout,
     setUsername,
     setPassword,
@@ -27,7 +27,7 @@ function Register() {
         </form>
       ) : (
         <form
-          onSubmit={handleSubmit}
+          onSubmit={handleRegister}
           style={{
             display: "flex",
             flexDirection: "column",

@@ -14,7 +14,7 @@ export default function useLogin() {
     }
   }, []);
 
-  const handleSubmit = async (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
     const submittedUser = {
       username,
@@ -42,7 +42,7 @@ export default function useLogin() {
   };
 
   return {
-    handleSubmit,
+    handleLogin,
     handleLogout,
     setUsername,
     setPassword,

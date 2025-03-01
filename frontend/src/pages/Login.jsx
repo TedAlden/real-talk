@@ -3,7 +3,7 @@ import useLogin from "../hooks/useLogin";
 
 function Login() {
   const {
-    handleSubmit,
+    handleLogin,
     handleLogout,
     setUsername,
     setPassword,
@@ -26,7 +26,7 @@ function Login() {
         </form>
       ) : (
         <form
-          onSubmit={handleSubmit}
+          onSubmit={handleLogin}
           style={{
             display: "flex",
             flexDirection: "column",

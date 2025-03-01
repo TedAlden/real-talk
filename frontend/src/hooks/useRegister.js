@@ -15,7 +15,7 @@ export default function useRegister() {
     }
   }, []);
 
-  const handleSubmit = async (e) => {
+  const handleRegister = async (e) => {
     e.preventDefault();
     const submittedUser = {
       username,
@@ -38,7 +38,7 @@ export default function useRegister() {
   };
 
   return {
-    handleSubmit,
+    handleRegister,
     handleLogout,
     setUsername,
     setEmail,
