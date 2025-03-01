@@ -2,8 +2,15 @@ import viteLogo from "/vite.svg";
 import useRegister from "../hooks/useRegister";
 
 function Register() {
-  const { handleSubmit, setUsername, setPassword, setEmail, alertMessage } =
-    useRegister();
+  const {
+    handleSubmit,
+    handleLogout,
+    setUsername,
+    setPassword,
+    setEmail,
+    loggedIn,
+    alertMessage,
+  } = useRegister();
 
   return (
     <>
@@ -13,50 +20,57 @@ function Register() {
         </a>
       </div>
       <h1>REAL TALK</h1>
-      <form
-        onSubmit={handleSubmit}
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-        }}
-      >
-        <div
+      {loggedIn ? (
+        <form onSubmit={handleLogout}>
+          <p>You are logged in</p>
+          <button style={{ width: "96px" }}>Logout</button>
+        </form>
+      ) : (
+        <form
+          onSubmit={handleSubmit}
           style={{
-            display: "grid",
-            gridTemplateColumns: "1fr 2fr",
-            gap: "0.75em",
-            textAlign: "right",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
           }}
         >
-          <label>Username:</label>
-          <input type="text" onChange={(e) => setUsername(e.target.value)} />
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "1fr 2fr",
+              gap: "0.75em",
+              textAlign: "right",
+            }}
+          >
+            <label>Username:</label>
+            <input type="text" onChange={(e) => setUsername(e.target.value)} />
 
-          <label>Password:</label>
-          <input
-            type="password"
-            onChange={(e) => setPassword(e.target.value)}
-          />
+            <label>Password:</label>
+            <input
+              type="password"
+              onChange={(e) => setPassword(e.target.value)}
+            />
 
-          <label>Email:</label>
-          <input type="text" onChange={(e) => setEmail(e.target.value)} />
-        </div>
-        <div
-          style={{
-            background: "red",
-            color: "white",
-            padding: "0.5em",
-            width: "100%",
-            margin: "1em",
-            minHeight: "2em",
-            borderRadius: "5px",
-            visibility: alertMessage ? "visible" : "hidden",
-          }}
-        >
-          {alertMessage}
-        </div>
-        <button style={{ width: "96px", marginTop: "1em" }}>Register</button>
-      </form>
+            <label>Email:</label>
+            <input type="text" onChange={(e) => setEmail(e.target.value)} />
+          </div>
+          <div
+            style={{
+              background: "red",
+              color: "white",
+              padding: "0.5em",
+              width: "100%",
+              margin: "1em",
+              minHeight: "2em",
+              borderRadius: "5px",
+              visibility: alertMessage ? "visible" : "hidden",
+            }}
+          >
+            {alertMessage}
+          </div>
+          <button style={{ width: "96px", marginTop: "1em" }}>Register</button>
+        </form>
+      )}
     </>
   );
 }
