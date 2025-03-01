@@ -1,29 +1,9 @@
 import viteLogo from "/vite.svg";
-import { useState } from "react";
-import { registerUser } from "../api/authService";
+import useRegister from "../hooks/useRegister";
 
 function Register() {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [email, setEmail] = useState("");
-  const [alert, setAlert] = useState("");
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    const submittedUser = {
-      username,
-      password,
-      email,
-    };
-    const response = await registerUser(submittedUser);
-
-    if (response.success !== false) {
-      setAlert("Registration successful!");
-    } else {
-      console.log(response);
-      setAlert("Registration failed! " + response.error);
-    }
-  };
+  const { handleSubmit, setUsername, setPassword, setEmail, alertMessage } =
+    useRegister();
 
   return (
     <>
@@ -70,10 +50,10 @@ function Register() {
             margin: "1em",
             minHeight: "2em",
             borderRadius: "5px",
-            visibility: alert ? "visible" : "hidden", // Keeps space reserved
+            visibility: alertMessage ? "visible" : "hidden",
           }}
         >
-          {alert}
+          {alertMessage}
         </div>
         <button style={{ width: "96px", marginTop: "1em" }}>Register</button>
       </form>
