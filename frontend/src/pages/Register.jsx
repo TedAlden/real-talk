@@ -18,12 +18,7 @@ function Register() {
 
   const handleRegister = async (e) => {
     e.preventDefault();
-    const submittedUser = {
-      username,
-      password,
-      email,
-    };
-    const response = await registerUser(submittedUser);
+    const response = await registerUser(username, email, password);
 
     if (response.success !== false) {
       setAlertMessage("Registration successful!");
