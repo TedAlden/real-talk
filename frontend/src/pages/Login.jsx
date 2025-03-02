@@ -12,7 +12,8 @@ function Login() {
   const [alertMessage, setAlertMessage] = useState("");
 
   useEffect(() => {
-    if (Cookies.get("authToken")) {
+    const token = JSON.parse(Cookies.get("authToken"));
+    if (token && token.type === "authenticated") {
       setLoggedIn(true);
     }
   }, []);
