@@ -6,6 +6,7 @@ import {
   verifyEmail,
   forgotPassword,
   resetPassword,
+  verifyOtp,
 } from "../controllers/auth.js";
 
 const authRouter = express.Router();
@@ -23,5 +24,6 @@ authRouter.post(
   useValidators("token", "password"),
   resetPassword
 );
+authRouter.post("/verify-otp", verifyOtp);
 
 export default authRouter;
