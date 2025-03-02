@@ -99,9 +99,7 @@ export const userUpdateSchema = {
   picture: {
     in: ["body"],
     optional: { options: { checkFalsy: true } },
-    isURL: {
-      errorMessage: "Picture must be a valid URL",
-    },
+
     trim: true,
   },
 };

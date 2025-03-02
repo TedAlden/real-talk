@@ -28,6 +28,7 @@ function UserProfileDetails() {
   const [formData, setFormData] = useState(emptyUser);
   const [alert, setAlert] = useState("");
   const [userId, setUserId] = useState(Cookies.get("authUser"));
+  const [profilePic, setProfilePic] = useState();
 
   useEffect(() => {
     const user = Cookies.get("authUser");
@@ -46,6 +47,26 @@ function UserProfileDetails() {
     loadUserData();
   }, [navigate, userId]);
 
+  const convertBase64 = (file) => {
+    return new Promise((resolve, reject) => {
+      const fileReader = new FileReader();
+      fileReader.readAsDataURL(file);
+      fileReader.onload = () => {
+        resolve(fileReader.result);
+      };
+      fileReader.onerror = (error) => {
+        reject(error);
+      };
+    });
+  };
+
+  const handleFileRead = async (e) => {
+    const { files } = e.target;
+    const file = files[0];
+    const base64 = await convertBase64(file);
+    base64 && setProfilePic(base64);
+  };
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => {
@@ -61,9 +82,9 @@ function UserProfileDetails() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const submittedUser = { ...formData, _id: userId };
+    const submittedUser = { ...formData, _id: userId, picture: profilePic };
     const response = await updateUser(submittedUser);
-
+    console.log(submittedUser);
     if (response.success !== false) {
       setAlert("User updated successfully!");
     } else {
@@ -76,120 +97,134 @@ function UserProfileDetails() {
     <form
       onSubmit={handleSubmit}
       style={{
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
+        display: "grid",
+        gridTemplateColumns: "1fr 2fr",
+        gap: "0.5rem",
+        maxWidth: "600px",
+        margin: "0 auto",
+        textAlign: "end",
       }}>
       <div
         style={{
-          display: "grid",
-          gridTemplateColumns: "1fr 2fr",
-          gap: "0.75em",
-          textAlign: "right",
+          gridColumn: "1 / -1",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
         }}>
-        <label>Username:</label>
+        {profilePic && (
+          <img
+            src={profilePic}
+            alt="Profile"
+            style={{
+              maxWidth: "150px",
+              maxHeight: "150px",
+              objectFit: "cover",
+            }}
+          />
+        )}
+        <label>Profile Picture</label>
         <input
-          type="text"
-          name="username"
-          value={formData?.username}
-          onChange={handleChange}
-        />
-
-        <label>Password:</label>
-        <input
-          type="password"
-          name="password"
-          value={formData?.password}
-          onChange={handleChange}
-        />
-
-        <label>Email:</label>
-        <input
-          type="text"
-          name="email"
-          value={formData?.email}
-          onChange={handleChange}
-        />
-
-        <label>First Name:</label>
-        <input
-          type="text"
-          name="name.first"
-          value={formData?.name?.first}
-          onChange={handleChange}
-        />
-
-        <label>Last Name:</label>
-        <input
-          type="text"
-          name="name.last"
-          value={formData?.name?.last}
-          onChange={handleChange}
-        />
-
-        <label>Birthday:</label>
-        <input
-          type="date"
-          name="birthday"
-          value={formData?.birthday}
-          onChange={handleChange}
-        />
-
-        <label>Phone:</label>
-        <input
-          type="tel"
-          name="phone"
-          value={formData?.phone}
-          onChange={handleChange}
-        />
-
-        <label>Country:</label>
-        <input
-          type="text"
-          name="location.country"
-          value={formData?.location?.country}
-          onChange={handleChange}
-        />
-
-        <label>State:</label>
-        <input
-          type="text"
-          name="location.state"
-          value={formData?.location?.state}
-          onChange={handleChange}
-        />
-
-        <label>City:</label>
-        <input
-          type="text"
-          name="location.city"
-          value={formData?.location?.city}
-          onChange={handleChange}
-        />
-
-        <label>Bio:</label>
-        <textarea
-          name="bio"
-          value={formData?.bio}
-          onChange={handleChange}
-          rows="3"
+          type="file"
+          accept="image/*"
+          name="originalFileName"
+          onChange={handleFileRead}
+          style={{ marginBottom: "10px" }}
         />
       </div>
-
+      <label>Username</label>
+      <input
+        type="text"
+        name="username"
+        value={formData?.username}
+        onChange={handleChange}
+      />
+      <label>Password</label>
+      <input
+        type="password"
+        name="password"
+        value={formData?.password}
+        onChange={handleChange}
+      />
+      <label>Email</label>
+      <input
+        type="email"
+        name="email"
+        value={formData?.email}
+        onChange={handleChange}
+      />
+      <label>First Name</label>
+      <input
+        type="text"
+        name="name.first"
+        value={formData?.name?.first}
+        onChange={handleChange}
+      />
+      <label>Last Name</label>
+      <input
+        type="text"
+        name="name.last"
+        value={formData?.name?.last}
+        onChange={handleChange}
+      />
+      <label>Birthday</label>
+      <input
+        type="date"
+        name="birthday"
+        value={formData?.birthday}
+        onChange={handleChange}
+      />
+      <label>Phone</label>
+      <input
+        type="tel"
+        name="phone"
+        value={formData?.phone}
+        onChange={handleChange}
+      />
+      <label>Country</label>
+      <input
+        type="text"
+        name="location.country"
+        value={formData?.location?.country}
+        onChange={handleChange}
+      />
+      <label>State</label>
+      <input
+        type="text"
+        name="location.state"
+        value={formData?.location?.state}
+        onChange={handleChange}
+      />
+      <label>City</label>
+      <input
+        type="text"
+        name="location.city"
+        value={formData?.location?.city}
+        onChange={handleChange}
+      />
+      <label>Bio</label>
+      <textarea
+        name="bio"
+        value={formData?.bio}
+        onChange={handleChange}
+        rows="3"
+      />{" "}
       <div
         style={{
-          background: alert.includes("failed") ? "red" : "green",
-          color: "white",
+          gridColumn: "1 / -1",
+          textAlign: "center",
           padding: "0.5em",
-          width: "100%",
-          margin: "1em",
-          minHeight: "2em",
+          backgroundColor: alert.includes("failed") ? "red" : "green",
+          color: "white",
           borderRadius: "5px",
-          visibility: alert ? "visible" : "hidden",
         }}>
         {alert}
       </div>
-      <button style={{ width: "96px", marginTop: "1em" }}>
+      <button
+        type="submit"
+        style={{
+          gridColumn: "1 / -1",
+          justifySelf: "center",
+        }}>
         Update Profile
       </button>
     </form>
