@@ -21,9 +21,19 @@ const handleError = (error) => {
   }
 };
 
-export async function loginUser(user) {
+/**
+ * Login a user via the backend API.
+ *
+ * @param {string} username Username.
+ * @param {string} password Password.
+ * @returns {Object} The response object from the backend.
+ */
+export async function loginUser(username, password) {
   try {
-    const response = await axiosInstance.post("/auth/login", user);
+    const response = await axiosInstance.post("/auth/login", {
+      username,
+      password,
+    });
     console.log(response);
     return response;
   } catch (error) {

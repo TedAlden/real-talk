@@ -19,11 +19,7 @@ function Login() {
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    const submittedUser = {
-      username,
-      password,
-    };
-    const response = await loginUser(submittedUser);
+    const response = await loginUser(username, password);
 
     if (response.status === 200) {
       setAlertMessage("");
