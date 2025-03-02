@@ -21,13 +21,6 @@ const handleError = (error) => {
   }
 };
 
-/**
- * Login a user via the backend API.
- *
- * @param {string} username Username.
- * @param {string} password Password.
- * @returns {Object} The response object from the backend.
- */
 export async function loginUser(username, password) {
   try {
     const response = await axiosInstance.post("/auth/login", {
@@ -41,14 +34,6 @@ export async function loginUser(username, password) {
   }
 }
 
-/**
- * Register a user via the backend API.
- *
- * @param {string} username Username.
- * @param {string} email Email.
- * @param {string} password Password.
- * @returns {Object} The response object from the backend.
- */
 export async function registerUser(username, email, password) {
   try {
     const response = await axiosInstance.post("/auth/register", {
