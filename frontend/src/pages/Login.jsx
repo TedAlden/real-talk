@@ -1,9 +1,11 @@
 import viteLogo from "/vite.svg";
 import { useEffect, useState } from "react";
 import { loginUser } from "../api/authService";
+import { useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
 
 function Login() {
+  const navigate = useNavigate();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [loggedIn, setLoggedIn] = useState(false);
@@ -23,14 +25,38 @@ function Login() {
     };
     const response = await loginUser(submittedUser);
 
-    if (response.success !== false) {
+    if (response.status === 200) {
       setAlertMessage("");
-      setLoggedIn(true);
-      Cookies.set("authToken", response.data.token, {
-        expires: 7,
-        secure: true,
-        sameSite: "strict",
-      });
+
+      if (response.data.type === "awaiting-otp") {
+        Cookies.set(
+          "authToken",
+          JSON.stringify({
+            token: response.data.token,
+            type: response.data.type,
+          }),
+          {
+            expires: 7,
+            secure: true,
+            sameSite: "strict",
+          }
+        );
+        navigate("/enter-otp");
+      } else if (response.data.type === "authenticated") {
+        Cookies.set(
+          "authToken",
+          JSON.stringify({
+            token: response.data.token,
+            type: response.data.type,
+          }),
+          {
+            expires: 7,
+            secure: true,
+            sameSite: "strict",
+          }
+        );
+        setLoggedIn(true);
+      }
     } else {
       console.log(response);
       setAlertMessage("Login failed! " + response.error);

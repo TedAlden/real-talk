@@ -1,26 +1,47 @@
 import viteLogo from "/vite.svg";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { useSearchParams } from "react-router-dom";
+import Cookies from "js-cookie";
+import { verifyOTP } from "../api/authService";
 
 function EnterOTP() {
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
-  const token = searchParams.get("token");
-
   const [pin, setPin] = useState("");
-  const [alert, setAlert] = useState("");
+  const [alertMessage, setAlertMessage] = useState("");
+
+  const token = JSON.parse(Cookies.get("authToken"));
 
   useEffect(() => {
-    if (!token) {
-      // navigate("/");
+    if (!token || token.type !== "awaiting-otp") {
+      navigate("/");
       return;
     }
-  });
+  }, []);
 
-  const handleSubmit = async (e) => {
+  const handleSubmitOTP = async (e) => {
     e.preventDefault();
-    // Submit pin
+
+    const response = await verifyOTP(token.token, pin);
+
+    if (response.status === 200) {
+      setAlertMessage("");
+      Cookies.set(
+        "authToken",
+        JSON.stringify({
+          token: response.data.token,
+          type: response.data.type,
+        }),
+        {
+          expires: 7,
+          secure: true,
+          sameSite: "strict",
+        }
+      );
+      navigate("/");
+    } else {
+      console.log(response);
+      setAlertMessage("Login failed! " + response.error);
+    }
   };
 
   return (
@@ -32,7 +53,7 @@ function EnterOTP() {
       </div>
       <h1>REAL TALK</h1>
       <form
-        onSubmit={handleSubmit}
+        onSubmit={handleSubmitOTP}
         style={{
           display: "flex",
           flexDirection: "column",
@@ -60,10 +81,10 @@ function EnterOTP() {
             margin: "1em",
             minHeight: "2em",
             borderRadius: "5px",
-            visibility: alert ? "visible" : "hidden",
+            visibility: alertMessage ? "visible" : "hidden",
           }}
         >
-          {alert}
+          {alertMessage}
         </div>
         <button style={{ width: "96px", marginTop: "1em" }}>Send</button>
       </form>
