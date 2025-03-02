@@ -1,7 +1,9 @@
-import viteLogo from "/vite.svg";
 import { useEffect, useState } from "react";
 import { loginUser } from "../api/authService";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+
+import Alert from "../components/Alert";
+
 import Cookies from "js-cookie";
 
 function Login() {
@@ -9,7 +11,7 @@ function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [loggedIn, setLoggedIn] = useState(false);
-  const [alertMessage, setAlertMessage] = useState("");
+  const [alertMessage, setAlertMessage] = useState({});
 
   useEffect(() => {
     if (Cookies.get("authToken")) {
@@ -25,7 +27,7 @@ function Login() {
     const response = await loginUser(username, password);
 
     if (response.status === 200) {
-      setAlertMessage("");
+      setAlertMessage({});
       const { token, type, userId } = response.data;
 
       if (response.data.type === "awaiting-otp") {
@@ -55,7 +57,11 @@ function Login() {
       }
     } else {
       console.log(response);
-      setAlertMessage("Login failed! " + response.error);
+      setAlertMessage({
+        type: "danger",
+        title: "Login failed!",
+        message: response.message,
+      });
     }
   };
 
@@ -67,71 +73,102 @@ function Login() {
 
   return (
     <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-      </div>
-      <h1>REAL TALK</h1>
       {loggedIn ? (
         <form onSubmit={handleLogout}>
           <p>You are logged in</p>
           <button style={{ width: "96px" }}>Logout</button>
         </form>
       ) : (
-        <form
-          onSubmit={handleLogin}
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-          }}
-        >
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "1fr 2fr",
-              gap: "0.75em",
-              textAlign: "right",
-            }}
-          >
-            <label>Username:</label>
-            <input type="text" onChange={(e) => setUsername(e.target.value)} />
+        <section className="bg-gray-50 dark:bg-gray-900">
+          <div className="mx-auto flex flex-col items-center justify-center px-6 py-8 md:h-screen lg:py-0">
+            <div className="w-full rounded-lg bg-white shadow sm:max-w-md md:mt-0 xl:p-0 dark:border dark:border-gray-700 dark:bg-gray-800">
+              <div className="space-y-4 p-6 sm:p-8 md:space-y-6">
+                <h1 className="text-xl leading-tight font-bold tracking-tight text-gray-900 md:text-2xl dark:text-white">
+                  Login
+                </h1>
+                <form className="mx-auto max-w-lg" onSubmit={handleLogin}>
+                  <div className="mb-5">
+                    <label
+                      htmlFor="username"
+                      className="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
+                    >
+                      Username
+                    </label>
+                    <input
+                      onChange={(e) => setUsername(e.target.value)}
+                      type="text"
+                      id="username"
+                      className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
+                      required
+                    />
+                  </div>
+                  <div className="mb-5">
+                    <label
+                      htmlFor="password"
+                      className="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
+                    >
+                      Password
+                    </label>
+                    <input
+                      onChange={(e) => setPassword(e.target.value)}
+                      type="password"
+                      id="password"
+                      className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
+                      required
+                    />
+                  </div>
 
-            <label>Password:</label>
-            <input
-              type="password"
-              onChange={(e) => setPassword(e.target.value)}
-            />
+                  <div className="mb-5 flex items-start">
+                    <div className="flex h-5 items-center">
+                      <input
+                        id="remember"
+                        type="checkbox"
+                        value=""
+                        className="h-4 w-4 rounded-sm border border-gray-300 bg-gray-50 focus:ring-3 focus:ring-blue-300 dark:border-gray-600 dark:bg-gray-700 dark:ring-offset-gray-800 dark:focus:ring-blue-600 dark:focus:ring-offset-gray-800"
+                      />
+                    </div>
+                    <label
+                      htmlFor="remember"
+                      className="ms-2 text-sm text-gray-500 dark:text-gray-400"
+                    >
+                      Remember me
+                    </label>
+                  </div>
+                  <button
+                    type="submit"
+                    className="w-full rounded-lg bg-blue-600 px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 focus:outline-none dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+                  >
+                    Login
+                  </button>
+                  <div className="">
+                    <p
+                      id="helper-text-explanation"
+                      className="mt-5 text-sm text-gray-500 dark:text-gray-400"
+                    >
+                      Forgot your password? Reset it{" "}
+                      <Link
+                        to="/forgot-password"
+                        className="font-medium text-blue-600 hover:underline dark:text-blue-500"
+                      >
+                        here
+                      </Link>
+                      .
+                    </p>
+                  </div>
+                  {Object.keys(alertMessage).length > 0 && (
+                    <div className="mt-5">
+                      <Alert
+                        type={alertMessage.type}
+                        title={alertMessage.title}
+                        message={alertMessage.message}
+                      />
+                    </div>
+                  )}
+                </form>
+              </div>
+            </div>
           </div>
-          <div
-            style={{
-              textAlign: "right",
-
-              width: "100%",
-            }}
-          >
-            <a href="/forgot-password">
-              <small>Forgot Password</small>
-            </a>
-          </div>
-          <div
-            style={{
-              background: "red",
-              color: "white",
-              padding: "0.5em",
-              width: "100%",
-              margin: "1em",
-              minHeight: "2em",
-              borderRadius: "5px",
-              visibility: alertMessage ? "visible" : "hidden",
-            }}
-          >
-            {alertMessage}
-          </div>
-
-          <button style={{ width: "96px", marginTop: "1em" }}>Login</button>
-        </form>
+        </section>
       )}
     </>
   );

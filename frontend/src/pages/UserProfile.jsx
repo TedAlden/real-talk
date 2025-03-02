@@ -1,4 +1,3 @@
-import viteLogo from "/vite.svg";
 import { useState, useEffect } from "react";
 import { updateUser, getUserById } from "../api/userService.js";
 import { useNavigate } from "react-router-dom";
@@ -99,12 +98,9 @@ function UserProfile() {
 
   return (
     <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-      </div>
-      <h1>REAL TALK</h1>
+      <h1 className="mb-5 text-center text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
+        Edit profile
+      </h1>
       <form
         onSubmit={handleSubmit}
         style={{
@@ -114,14 +110,16 @@ function UserProfile() {
           maxWidth: "600px",
           margin: "0 auto",
           textAlign: "end",
-        }}>
+        }}
+      >
         <div
           style={{
             gridColumn: "1 / -1",
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
-          }}>
+          }}
+        >
           {profilePic && (
             <img
               src={profilePic}
@@ -227,7 +225,8 @@ function UserProfile() {
             backgroundColor: alert.includes("failed") ? "red" : "green",
             color: "white",
             borderRadius: "5px",
-          }}>
+          }}
+        >
           {alert}
         </div>
         <button
@@ -235,7 +234,8 @@ function UserProfile() {
           style={{
             gridColumn: "1 / -1",
             justifySelf: "center",
-          }}>
+          }}
+        >
           Update Profile
         </button>
       </form>
