@@ -24,12 +24,7 @@ function ResetPassword() {
       return;
     }
 
-    const submittedUser = {
-      token,
-      password: newPassword,
-    };
-
-    const response = await resetPassword(submittedUser); // Await the API call
+    const response = await resetPassword(token, newPassword);
 
     if (response.success !== false) {
       setAlert("Password has been successfully changed.");

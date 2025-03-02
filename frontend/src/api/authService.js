@@ -83,9 +83,12 @@ export async function verifyEmail(user) {
   }
 }
 
-export async function resetPassword(user) {
+export async function resetPassword(token, newPassword) {
   try {
-    const response = await axiosInstance.post("/auth/reset-password", user);
+    const response = await axiosInstance.post("/auth/reset-password", {
+      token,
+      password: newPassword,
+    });
     console.log(response);
     return response;
   } catch (error) {
