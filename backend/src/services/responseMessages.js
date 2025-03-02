@@ -14,8 +14,12 @@ export const ErrorMsg = Object.freeze({
   NEEDS_TOKEN: "Token is required.",
   INVALID_TOKEN: "Invalid token.",
   INVALID_ID: "Invalid user ID.",
-  WRONG_PASSWORD: "Incorrect password. ",
+  WRONG_PASSWORD: "Incorrect password.",
   SERVER_ERROR: "Server error.",
+
+  INCORRECT_OTP: "Incorrect OTP.",
+  OTP_EXPIRED: "OTP has expired.",
+  MFA_NOT_ENABLED: "MFA is not enabled for this user.",
 });
 
 export const SuccessMsg = Object.freeze({
