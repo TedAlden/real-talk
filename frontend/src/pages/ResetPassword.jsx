@@ -83,7 +83,7 @@ function ResetPassword() {
             margin: "1em",
             minHeight: "2em",
             borderRadius: "5px",
-            visibility: alert ? "visible" : "hidden", // Keeps space reserved
+            visibility: alert ? "visible" : "hidden",
           }}
         >
           {alert}

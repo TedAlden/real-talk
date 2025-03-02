@@ -30,11 +30,12 @@ function UserProfileDetails() {
   const [userId, setUserId] = useState(Cookies.get("authUser"));
 
   useEffect(() => {
-    const user = Cookies.get("authUser");
-    if (!user) {
-      navigate("/"); // Redirect immediately if no token is found
+    const token = Cookies.get("authToken");
+    if (!token) {
+      navigate("/");
       return;
     }
+    const user = Cookies.get("authUser");
     setUserId(user);
     const loadUserData = async () => {
       const response = await getUserById(userId);
@@ -79,14 +80,16 @@ function UserProfileDetails() {
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
-      }}>
+      }}
+    >
       <div
         style={{
           display: "grid",
           gridTemplateColumns: "1fr 2fr",
           gap: "0.75em",
           textAlign: "right",
-        }}>
+        }}
+      >
         <label>Username:</label>
         <input
           type="text"
@@ -186,7 +189,8 @@ function UserProfileDetails() {
           minHeight: "2em",
           borderRadius: "5px",
           visibility: alert ? "visible" : "hidden",
-        }}>
+        }}
+      >
         {alert}
       </div>
       <button style={{ width: "96px", marginTop: "1em" }}>

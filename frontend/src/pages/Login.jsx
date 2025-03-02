@@ -12,9 +12,11 @@ function Login() {
   const [alertMessage, setAlertMessage] = useState("");
 
   useEffect(() => {
-    const token = JSON.parse(Cookies.get("authToken"));
-    if (token && token.type === "authenticated") {
-      setLoggedIn(true);
+    if (Cookies.get("authToken")) {
+      const token = JSON.parse(Cookies.get("authToken"));
+      if (token && token.type === "authenticated") {
+        setLoggedIn(true);
+      }
     }
   }, []);
 
@@ -24,34 +26,31 @@ function Login() {
 
     if (response.status === 200) {
       setAlertMessage("");
+      const { token, type, userId } = response.data;
 
       if (response.data.type === "awaiting-otp") {
-        Cookies.set(
-          "authToken",
-          JSON.stringify({
-            token: response.data.token,
-            type: response.data.type,
-          }),
-          {
-            expires: 7,
-            secure: true,
-            sameSite: "strict",
-          }
-        );
+        Cookies.set("authToken", JSON.stringify({ token, type }), {
+          expires: 7,
+          secure: true,
+          sameSite: "strict",
+        });
+        Cookies.set("authUser", userId, {
+          expires: 7,
+          secure: true,
+          sameSite: "strict",
+        });
         navigate("/enter-otp");
       } else if (response.data.type === "authenticated") {
-        Cookies.set(
-          "authToken",
-          JSON.stringify({
-            token: response.data.token,
-            type: response.data.type,
-          }),
-          {
-            expires: 7,
-            secure: true,
-            sameSite: "strict",
-          }
-        );
+        Cookies.set("authToken", JSON.stringify({ token, type }), {
+          expires: 7,
+          secure: true,
+          sameSite: "strict",
+        });
+        Cookies.set("authUser", userId, {
+          expires: 7,
+          secure: true,
+          sameSite: "strict",
+        });
         setLoggedIn(true);
       }
     } else {
