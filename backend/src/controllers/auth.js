@@ -10,6 +10,8 @@ import { connectDB } from "../database/connection.js";
 import { templates } from "../services/mail/templater.js";
 import { TokenTypes } from "../services/tokenTypes.js";
 
+const base32_encode = base32.default.encode;
+
 /**
  * POST /auth/register
  *
@@ -45,7 +47,7 @@ export const register = async (req, res) => {
     const hash = await bcrypt.hash(password, 10);
 
     // Generate a random base-32 token for MFA (two-factor authentication)
-    const mfaSecret = base32.encode(crypto.randomBytes(32).toString("hex"));
+    const mfaSecret = base32_encode(crypto.randomBytes(32).toString("hex"));
 
     // Insert the new user into the collection
     const newUser = {
@@ -327,12 +329,9 @@ export const verifyOtp = async (req, res) => {
     const { token, otp } = req.body;
     const db = await connectDB();
     const userCollection = db.collection("users");
-    const user = await userCollection.findOne({
-      _id: new ObjectId(decoded.userId),
-    });
 
     // Check token is valid
-    jwt.verify(token, process.env.SECRET_KEY, (err, decoded) => {
+    jwt.verify(token, process.env.SECRET_KEY, async (err, decoded) => {
       if (err) {
         return res.status(400).json({ error: ErrorMsg.INVALID_TOKEN });
       }
@@ -342,6 +341,11 @@ export const verifyOtp = async (req, res) => {
         return res.status(400).json({ error: ErrorMsg.INVALID_TOKEN });
       }
 
+      // Find the user in the database
+      const user = await userCollection.findOne({
+        _id: new ObjectId(decoded.userId),
+      });
+
       // Check if MFA is enabled
       if (!user.mfaEnabled) {
         return res.status(400).json({ error: ErrorMsg.MFA_NOT_ENABLED });
@@ -349,7 +353,7 @@ export const verifyOtp = async (req, res) => {
 
       // Verify OTP
       const { otp: actualOTP, expires } = TOTP.generate(user.mfaSecret);
-      if (otp !== actualOTP) {
+      if (parseInt(otp) !== actualOTP) {
         return res.status(400).json({ error: ErrorMsg.INCORRECT_OTP });
       }
 
