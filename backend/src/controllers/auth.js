@@ -325,7 +325,8 @@ export const resetPassword = async (req, res) => {
  */
 export const verifyOtp = async (req, res) => {
   try {
-    const timeNow = new Date();
+    const date = new Date();
+    const timeNow = date.getTime();
     const { token, otp } = req.body;
     const db = await connectDB();
     const userCollection = db.collection("users");
