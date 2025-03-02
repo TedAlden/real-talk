@@ -42,6 +42,7 @@ function Register() {
   const handleLogout = () => {
     setLoggedIn(false);
     Cookies.remove("authToken");
+    Cookies.remove("authUser");
   };
 
   return (
