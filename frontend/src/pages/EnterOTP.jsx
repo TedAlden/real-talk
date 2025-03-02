@@ -16,7 +16,7 @@ function EnterOTP() {
       navigate("/");
       return;
     }
-  }, []);
+  }, [token, navigate]);
 
   const handleSubmitOTP = async (e) => {
     e.preventDefault();
