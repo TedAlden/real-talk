@@ -339,7 +339,7 @@ export const verifyOtp = async (req, res) => {
 
       // Check if it's an awaiting-otp token
       if (decoded.type !== TokenTypes.AWAIT_MFA) {
-        return res.status(400).json({ error: ErrorMsg.INVALID_TOKEN });
+        return res.status(401).json({ error: ErrorMsg.INVALID_TOKEN });
       }
 
       // Find the user in the database
@@ -349,18 +349,18 @@ export const verifyOtp = async (req, res) => {
 
       // Check if MFA is enabled
       if (!user.mfaEnabled) {
-        return res.status(400).json({ error: ErrorMsg.MFA_NOT_ENABLED });
+        return res.status(403).json({ error: ErrorMsg.MFA_NOT_ENABLED });
       }
 
       // Verify OTP
       const { otp: actualOTP, expires } = TOTP.generate(user.mfaSecret);
       if (parseInt(otp) !== parseInt(actualOTP)) {
-        return res.status(400).json({ error: ErrorMsg.INCORRECT_OTP });
+        return res.status(401).json({ error: ErrorMsg.INCORRECT_OTP });
       }
 
       // Check if OTP is expired
       if (timeNow > expires) {
-        return res.status(400).json({ error: ErrorMsg.OTP_EXPIRED });
+        return res.status(401).json({ error: ErrorMsg.OTP_EXPIRED });
       }
 
       // Give the user an authentication token
