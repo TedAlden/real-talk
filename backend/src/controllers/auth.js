@@ -353,7 +353,7 @@ export const verifyOtp = async (req, res) => {
 
       // Verify OTP
       const { otp: actualOTP, expires } = TOTP.generate(user.mfaSecret);
-      if (parseInt(otp) !== actualOTP) {
+      if (parseInt(otp) !== parseInt(actualOTP)) {
         return res.status(400).json({ error: ErrorMsg.INCORRECT_OTP });
       }
 
