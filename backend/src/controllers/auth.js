@@ -1,10 +1,16 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import { TOTP } from "totp-generator";
+import * as crypto from "crypto";
+import * as base32 from "hi-base32";
 import transporter from "../services/mail/mailer.js";
 import { ObjectId } from "mongodb";
 import { ErrorMsg, SuccessMsg } from "../services/responseMessages.js";
 import { connectDB } from "../database/connection.js";
 import { templates } from "../services/mail/templater.js";
+import { TokenTypes } from "../services/tokenTypes.js";
+
+const base32_encode = base32.default.encode;
 
 /**
  * POST /auth/register
@@ -40,6 +46,9 @@ export const register = async (req, res) => {
     // Hash the password
     const hash = await bcrypt.hash(password, 10);
 
+    // Generate a random base-32 token for MFA (two-factor authentication)
+    const mfaSecret = base32_encode(crypto.randomBytes(32).toString("hex"));
+
     // Insert the new user into the collection
     const newUser = {
       username,
@@ -47,13 +56,22 @@ export const register = async (req, res) => {
       password: hash,
       isVerified: false,
       isAdmin: false,
+      mfaSecret,
+      mfaEnabled: true,
     };
     const { insertedId } = await userCollection.insertOne(newUser);
 
     // Generate verification token
-    const token = jwt.sign({ userId: insertedId }, process.env.SECRET_KEY, {
-      expiresIn: "1d",
-    });
+    const token = jwt.sign(
+      {
+        userId: insertedId,
+        type: TokenTypes.VERIFY_EMAIL,
+      },
+      process.env.SECRET_KEY,
+      {
+        expiresIn: "1d",
+      }
+    );
 
     // Generate the 'verify your account' email
     const htmlContent = templates.verifyEmail(username, email, token);
@@ -110,15 +128,39 @@ export const login = async (req, res) => {
     bcrypt.compare(password, user.password, (err, result) => {
       if (err) throw err;
 
-      if (result) {
-        // If the password is correct, create a token and send it to the user
-        const token = jwt.sign({ userId: user._id }, process.env.SECRET_KEY, {
-          expiresIn: "1h",
-        });
-        return res.status(200).json({ token, _id: user._id });
-      } else {
-        // Else if the password is incorrect, return 401 meaning unauthorized
+      if (!result) {
+        // Incorrect password
         return res.status(401).json({ error: ErrorMsg.WRONG_PASSWORD });
+      } else if (user.mfaEnabled) {
+        // Give the user a token to verify their 2FA OTP
+        const token = jwt.sign(
+          {
+            userId: user._id,
+            type: TokenTypes.AWAIT_MFA,
+          },
+          process.env.SECRET_KEY,
+          {
+            expiresIn: "1h",
+          }
+        );
+        return res
+          .status(200)
+          .json({ token, type: TokenTypes.AWAIT_MFA, userId: user._id });
+      } else {
+        // Give the user an authentication token
+        const token = jwt.sign(
+          {
+            userId: user._id,
+            type: TokenTypes.AUTH,
+          },
+          process.env.SECRET_KEY,
+          {
+            expiresIn: "1h",
+          }
+        );
+        return res
+          .status(200)
+          .json({ token, type: TokenTypes.AUTH, userId: user._id });
       }
     });
   } catch (err) {
@@ -153,6 +195,11 @@ export const verifyEmail = async (req, res) => {
     // Verify token
     jwt.verify(token, process.env.SECRET_KEY, async (err, decoded) => {
       if (err) {
+        return res.status(400).json({ error: ErrorMsg.INVALID_TOKEN });
+      }
+
+      // Check if it's a verify-email token
+      if (decoded.type !== TokenTypes.VERIFY_EMAIL) {
         return res.status(400).json({ error: ErrorMsg.INVALID_TOKEN });
       }
 
@@ -195,7 +242,7 @@ export const forgotPassword = async (req, res) => {
     // Generate password reset token
     const token = jwt.sign(
       {
-        type: "password-reset",
+        type: TokenTypes.RESET_PASSWORD,
         userId: user._id,
       },
       process.env.SECRET_KEY,
@@ -249,6 +296,11 @@ export const resetPassword = async (req, res) => {
         return res.status(400).json({ error: ErrorMsg.INVALID_TOKEN });
       }
 
+      // Check if it's a reset-password token
+      if (decoded.type !== TokenTypes.RESET_PASSWORD) {
+        return res.status(400).json({ error: ErrorMsg.INVALID_TOKEN });
+      }
+
       // Update (reset) password with new requested password
       const hash = await bcrypt.hash(password, 10);
       await userCollection.updateOne(
@@ -260,6 +312,76 @@ export const resetPassword = async (req, res) => {
     });
   } catch (err) {
     console.error("Reset password error:", err);
+    return res.status(500).json({ error: ErrorMsg.SERVER_ERROR });
+  }
+};
+
+/**
+ * POST /auth/verify-otp
+ *
+ * Verify that a submitted OTP is correct to complete logging into an account.
+ *
+ * Request body:
+ * {
+ *  token: string,
+ *  otp: string
+ * }
+ */
+export const verifyOtp = async (req, res) => {
+  try {
+    const date = new Date();
+    const timeNow = date.getTime();
+    const { token, otp } = req.body;
+    const db = await connectDB();
+    const userCollection = db.collection("users");
+
+    // Check token is valid
+    jwt.verify(token, process.env.SECRET_KEY, async (err, decoded) => {
+      if (err) {
+        return res.status(400).json({ error: ErrorMsg.INVALID_TOKEN });
+      }
+
+      // Check if it's an awaiting-otp token
+      if (decoded.type !== TokenTypes.AWAIT_MFA) {
+        return res.status(401).json({ error: ErrorMsg.INVALID_TOKEN });
+      }
+
+      // Find the user in the database
+      const user = await userCollection.findOne({
+        _id: new ObjectId(decoded.userId),
+      });
+
+      // Check if MFA is enabled
+      if (!user.mfaEnabled) {
+        return res.status(403).json({ error: ErrorMsg.MFA_NOT_ENABLED });
+      }
+
+      // Verify OTP
+      const { otp: actualOTP, expires } = TOTP.generate(user.mfaSecret);
+      if (parseInt(otp) !== parseInt(actualOTP)) {
+        return res.status(401).json({ error: ErrorMsg.INCORRECT_OTP });
+      }
+
+      // Check if OTP is expired
+      if (timeNow > expires) {
+        return res.status(401).json({ error: ErrorMsg.OTP_EXPIRED });
+      }
+
+      // Give the user an authentication token
+      const authToken = jwt.sign(
+        {
+          userId: user._id,
+          type: TokenTypes.AUTH,
+        },
+        process.env.SECRET_KEY,
+        {
+          expiresIn: "1h",
+        }
+      );
+      return res.status(200).json({ token: authToken, type: TokenTypes.AUTH });
+    });
+  } catch (err) {
+    console.error("Verify OTP error:", err);
     return res.status(500).json({ error: ErrorMsg.SERVER_ERROR });
   }
 };

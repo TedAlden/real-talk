@@ -17,8 +17,7 @@ function VerifyUser() {
     }
 
     const verifyUser = async () => {
-      const submittedUser = { token, email };
-      const response = await verifyEmail(submittedUser); // Await the API call
+      const response = await verifyEmail(email, token);
 
       if (response.success !== false) {
         setAlert("Congratulations! You are now verified!");

@@ -1,12 +1,12 @@
 import axiosInstance from "./axios";
 import { apiErrorResponse } from "./apiUtils";
-//Logs in the given user
-async function loginUser(user) {
+
+export async function loginUser(username, password) {
   try {
-    //Makes a POST request to the "/users/login" endpoint. Auth stuff is usually POST because it's more secure.
-    const response = await axiosInstance.post("/auth/login", user);
-    //Log the response for debugging purposes and return the response
-    //The response should contain a token which we can use to authenticate the user on protected endpoints.
+    const response = await axiosInstance.post("/auth/login", {
+      username,
+      password,
+    });
     console.log(response);
     return response;
   } catch (error) {
@@ -14,12 +14,13 @@ async function loginUser(user) {
   }
 }
 
-async function registerUser(user) {
+export async function registerUser(username, email, password) {
   try {
-    //Makes a POST request to the "/users/register" endpoint. Auth stuff is usually POST because it's more secure.
-    const response = await axiosInstance.post("/auth/register", user);
-    //Log the response for debugging purposes and return the response.
-    //Usually the response is the info of the newly registered user or maybe a token so they can be logged in immediately.
+    const response = await axiosInstance.post("/auth/register", {
+      username,
+      email,
+      password,
+    });
     console.log(response);
     return response;
   } catch (error) {
@@ -27,11 +28,11 @@ async function registerUser(user) {
   }
 }
 
-async function sendResetEmail(user) {
+export async function sendResetEmail(email) {
   try {
-    //Makes a POST request to the "/users/register" endpoint. Auth stuff is usually POST because it's more secure.
-    const response = await axiosInstance.post("/auth/forgot-password", user);
-    //Log the response for debugging purposes and return the response.
+    const response = await axiosInstance.post("/auth/forgot-password", {
+      email,
+    });
     console.log(response);
     return response;
   } catch (error) {
@@ -39,11 +40,12 @@ async function sendResetEmail(user) {
   }
 }
 
-async function verifyEmail(user) {
+export async function verifyEmail(email, token) {
   try {
-    //Makes a POST request to the "/users/register" endpoint. Auth stuff is usually POST because it's more secure.
-    const response = await axiosInstance.post("/auth/verify-email", user);
-    //Log the response for debugging purposes and return the response.
+    const response = await axiosInstance.post("/auth/verify-email", {
+      email,
+      token,
+    });
     console.log(response);
     return response;
   } catch (error) {
@@ -51,11 +53,12 @@ async function verifyEmail(user) {
   }
 }
 
-async function resetPassword(user) {
+export async function resetPassword(token, newPassword) {
   try {
-    //Makes a POST request to the "/users/register" endpoint. Auth stuff is usually POST because it's more secure.
-    const response = await axiosInstance.post("/auth/reset-password", user);
-    //Log the response for debugging purposes and return the response.
+    const response = await axiosInstance.post("/auth/reset-password", {
+      token,
+      password: newPassword,
+    });
     console.log(response);
     return response;
   } catch (error) {
@@ -63,4 +66,15 @@ async function resetPassword(user) {
   }
 }
 
-export { verifyEmail, sendResetEmail, loginUser, registerUser, resetPassword };
+export async function verifyOTP(token, otp) {
+  try {
+    const response = await axiosInstance.post("/auth/verify-otp", {
+      token,
+      otp,
+    });
+    console.log(response);
+    return response;
+  } catch (error) {
+    return apiErrorResponse(error);
+  }
+}
