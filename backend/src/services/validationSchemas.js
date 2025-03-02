@@ -1,7 +1,7 @@
 export const userUpdateSchema = {
   "name.first": {
     in: ["body"],
-    optional: true,
+    optional: { options: { checkFalsy: true } },
     isString: {
       errorMessage: "First name must be a string",
     },
@@ -10,7 +10,7 @@ export const userUpdateSchema = {
   },
   "name.last": {
     in: ["body"],
-    optional: true,
+    optional: { options: { checkFalsy: true } },
     isString: {
       errorMessage: "Last name must be a string",
     },
@@ -19,7 +19,7 @@ export const userUpdateSchema = {
   },
   "location.city": {
     in: ["body"],
-    optional: true,
+    optional: { options: { checkFalsy: true } },
     isString: {
       errorMessage: "City must be a string",
     },
@@ -28,7 +28,7 @@ export const userUpdateSchema = {
   },
   "location.state": {
     in: ["body"],
-    optional: true,
+    optional: { options: { checkFalsy: true } },
     isString: {
       errorMessage: "State must be a string",
     },
@@ -37,7 +37,7 @@ export const userUpdateSchema = {
   },
   "location.country": {
     in: ["body"],
-    optional: true,
+    optional: { options: { checkFalsy: true } },
     isString: {
       errorMessage: "Country must be a string",
     },
@@ -46,7 +46,7 @@ export const userUpdateSchema = {
   },
   email: {
     in: ["body"],
-    optional: true,
+    optional: { options: { checkFalsy: true } },
     isEmail: {
       errorMessage: "Must be a valid email address",
     },
@@ -54,7 +54,7 @@ export const userUpdateSchema = {
   },
   username: {
     in: ["body"],
-    optional: true,
+    optional: { options: { checkFalsy: true } },
     isAlphanumeric: {
       errorMessage: "Username must contain only letters and numbers",
     },
@@ -63,7 +63,7 @@ export const userUpdateSchema = {
   },
   password: {
     in: ["body"],
-    optional: true,
+    optional: { options: { checkFalsy: true } },
     /*     isStrongPassword: {
       options: {
         minLength: 8,
@@ -78,13 +78,13 @@ export const userUpdateSchema = {
   },
   bio: {
     in: ["body"],
-    optional: true,
+    optional: { options: { checkFalsy: true } },
     trim: true,
     escape: true,
   },
   birthday: {
     in: ["body"],
-    optional: true,
+    optional: { options: { checkFalsy: true } },
     isISO8601: {
       errorMessage: "Birthday must be a valid ISO8601 date",
     },
@@ -92,13 +92,13 @@ export const userUpdateSchema = {
   },
   phone: {
     in: ["body"],
-    optional: true,
+    optional: { options: { checkFalsy: true } },
     trim: true,
     escape: true,
   },
   picture: {
     in: ["body"],
-    optional: true,
+    optional: { options: { checkFalsy: true } },
     isURL: {
       errorMessage: "Picture must be a valid URL",
     },
