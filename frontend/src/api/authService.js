@@ -75,9 +75,12 @@ export async function sendResetEmail(email) {
   }
 }
 
-export async function verifyEmail(user) {
+export async function verifyEmail(email, token) {
   try {
-    const response = await axiosInstance.post("/auth/verify-email", user);
+    const response = await axiosInstance.post("/auth/verify-email", {
+      email,
+      token,
+    });
     console.log(response);
     return response;
   } catch (error) {
