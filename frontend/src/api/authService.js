@@ -63,9 +63,11 @@ export async function registerUser(username, email, password) {
   }
 }
 
-export async function sendResetEmail(user) {
+export async function sendResetEmail(email) {
   try {
-    const response = await axiosInstance.post("/auth/forgot-password", user);
+    const response = await axiosInstance.post("/auth/forgot-password", {
+      email,
+    });
     console.log(response);
     return response;
   } catch (error) {

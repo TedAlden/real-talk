@@ -8,10 +8,7 @@ function ForgotPassword() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const submittedUser = {
-      email,
-    };
-    const response = await sendResetEmail(submittedUser);
+    const response = await sendResetEmail(email);
 
     if (response.success !== false) {
       setAlert("Password reset email sent!");
