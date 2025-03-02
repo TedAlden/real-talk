@@ -1,8 +1,7 @@
 import axiosInstance from "./axios";
 import { apiErrorResponse } from "./apiUtils";
 
-//Gets a list of all users from the backend
-async function getUsersByQuery(query_type, query) {
+export async function getUsersByQuery(query_type, query) {
   try {
     const response = await axiosInstance.get(
       `/api/users?${query_type}=${query}`
@@ -15,7 +14,7 @@ async function getUsersByQuery(query_type, query) {
   }
 }
 
-async function getUserById(_id) {
+export async function getUserById(_id) {
   try {
     const response = await axiosInstance.get(`/api/users/${_id}`);
     console.log(response);
@@ -25,7 +24,7 @@ async function getUserById(_id) {
   }
 }
 
-async function updateUser(user) {
+export async function updateUser(user) {
   try {
     const { _id } = user;
     const response = await axiosInstance.put(`/api/users/${_id}`, user);
@@ -36,7 +35,7 @@ async function updateUser(user) {
   }
 }
 
-async function deleteUserById(_id) {
+export async function deleteUserById(_id) {
   try {
     const response = await axiosInstance.delete(`/api/users/${_id}`);
     console.log(response);
@@ -45,5 +44,3 @@ async function deleteUserById(_id) {
     return apiErrorResponse(error);
   }
 }
-
-export { getUsersByQuery, getUserById, updateUser, deleteUserById };
