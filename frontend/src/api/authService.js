@@ -44,7 +44,7 @@ export async function registerUser(username, email, password) {
     console.log(response);
     return response;
   } catch (error) {
-    handleError(error);
+    return handleError(error);
   }
 }
 
@@ -56,7 +56,7 @@ export async function sendResetEmail(email) {
     console.log(response);
     return response;
   } catch (error) {
-    handleError(error);
+    return handleError(error);
   }
 }
 
@@ -69,7 +69,7 @@ export async function verifyEmail(email, token) {
     console.log(response);
     return response;
   } catch (error) {
-    handleError(error);
+    return handleError(error);
   }
 }
 
@@ -82,7 +82,7 @@ export async function resetPassword(token, newPassword) {
     console.log(response);
     return response;
   } catch (error) {
-    handleError(error);
+    return handleError(error);
   }
 }
 
@@ -95,6 +95,6 @@ export async function verifyOTP(token, otp) {
     console.log(response);
     return response;
   } catch (error) {
-    handleError(error);
+    return handleError(error);
   }
 }
