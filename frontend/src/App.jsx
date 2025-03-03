@@ -16,16 +16,18 @@ function App() {
     <div className="App">
       <Router>
         <Navbar />
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/forgot-password" element={<ForgotPassword />} />
-          <Route path="/verify-email" element={<VerifyUser />} />
-          <Route path="/reset-password" element={<ResetPassword />} />
-          <Route path="/profile" element={<UserProfile />} />
-          <Route path="/enter-otp" element={<EnterOTP />} />
-        </Routes>
+        <div className="mx-auto max-w-screen-xl p-4">
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/verify-email" element={<VerifyUser />} />
+            <Route path="/reset-password" element={<ResetPassword />} />
+            <Route path="/profile" element={<UserProfile />} />
+            <Route path="/enter-otp" element={<EnterOTP />} />
+          </Routes>
+        </div>
       </Router>
     </div>
   );
