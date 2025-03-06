@@ -1,8 +1,20 @@
 import { useState, useEffect } from "react";
 import { updateUser, getUserById } from "../api/userService.js";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
 import _ from "lodash";
+
+import { HiAtSymbol, HiInformationCircle, HiMail } from "react-icons/hi";
+import {
+  Alert,
+  Button,
+  Datepicker,
+  FileInput,
+  TextInput,
+  Textarea,
+  Label,
+  ToggleSwitch,
+} from "flowbite-react";
 
 const emptyUser = {
   _id: "",
@@ -26,17 +38,22 @@ const emptyUser = {
 function UserProfile() {
   const navigate = useNavigate();
   const [formData, setFormData] = useState(emptyUser);
-  const [alert, setAlert] = useState("");
+  const [alertMessage, setAlertMessage] = useState("");
   const [userId, setUserId] = useState(Cookies.get("authUser"));
   const [profilePic, setProfilePic] = useState();
+
+  const [loggedIn, setLoggedIn] = useState(false);
+
+  const [mfaEnabled, setMfaEnabled] = useState(false);
 
   useEffect(() => {
     const user = Cookies.get("authUser");
     if (!user) {
-      navigate("/"); // Redirect immediately if no token is found
+      // navigate("/"); // Redirect immediately if no token is found
       return;
     }
     setUserId(user);
+    setLoggedIn(true);
     const loadUserData = async () => {
       const response = await getUserById(userId);
       if (response.success !== false) {
@@ -89,157 +106,250 @@ function UserProfile() {
     const response = await updateUser(submittedUser);
     console.log(submittedUser);
     if (response.success !== false) {
-      setAlert("User updated successfully!");
+      setAlertMessage({
+        color: "success",
+        title: "User updated successfully!",
+      });
     } else {
       console.log(response);
-      setAlert("User update failed! " + response.error);
+      setAlertMessage({
+        color: "failure",
+        title: "User update failed!",
+        message: response.error,
+      });
     }
   };
 
-  return (
-    <>
-      <h1 className="mb-5 text-center text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
-        Edit profile
+  return loggedIn ? (
+    <div className="flex flex-col items-center justify-center p-8">
+      <div className="w-full rounded-lg bg-white shadow sm:max-w-xl md:mt-0 xl:p-0 dark:border dark:border-gray-700 dark:bg-gray-800">
+        <div className="space-y-4 p-6 sm:p-8 md:space-y-6">
+          <h1 className="my-5 text-center text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
+            Edit profile
+          </h1>
+          <form
+            className="flex max-w-xl flex-col gap-4"
+            onSubmit={handleSubmit}
+          >
+            {profilePic && (
+              <div className="flex justify-center">
+                <img
+                  className="h-32 w-32 overflow-hidden rounded-full"
+                  src={profilePic}
+                  alt="Profile"
+                  style={{
+                    maxWidth: "150px",
+                    maxHeight: "150px",
+                    objectFit: "cover",
+                  }}
+                />
+              </div>
+            )}
+            <div>
+              <div className="mb-2 block">
+                <Label htmlFor="file-upload" value="Profile Picture" />
+              </div>
+              <FileInput
+                id="file-upload"
+                accept="image/*"
+                onChange={handleFileRead}
+              />
+            </div>
+            <div>
+              <div className="mb-2 block">
+                <Label htmlFor="file-upload" value="Username" />
+              </div>
+              <TextInput
+                id="username"
+                type="text"
+                placeholder="username"
+                // addon="@"
+                icon={HiAtSymbol}
+                required
+                value={formData?.username}
+                onChange={handleChange}
+              />
+            </div>
+            <div>
+              <div className="mb-2 block">
+                <Label htmlFor="file-upload" value="Email" />
+              </div>
+              <TextInput
+                id="email"
+                type="text"
+                placeholder="email"
+                icon={HiMail}
+                required
+                value={formData?.email}
+                onChange={handleChange}
+              />
+            </div>
+            <div>
+              <div className="mb-2 block">
+                <Label htmlFor="file-upload" value="Password" />
+              </div>
+              <TextInput
+                id="password"
+                type="text"
+                placeholder="••••••••"
+                onChange={handleChange}
+              />
+            </div>
+            <div class="grid gap-4 md:grid-cols-2">
+              <div>
+                <div className="mb-2 block">
+                  <Label htmlFor="file-upload" value="First Name" />
+                </div>
+                <TextInput
+                  id="first-name"
+                  type="text"
+                  placeholder="John"
+                  required
+                  value={formData?.name?.first}
+                  onChange={handleChange}
+                />
+              </div>
+              <div>
+                <div className="mb-2 block">
+                  <Label htmlFor="file-upload" value="Last Name" />
+                </div>
+                <TextInput
+                  id="last-name"
+                  type="text"
+                  placeholder="Doe"
+                  required
+                  value={formData?.name?.last}
+                  onChange={handleChange}
+                />
+              </div>
+            </div>
+            <div>
+              <div className="mb-2 block">
+                <Label htmlFor="date-of-birth" value="Date of Birth" />
+              </div>
+              <Datepicker
+                id="date-of-birth"
+                required
+                value={formData?.birthday}
+                onChange={handleChange}
+              />
+            </div>
+            <div>
+              <div className="mb-2 block">
+                <Label htmlFor="telephone" value="Telephone" />
+              </div>
+              <TextInput
+                id="telephone"
+                type="tel"
+                placeholder="(123) 456-7890"
+                value={formData?.phone}
+                onChange={handleChange}
+              />
+            </div>
+            <div class="grid gap-4 md:grid-cols-2">
+              <div>
+                <div className="mb-2 block">
+                  <Label htmlFor="country" value="Country" />
+                </div>
+                <TextInput
+                  id="country"
+                  type="text"
+                  placeholder=""
+                  value={formData?.location?.country}
+                  onChange={handleChange}
+                />
+              </div>
+              <div>
+                <div className="mb-2 block">
+                  <Label htmlFor="state" value="State" />
+                </div>
+                <TextInput
+                  id="state"
+                  type="text"
+                  placeholder=""
+                  value={formData?.location?.state}
+                  onChange={handleChange}
+                />
+              </div>
+              <div>
+                <div className="mb-2 block">
+                  <Label htmlFor="city" value="City" />
+                </div>
+                <TextInput
+                  id="city"
+                  type="text"
+                  placeholder=""
+                  value={formData?.location?.city}
+                  onChange={handleChange}
+                />
+              </div>
+              <div>
+                <div className="mb-2 block">
+                  <Label htmlFor="zip" value="Zip" />
+                </div>
+                <TextInput
+                  id="zip"
+                  type="text"
+                  placeholder=""
+                  onChange={handleChange}
+                />
+              </div>
+            </div>
+            <div>
+              <div className="mb-2 block">
+                <Label htmlFor="biography" value="Bio" />
+              </div>
+              <Textarea
+                id="biography"
+                type="text"
+                placeholder="Write your thoughts here!..."
+                required
+                value={formData?.bio}
+                onChange={handleChange}
+              />
+            </div>
+            <div>
+              <div className="mb-2 block">
+                <Label htmlFor="mfa" value="Account Security" />
+              </div>
+              <ToggleSwitch
+                checked={mfaEnabled}
+                label="Enable 2FA"
+                onChange={setMfaEnabled}
+              />
+            </div>
+            <Button type="submit">Update</Button>
+            {Object.keys(alertMessage).length > 0 && (
+              <div className="">
+                <Alert
+                  color={alertMessage.color}
+                  icon={alertMessage.icon || HiInformationCircle}
+                >
+                  <span className="font-medium">{alertMessage.title}</span>{" "}
+                  {alertMessage.message}
+                </Alert>
+              </div>
+            )}
+          </form>
+        </div>
+      </div>
+    </div>
+  ) : (
+    <div>
+      <h1 className="my-5 text-2xl font-bold text-gray-900 dark:text-white">
+        Welcome
       </h1>
-      <form
-        onSubmit={handleSubmit}
-        style={{
-          display: "grid",
-          gridTemplateColumns: "1fr 2fr",
-          gap: "0.5rem",
-          maxWidth: "600px",
-          margin: "0 auto",
-          textAlign: "end",
-        }}
-      >
-        <div
-          style={{
-            gridColumn: "1 / -1",
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-          }}
+      <p className="my-5 text-gray-900 dark:text-white">
+        You must{" "}
+        <Link
+          to="/login"
+          className="font-medium text-blue-600 hover:underline dark:text-blue-500"
         >
-          {profilePic && (
-            <img
-              src={profilePic}
-              alt="Profile"
-              style={{
-                maxWidth: "150px",
-                maxHeight: "150px",
-                objectFit: "cover",
-              }}
-            />
-          )}
-          <label>Profile Picture</label>
-          <input
-            type="file"
-            accept="image/*"
-            name="originalFileName"
-            onChange={handleFileRead}
-            style={{ marginBottom: "10px" }}
-          />
-        </div>
-        <label>User2name</label>
-        <input
-          type="text"
-          name="username"
-          value={formData?.username}
-          onChange={handleChange}
-        />
-        <label>Password</label>
-        <input
-          type="password"
-          name="password"
-          value={formData?.password}
-          onChange={handleChange}
-        />
-        <label>Email</label>
-        <input
-          type="email"
-          name="email"
-          value={formData?.email}
-          onChange={handleChange}
-        />
-        <label>First Name</label>
-        <input
-          type="text"
-          name="name.first"
-          value={formData?.name?.first}
-          onChange={handleChange}
-        />
-        <label>Last Name</label>
-        <input
-          type="text"
-          name="name.last"
-          value={formData?.name?.last}
-          onChange={handleChange}
-        />
-        <label>Birthday</label>
-        <input
-          type="date"
-          name="birthday"
-          value={formData?.birthday}
-          onChange={handleChange}
-        />
-        <label>Phone</label>
-        <input
-          type="tel"
-          name="phone"
-          value={formData?.phone}
-          onChange={handleChange}
-        />
-        <label>Country</label>
-        <input
-          type="text"
-          name="location.country"
-          value={formData?.location?.country}
-          onChange={handleChange}
-        />
-        <label>State</label>
-        <input
-          type="text"
-          name="location.state"
-          value={formData?.location?.state}
-          onChange={handleChange}
-        />
-        <label>City</label>
-        <input
-          type="text"
-          name="location.city"
-          value={formData?.location?.city}
-          onChange={handleChange}
-        />
-        <label>Bio</label>
-        <textarea
-          name="bio"
-          value={formData?.bio}
-          onChange={handleChange}
-          rows="3"
-        />{" "}
-        <div
-          style={{
-            gridColumn: "1 / -1",
-            textAlign: "center",
-            padding: "0.5em",
-            backgroundColor: alert.includes("failed") ? "red" : "green",
-            color: "white",
-            borderRadius: "5px",
-          }}
-        >
-          {alert}
-        </div>
-        <button
-          type="submit"
-          style={{
-            gridColumn: "1 / -1",
-            justifySelf: "center",
-          }}
-        >
-          Update Profile
-        </button>
-      </form>
-    </>
+          log in
+        </Link>{" "}
+        before you can view this page.
+      </p>
+    </div>
   );
 }
 

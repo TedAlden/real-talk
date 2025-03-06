@@ -13,10 +13,10 @@ import EnterOTP from "./pages/EnterOTP";
 
 function App() {
   return (
-    <div className="App">
+    <div className="rt-app bg-gray-50 dark:bg-gray-900">
       <Router>
         <Navbar />
-        <div className="mx-auto max-w-screen-xl p-4">
+        <div className="container mx-auto">
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/login" element={<Login />} />

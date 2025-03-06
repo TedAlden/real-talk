@@ -1,78 +1,71 @@
-import viteLogo from "/vite.svg";
 import { useState } from "react";
 import { sendResetEmail } from "../api/authService";
 
+import { HiAtSymbol, HiInformationCircle } from "react-icons/hi";
+import { Alert, Button, Checkbox, Label, TextInput } from "flowbite-react";
+
 function ForgotPassword() {
   const [email, setEmail] = useState("");
-  const [alert, setAlert] = useState("");
+  const [alertMessage, setAlertMessage] = useState("");
 
-  const handleSubmit = async (e) => {
+  const handleSubmitEmail = async (e) => {
     e.preventDefault();
     const response = await sendResetEmail(email);
 
     if (response.success !== false) {
-      setAlert("Password reset email sent!");
+      setAlertMessage({
+        color: "success",
+        title: "Password reset email sent!",
+      });
     } else {
-      console.log(response);
-      setAlert("Password reset failed! " + response.error);
+      setAlertMessage({
+        color: "failure",
+        title: "Password reset failed!",
+        message: response.message,
+      });
     }
   };
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
+    <div className="flex flex-col items-center justify-center p-8">
+      <div className="w-full rounded-lg bg-white shadow sm:max-w-md md:mt-0 xl:p-0 dark:border dark:border-gray-700 dark:bg-gray-800">
+        <div className="space-y-4 p-6 sm:p-8 md:space-y-6">
+          <h1 className="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">
+            Forgotten your password?
+          </h1>
+          <form
+            className="flex max-w-md flex-col gap-4"
+            onSubmit={handleSubmitEmail}
+          >
+            <div>
+              <div className="mb-2 block">
+                <Label htmlFor="email" value="Email" />
+              </div>
+              <TextInput
+                id="email"
+                type="email"
+                icon={HiAtSymbol}
+                placeholder="username@site.com"
+                required
+                onChange={(e) => setEmail(e.target.value)}
+              />
+            </div>
+            <Button type="submit">Send</Button>
+            {Object.keys(alertMessage).length > 0 && (
+                  <div>
+                    <Alert
+                      color={alertMessage.color}
+                      icon={alertMessage.icon || HiInformationCircle}
+                    >
+                      <span className="font-medium">{alertMessage.title}</span>{" "}
+                      {alertMessage.message}
+                    </Alert>
+                  </div>
+                )}
+          </form>
+        </div>
       </div>
-      <h1>REAL TALK</h1>
-      <form
-        onSubmit={handleSubmit}
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-        }}
-      >
-        <p>
-          Enter your email to receive a password <br></br>reset link.
-        </p>
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "1fr 2fr",
-            gap: "0.75em",
-            textAlign: "right",
-          }}
-        >
-          <label>Email:</label>
-          <input type="text" onChange={(e) => setEmail(e.target.value)} />
-        </div>
-        <a
-          style={{
-            margin: "0.5em",
-          }}
-          href="/login"
-        >
-          <small>Back to Login </small>
-        </a>
-        <div
-          style={{
-            background: "red",
-            color: "white",
-            padding: "0.5em",
-            width: "100%",
-            margin: "1em",
-            minHeight: "2em",
-            borderRadius: "5px",
-            visibility: alert ? "visible" : "hidden", // Keeps space reserved
-          }}
-        >
-          {alert}
-        </div>
-        <button style={{ width: "96px", marginTop: "1em" }}>Send</button>
-      </form>
-    </>
+    </div>
   );
 }
 

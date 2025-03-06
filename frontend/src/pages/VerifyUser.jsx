@@ -1,11 +1,16 @@
-import viteLogo from "/vite.svg";
 import { useEffect, useState } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { verifyEmail } from "../api/authService";
 
+import { HiInformationCircle } from "react-icons/hi";
+import { Alert } from "flowbite-react";
+
 function VerifyUser() {
   const [searchParams] = useSearchParams();
-  const [alert, setAlert] = useState("Verifying token, please wait...");
+  const [alertMessage, setAlertMessage] = useState({
+    color: "info",
+    title: "Verifying token, please wait!",
+  });
   const navigate = useNavigate();
   const token = searchParams.get("token");
   const email = searchParams.get("email");
@@ -20,10 +25,17 @@ function VerifyUser() {
       const response = await verifyEmail(email, token);
 
       if (response.success !== false) {
-        setAlert("Congratulations! You are now verified!");
+        setAlertMessage({
+          color: "success",
+          title: "Verification successful!",
+        });
       } else {
         console.error(response);
-        setAlert("Verification failed! " + (response.error || "Unknown error"));
+        setAlertMessage({
+          color: "failure",
+          title: "Verification failed!",
+          message: response.error || "Unknown error",
+        });
       }
     };
 
@@ -31,15 +43,19 @@ function VerifyUser() {
   }, [token, email, navigate]);
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-      </div>
-      <h1>REAL TALK</h1>
-      <p>{alert}</p>
-    </>
+    <div className="flex flex-col items-center justify-center p-8">
+      {Object.keys(alertMessage).length > 0 && (
+        <div className="sm:max-w-md">
+          <Alert
+            color={alertMessage.color}
+            icon={alertMessage.icon || HiInformationCircle}
+          >
+            <span className="font-medium">{alertMessage.title}</span>{" "}
+            {alertMessage.message}
+          </Alert>
+        </div>
+      )}
+    </div>
   );
 }
 
