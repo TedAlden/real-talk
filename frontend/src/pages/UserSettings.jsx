@@ -4,10 +4,13 @@ import { Link, useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
 import _ from "lodash";
 
+import QRCode from "react-qr-code";
+
 import { HiAtSymbol, HiInformationCircle, HiMail } from "react-icons/hi";
 import {
   Alert,
   Button,
+  Clipboard,
   Datepicker,
   FileInput,
   TextInput,
@@ -195,7 +198,7 @@ function UserSettings() {
                 onChange={handleChange}
               />
             </div>
-            <div class="grid gap-4 md:grid-cols-2">
+            <div className="grid gap-4 md:grid-cols-2">
               <div>
                 <div className="mb-2 block">
                   <Label htmlFor="file-upload" value="First Name" />
@@ -246,7 +249,7 @@ function UserSettings() {
                 onChange={handleChange}
               />
             </div>
-            <div class="grid gap-4 md:grid-cols-2">
+            <div className="grid gap-4 md:grid-cols-2">
               <div>
                 <div className="mb-2 block">
                   <Label htmlFor="country" value="Country" />
@@ -310,12 +313,36 @@ function UserSettings() {
             </div>
             <div>
               <div className="mb-2 block">
-                <Label htmlFor="mfa" value="Account Security" />
+                <Label htmlFor="mfa" value="Two-factor authentication" />
               </div>
               <ToggleSwitch
+                id="mfa.enabled"
                 checked={mfaEnabled}
-                label="Enable 2FA"
+                label="Enabled"
                 onChange={setMfaEnabled}
+              />
+            </div>
+            <div>
+              <div className="mb-2 block">
+                <Label htmlFor="mfa" value="Secret" />
+              </div>
+              <div className="relative">
+                <TextInput
+                  sizing="lg"
+                  id="mfa.secret"
+                  type="text"
+                  placeholder="2FA Secret"
+                  value={formData?.mfaSecret}
+                  readOnly
+                />
+                <Clipboard.WithIconText valueToCopy={formData?.mfaSecret} />
+              </div>
+            </div>
+            <div className="flex justify-center">
+              <QRCode
+                id="mfa.qr"
+                size={128}
+                value={`otpauth://totp/RealTalk:${formData?.email}?secret=${formData?.mfaSecret}&issuer=RealTalk`}
               />
             </div>
             <Button type="submit">Update</Button>
