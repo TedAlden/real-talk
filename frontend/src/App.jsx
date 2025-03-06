@@ -8,7 +8,7 @@ import Register from "./pages/Register";
 import ForgotPassword from "./pages/ForgotPassword";
 import VerifyUser from "./pages/VerifyUser";
 import ResetPassword from "./pages/ResetPassword";
-import UserProfile from "./pages/UserProfile";
+import UserSettings from "./pages/UserSettings";
 import EnterOTP from "./pages/EnterOTP";
 
 function App() {
@@ -24,7 +24,7 @@ function App() {
             <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/verify-email" element={<VerifyUser />} />
             <Route path="/reset-password" element={<ResetPassword />} />
-            <Route path="/profile" element={<UserProfile />} />
+            <Route path="/settings" element={<UserSettings />} />
             <Route path="/enter-otp" element={<EnterOTP />} />
           </Routes>
         </div>

@@ -35,7 +35,7 @@ const emptyUser = {
   bio: "",
 };
 
-function UserProfile() {
+function UserSettings() {
   const navigate = useNavigate();
   const [formData, setFormData] = useState(emptyUser);
   const [alertMessage, setAlertMessage] = useState("");
@@ -125,7 +125,7 @@ function UserProfile() {
       <div className="w-full rounded-lg bg-white shadow sm:max-w-xl md:mt-0 xl:p-0 dark:border dark:border-gray-700 dark:bg-gray-800">
         <div className="space-y-4 p-6 sm:p-8 md:space-y-6">
           <h1 className="my-5 text-center text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
-            Edit profile
+            Settings
           </h1>
           <form
             className="flex max-w-xl flex-col gap-4"
@@ -353,4 +353,4 @@ function UserProfile() {
   );
 }
 
-export default UserProfile;
+export default UserSettings;
