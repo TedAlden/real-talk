@@ -63,6 +63,10 @@ function UserProfile() {
       }
       if (response.data.picture) {
         setProfilePic(response.data.picture);
+      }else{
+        if (response.data.username){
+          setProfilePic("https://ui-avatars.com/api/?name="+response.data.username)
+        }
       }
     };
 
