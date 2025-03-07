@@ -23,6 +23,7 @@ export default function MyNavbar() {
             <NavbarLink to="/" text="Home" />
             <NavbarLink to="/login" text="Login" />
             <NavbarLink to="/register" text="Register" />
+            <NavbarLink to="/profile/0" text="Profile" />
             <NavbarLink to="/settings" text="Settings" />
           </Navbar.Collapse>
           <DarkThemeToggle />

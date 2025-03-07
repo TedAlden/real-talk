@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
-import { updateUser, getUserById } from "../api/userService.js";
+import { getUserById } from "../api/userService.js";
 import { useNavigate, useParams } from "react-router-dom";
 import AppCard from "../components/AppCard";
 import _ from "lodash";
-
+import Cookies from "js-cookie";
 const emptyUser = {
   _id: "",
   username: "",
@@ -45,10 +45,12 @@ function UserProfile() {
   const navigate = useNavigate();
   const [userData, setUserData] = useState(emptyUser);
   const [profilePic, setProfilePic] = useState();
+  const paramId = useParams().id
 
-  const userId = useParams().id;
-  console.log("userId:",userId);
   useEffect(() => {
+    const user = Cookies.get("authUser");
+    const userId = paramId ==0 ? user :  paramId; //if id is 0 uses authUser id
+    console.log("Profile userId:",userId);
     const loadUserData = async () => {
       const response = await getUserById(userId);
       if (response.success !== false) {
@@ -60,7 +62,7 @@ function UserProfile() {
     };
 
     loadUserData();
-  }, [navigate]);
+  }, [paramId, navigate]);
 
   return (
     <div className="flex flex-col items-center justify-center p-8">
