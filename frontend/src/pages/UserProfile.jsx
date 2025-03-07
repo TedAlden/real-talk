@@ -45,12 +45,17 @@ function UserProfile() {
   const navigate = useNavigate();
   const [userData, setUserData] = useState(emptyUser);
   const [profilePic, setProfilePic] = useState();
+  const [isFollowing, setIsFollowing] = useState(false)
+  const [isCurrentUser, setIsCurrentUser] = useState(false)
   const paramId = useParams().id
-
+ 
   useEffect(() => {
     const user = Cookies.get("authUser");
     const userId = paramId ==0 ? user :  paramId; //if id is 0 uses authUser id
     console.log("Profile userId:",userId);
+    if (userId === user) {
+      setIsCurrentUser(true);
+    }
     const loadUserData = async () => {
       const response = await getUserById(userId);
       if (response.success !== false) {
@@ -64,13 +69,29 @@ function UserProfile() {
     loadUserData();
   }, [paramId, navigate]);
 
+  const handleFollow = () => {
+    setIsFollowing((prev) => !prev);
+    // Add API stuff here
+  };
+
   return (
     <div className="flex flex-col items-center justify-center p-8">
       <div className="md:max-w-4xl">
     <AppCard >
       
   <div className="grid grid-cols-4 gap-6 text-lg text-gray-900 dark:text-white m-4 p-4">
-  <h1 className="col-span-4 text-2xl font-semibold mb-2 text-center w-full">Profile</h1>
+  <div className="col-span-4 flex justify-between items-center">
+              <h1 className="text-2xl font-semibold">Profile</h1>
+              {!isCurrentUser && (<button
+                onClick={handleFollow}
+                className={`px-4 py-1 rounded-md  text-sm font-medium transition ${
+                  isFollowing ? "bg-red-500 hover:bg-red-600" : "bg-blue-500 hover:bg-blue-600"
+                }`}
+              >
+                {isFollowing ? "Unfollow" : "Follow"}
+              </button>)}
+            </div>
+ 
   <div className="flex items-center justify-center">
             <img
               className="rounded-full  w-full shadow-lg h-auto"
