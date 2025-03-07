@@ -10,6 +10,7 @@ import VerifyUser from "./pages/VerifyUser";
 import ResetPassword from "./pages/ResetPassword";
 import UserSettings from "./pages/UserSettings";
 import EnterOTP from "./pages/EnterOTP";
+import UserProfile from "./pages/UserProfile";
 
 function App() {
   return (
@@ -26,6 +27,7 @@ function App() {
             <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/settings" element={<UserSettings />} />
             <Route path="/enter-otp" element={<EnterOTP />} />
+            <Route path="/profile/:id" element={<UserProfile />} />
           </Routes>
         </div>
       </Router>
