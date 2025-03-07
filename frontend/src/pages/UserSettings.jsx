@@ -125,7 +125,7 @@ function UserSettings() {
 
   return loggedIn ? (
     <div className="flex flex-col items-center justify-center p-8">
-      <AppCard>
+     <div className="w-full sm:max-w-xl"><AppCard>
         <div className="space-y-4 p-6 sm:p-8 md:space-y-6">
           <h1 className="my-5 text-center text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
             Settings
@@ -359,7 +359,7 @@ function UserSettings() {
             )}
           </form>
         </div>
-      </AppCard>
+      </AppCard></div> 
     </div>
   ) : (
     <div>
