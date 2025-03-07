@@ -3,7 +3,7 @@ import { updateUser, getUserById } from "../api/userService.js";
 import { Link, useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
 import _ from "lodash";
-
+import AppCard from "../components/AppCard.jsx";
 import QRCode from "react-qr-code";
 
 import { HiAtSymbol, HiInformationCircle, HiMail } from "react-icons/hi";
@@ -125,7 +125,7 @@ function UserSettings() {
 
   return loggedIn ? (
     <div className="flex flex-col items-center justify-center p-8">
-      <div className="w-full rounded-lg bg-white shadow sm:max-w-xl md:mt-0 xl:p-0 dark:border dark:border-gray-700 dark:bg-gray-800">
+      <AppCard>
         <div className="space-y-4 p-6 sm:p-8 md:space-y-6">
           <h1 className="my-5 text-center text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
             Settings
@@ -359,7 +359,7 @@ function UserSettings() {
             )}
           </form>
         </div>
-      </div>
+      </AppCard>
     </div>
   ) : (
     <div>
