@@ -212,7 +212,7 @@ function UserSettings() {
               <TextInput
                 id="password"
                 name="password"
-                type="text"
+                type="password"
                 placeholder="••••••••"
                 onChange={handleChange}
               />
