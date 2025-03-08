@@ -62,7 +62,7 @@ export const register = async (req, res) => {
       last_name: "",
       date_of_birth,
       telephone: "",
-      biography: "",
+      biography: "Hi there, I'm new to RealTalk!",
       profile_picture: "",
       address: {
         line_1: "",
