@@ -113,13 +113,13 @@ function UserSettings() {
 
   return loggedIn ? (
     <>
-      {loading ? (
-        <div className="text-center p-16">
-          <Spinner aria-label="Extra large spinner example" size="xl" />
-        </div>
-      ) : (
-        <Tabs aria-label="Tabs with underline" variant="underline">
-          <TabItem title="Profile" icon={HiUser}>
+      <Tabs aria-label="Tabs with underline" variant="underline">
+        <TabItem title="Profile" icon={HiUser}>
+          {loading ? (
+            <div className="text-center p-16">
+              <Spinner aria-label="Extra large spinner example" size="xl" />
+            </div>
+          ) : (
             <div className="flex flex-col items-center justify-center p-8">
               <div className="w-full sm:max-w-2xl ">
                 <form
@@ -179,8 +179,14 @@ function UserSettings() {
                 </form>
               </div>
             </div>
-          </TabItem>
-          <TabItem title="Account" icon={HiCog}>
+          )}
+        </TabItem>
+        <TabItem title="Account" icon={HiCog}>
+          {loading ? (
+            <div className="text-center p-16">
+              <Spinner aria-label="Extra large spinner example" size="xl" />
+            </div>
+          ) : (
             <div className="flex flex-col items-center justify-center p-8">
               <div className="w-full sm:max-w-2xl ">
                 <form
@@ -204,7 +210,7 @@ function UserSettings() {
                   </div>
                   <div>
                     <div className="mb-2 block">
-                      <Label htmlFor="password" value="Password" />
+                      <Label htmlFor="password" value="Update Password" />
                     </div>
                     <TextInput
                       id="password"
@@ -216,7 +222,7 @@ function UserSettings() {
                   </div>
                   <div>
                     <div className="mb-2 block">
-                      <Label htmlFor="mfa" value="Two-factor authentication" />
+                      <Label htmlFor="mfa" value="Two-factor Authentication" />
                     </div>
                     <ToggleSwitch
                       id="mfa.enabled"
@@ -265,8 +271,14 @@ function UserSettings() {
                 </form>
               </div>
             </div>
-          </TabItem>
-          <TabItem title="Personal" icon={HiLockClosed}>
+          )}
+        </TabItem>
+        <TabItem title="Personal" icon={HiLockClosed}>
+          {loading ? (
+            <div className="text-center p-16">
+              <Spinner aria-label="Extra large spinner example" size="xl" />
+            </div>
+          ) : (
             <div className="flex flex-col items-center justify-center p-8">
               <div className="w-full sm:max-w-2xl ">
                 <form
@@ -388,8 +400,14 @@ function UserSettings() {
                 </form>
               </div>
             </div>
-          </TabItem>
-          <TabItem title="Usage limits" icon={HiClock}>
+          )}
+        </TabItem>
+        <TabItem title="Usage limits" icon={HiClock}>
+          {loading ? (
+            <div className="text-center p-16">
+              <Spinner aria-label="Extra large spinner example" size="xl" />
+            </div>
+          ) : (
             <div className="flex flex-col items-center justify-center p-8">
               <div className="w-full sm:max-w-2xl ">
                 <form
@@ -404,9 +422,9 @@ function UserSettings() {
                 </form>
               </div>
             </div>
-          </TabItem>
-        </Tabs>
-      )}
+          )}
+        </TabItem>
+      </Tabs>
       {Object.keys(alertMessage).length > 0 && (
         <div className="flex flex-col items-center justify-center">
           <div className="w-full sm:max-w-2xl ">
