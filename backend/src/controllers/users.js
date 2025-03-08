@@ -2,6 +2,7 @@ import { connectDB } from "../database/connection.js";
 import { ObjectId } from "mongodb";
 import { ErrorMsg, SuccessMsg } from "../services/responseMessages.js";
 import { matchedData } from "express-validator";
+import bcrypt from "bcrypt";
 
 /**
  * GET /users?id={}&username={}&email={}
@@ -108,6 +109,10 @@ export const updateUserById = async (req, res) => {
     ...user,
     ...matchedData(req),
   };
+
+  // Hash password
+  const hash = await bcrypt.hash(updatedUser.password, 10);
+  updatedUser.password = hash;
 
   // Update user in database
   await userCollection.updateOne(
