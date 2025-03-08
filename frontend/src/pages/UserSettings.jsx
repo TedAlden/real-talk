@@ -65,6 +65,7 @@ function UserSettings() {
     const loadUserData = async () => {
       const response = await getUserById(userId);
       if (response.success !== false) {
+        response.data.date_of_birth = new Date(response.data.date_of_birth);
         setFormData(response.data);
       }
       if (response.data.picture) {
@@ -121,8 +122,6 @@ function UserSettings() {
 
     const submittedUser = { ...formData, _id: userId, picture: profilePic };
     const response = await updateUser(submittedUser);
-
-    console.log(submittedUser);
 
     if (response.success !== false) {
       setAlertMessage({
@@ -255,8 +254,10 @@ function UserSettings() {
                 id="date_of_birth"
                 name="date_of_birth"
                 required
-                value={formData?.date_of_birth}
-                onChange={handleChange}
+                weekStart={1}
+                onChange={(value) => 
+                  setFormData({ ...formData, date_of_birth: value })
+                }
               />
             </div>
             <div>
