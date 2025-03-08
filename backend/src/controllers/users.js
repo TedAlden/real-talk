@@ -95,6 +95,14 @@ export const updateUserById = async (req, res) => {
     return res.status(400).json({ error: ErrorMsg.EMAIL_TAKEN });
   }
 
+  // Check username is not taken
+  const usernameExists = await userCollection.findOne({
+    username: req.body.username,
+  });
+  if (usernameExists && usernameExists._id.toString() !== id) {
+    return res.status(400).json({ error: ErrorMsg.USERNAME_TAKEN });
+  }
+
   // Update the new user object with the validated fields
   const updatedUser = {
     ...user,
