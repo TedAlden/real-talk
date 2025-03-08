@@ -14,6 +14,7 @@ import {
   Clipboard,
   Datepicker,
   FileInput,
+  Spinner,
   Tabs,
   TabItem,
   TextInput,
@@ -52,6 +53,7 @@ function UserSettings() {
   const [formData, setFormData] = useState(emptyUser);
   const [alertMessage, setAlertMessage] = useState("");
   const [userId, setUserId] = useState(Cookies.get("authUser"));
+  const [loading, setLoading] = useState(true);
   const [loggedIn, setLoggedIn] = useState(false);
 
   useEffect(() => {
@@ -59,7 +61,8 @@ function UserSettings() {
     setUserId(user);
     setLoggedIn(true);
     (async () => {
-      const response = await getUserById(userId);
+      const response = await getUserById(userId)
+      setLoading(false);
       if (response.success !== false) {
         response.data.date_of_birth = new Date(response.data.date_of_birth);
         setFormData(response.data);
@@ -110,294 +113,300 @@ function UserSettings() {
 
   return loggedIn ? (
     <>
-      <Tabs aria-label="Tabs with underline" variant="underline">
-        <TabItem title="Profile" icon={HiUser}>
-          <div className="flex flex-col items-center justify-center p-8">
-            <div className="w-full sm:max-w-2xl ">
-              <form
-                className="flex max-w-2xl flex-col gap-4"
-                onSubmit={handleFormSubmit}
-              >
-                {formData.profile_picture && (
+      {loading ? (
+        <div className="text-center p-16">
+          <Spinner aria-label="Extra large spinner example" size="xl" />
+        </div>
+      ) : (
+        <Tabs aria-label="Tabs with underline" variant="underline">
+          <TabItem title="Profile" icon={HiUser}>
+            <div className="flex flex-col items-center justify-center p-8">
+              <div className="w-full sm:max-w-2xl ">
+                <form
+                  className="flex max-w-2xl flex-col gap-4"
+                  onSubmit={handleFormSubmit}
+                >
+                  {formData.profile_picture && (
+                    <div className="flex justify-center">
+                      <img
+                        className="h-32 w-32 overflow-hidden rounded-full object-cover"
+                        src={formData.profile_picture}
+                        alt="Profile"
+                      />
+                    </div>
+                  )}
+                  <div>
+                    <div className="mb-2 block">
+                      <Label htmlFor="file-upload" value="Profile Picture" />
+                    </div>
+                    <FileInput
+                      id="file-upload"
+                      accept="image/*"
+                      onChange={handleProfilePictureChange}
+                    />
+                  </div>
+                  <div>
+                    <div className="mb-2 block">
+                      <Label htmlFor="username" value="Username" />
+                    </div>
+                    <TextInput
+                      id="username"
+                      name="username"
+                      type="text"
+                      placeholder="username"
+                      // addon="@"
+                      icon={HiAtSymbol}
+                      required
+                      value={formData?.username}
+                      onChange={handleFormChange}
+                    />
+                  </div>
+                  <div>
+                    <div className="mb-2 block">
+                      <Label htmlFor="biography" value="Bio" />
+                    </div>
+                    <Textarea
+                      id="biography"
+                      name="biography"
+                      type="text"
+                      placeholder="Write your thoughts here!..."
+                      required
+                      value={formData?.biography}
+                      onChange={handleFormChange}
+                    />
+                  </div>
+                  <Button type="submit">Update</Button>
+                </form>
+              </div>
+            </div>
+          </TabItem>
+          <TabItem title="Account" icon={HiCog}>
+            <div className="flex flex-col items-center justify-center p-8">
+              <div className="w-full sm:max-w-2xl ">
+                <form
+                  className="flex max-w-2xl flex-col gap-4"
+                  onSubmit={handleFormSubmit}
+                >
+                  <div>
+                    <div className="mb-2 block">
+                      <Label htmlFor="email" value="Email" />
+                    </div>
+                    <TextInput
+                      id="email"
+                      name="email"
+                      type="text"
+                      placeholder="email"
+                      icon={HiMail}
+                      required
+                      value={formData?.email}
+                      onChange={handleFormChange}
+                    />
+                  </div>
+                  <div>
+                    <div className="mb-2 block">
+                      <Label htmlFor="password" value="Password" />
+                    </div>
+                    <TextInput
+                      id="password"
+                      name="password"
+                      type="password"
+                      placeholder="••••••••"
+                      onChange={handleFormChange}
+                    />
+                  </div>
+                  <div>
+                    <div className="mb-2 block">
+                      <Label htmlFor="mfa" value="Two-factor authentication" />
+                    </div>
+                    <ToggleSwitch
+                      id="mfa.enabled"
+                      name="mfa.enabled"
+                      checked={formData?.mfa?.enabled}
+                      label="Enabled"
+                      onChange={(value) =>
+                        setFormData({
+                          ...formData,
+                          mfa: { ...formData.mfa, enabled: value },
+                        })
+                      }
+                    />
+                  </div>
+                  <div>
+                    <div className="mb-2 block">
+                      <Label htmlFor="mfa" value="Secret" />
+                    </div>
+                    <div className="relative">
+                      <TextInput
+                        sizing="lg"
+                        id="mfa.secret"
+                        type="text"
+                        placeholder="2FA Secret"
+                        value={formData?.mfa?.secret}
+                        readOnly
+                      />
+                      <Clipboard.WithIconText
+                        onClick={(e) => {
+                          // Workaround to prevent this button from submitting the
+                          // form. Does however disable the button animation.
+                          e.preventDefault()
+                          navigator.clipboard.writeText(formData?.mfa?.secret);
+                        }}
+                      />
+                    </div>
+                  </div>
                   <div className="flex justify-center">
-                    <img
-                      className="h-32 w-32 overflow-hidden rounded-full object-cover"
-                      src={formData.profile_picture}
-                      alt="Profile"
+                    <QRCode
+                      id="mfa.qr"
+                      size={128}
+                      value={`otpauth://totp/RealTalk:${formData?.email}?secret=${formData?.mfa?.secret}&issuer=RealTalk`}
                     />
                   </div>
-                )}
-                <div>
-                  <div className="mb-2 block">
-                    <Label htmlFor="file-upload" value="Profile Picture" />
-                  </div>
-                  <FileInput
-                    id="file-upload"
-                    accept="image/*"
-                    onChange={handleProfilePictureChange}
-                  />
-                </div>
-                <div>
-                  <div className="mb-2 block">
-                    <Label htmlFor="username" value="Username" />
-                  </div>
-                  <TextInput
-                    id="username"
-                    name="username"
-                    type="text"
-                    placeholder="username"
-                    // addon="@"
-                    icon={HiAtSymbol}
-                    required
-                    value={formData?.username}
-                    onChange={handleFormChange}
-                  />
-                </div>
-                <div>
-                  <div className="mb-2 block">
-                    <Label htmlFor="biography" value="Bio" />
-                  </div>
-                  <Textarea
-                    id="biography"
-                    name="biography"
-                    type="text"
-                    placeholder="Write your thoughts here!..."
-                    required
-                    value={formData?.biography}
-                    onChange={handleFormChange}
-                  />
-                </div>
-                <Button type="submit">Update</Button>
-              </form>
+                  <Button type="submit">Update</Button>
+                </form>
+              </div>
             </div>
-          </div>
-        </TabItem>
-        <TabItem title="Account" icon={HiCog}>
-          <div className="flex flex-col items-center justify-center p-8">
-            <div className="w-full sm:max-w-2xl ">
-              <form
-                className="flex max-w-2xl flex-col gap-4"
-                onSubmit={handleFormSubmit}
-              >
-                <div>
-                  <div className="mb-2 block">
-                    <Label htmlFor="email" value="Email" />
+          </TabItem>
+          <TabItem title="Personal" icon={HiLockClosed}>
+            <div className="flex flex-col items-center justify-center p-8">
+              <div className="w-full sm:max-w-2xl ">
+                <form
+                  className="flex max-w-2xl flex-col gap-4"
+                  onSubmit={handleFormSubmit}
+                >
+                  <div className="grid gap-4 md:grid-cols-2">
+                    <div>
+                      <div className="mb-2 block">
+                        <Label htmlFor="first_name" value="First Name" />
+                      </div>
+                      <TextInput
+                        id="first_name"
+                        name="first_name"
+                        type="text"
+                        placeholder="John"
+                        required
+                        value={formData?.first_name}
+                        onChange={handleFormChange}
+                      />
+                    </div>
+                    <div>
+                      <div className="mb-2 block">
+                        <Label htmlFor="last_name" value="Last Name" />
+                      </div>
+                      <TextInput
+                        id="last_name"
+                        name="last_name"
+                        type="text"
+                        placeholder="Doe"
+                        required
+                        value={formData?.last_name}
+                        onChange={handleFormChange}
+                      />
+                    </div>
                   </div>
-                  <TextInput
-                    id="email"
-                    name="email"
-                    type="text"
-                    placeholder="email"
-                    icon={HiMail}
-                    required
-                    value={formData?.email}
-                    onChange={handleFormChange}
-                  />
-                </div>
-                <div>
-                  <div className="mb-2 block">
-                    <Label htmlFor="password" value="Password" />
-                  </div>
-                  <TextInput
-                    id="password"
-                    name="password"
-                    type="password"
-                    placeholder="••••••••"
-                    onChange={handleFormChange}
-                  />
-                </div>
-                <div>
-                  <div className="mb-2 block">
-                    <Label htmlFor="mfa" value="Two-factor authentication" />
-                  </div>
-                  <ToggleSwitch
-                    id="mfa.enabled"
-                    name="mfa.enabled"
-                    checked={formData?.mfa?.enabled}
-                    label="Enabled"
-                    onChange={(value) =>
-                      setFormData({
-                        ...formData,
-                        mfa: { ...formData.mfa, enabled: value },
-                      })
-                    }
-                  />
-                </div>
-                <div>
-                  <div className="mb-2 block">
-                    <Label htmlFor="mfa" value="Secret" />
-                  </div>
-                  <div className="relative">
-                    <TextInput
-                      sizing="lg"
-                      id="mfa.secret"
-                      type="text"
-                      placeholder="2FA Secret"
-                      value={formData?.mfa?.secret}
-                      readOnly
-                    />
-                    <Clipboard.WithIconText
-                      onClick={(e) => {
-                        // Workaround to prevent this button from submitting the
-                        // form. Does however disable the button animation.
-                        e.preventDefault()
-                        navigator.clipboard.writeText(formData?.mfa?.secret);
-                      }}
-                    />
-                  </div>
-                </div>
-                <div className="flex justify-center">
-                  <QRCode
-                    id="mfa.qr"
-                    size={128}
-                    value={`otpauth://totp/RealTalk:${formData?.email}?secret=${formData?.mfa?.secret}&issuer=RealTalk`}
-                  />
-                </div>
-                <Button type="submit">Update</Button>
-              </form>
-            </div>
-          </div>
-        </TabItem>
-        <TabItem title="Personal" icon={HiLockClosed}>
-          <div className="flex flex-col items-center justify-center p-8">
-            <div className="w-full sm:max-w-2xl ">
-              <form
-                className="flex max-w-2xl flex-col gap-4"
-                onSubmit={handleFormSubmit}
-              >
-                <div className="grid gap-4 md:grid-cols-2">
                   <div>
                     <div className="mb-2 block">
-                      <Label htmlFor="first_name" value="First Name" />
+                      <Label htmlFor="date_of_birth" value="Date of Birth" />
                     </div>
-                    <TextInput
-                      id="first_name"
-                      name="first_name"
-                      type="text"
-                      placeholder="John"
+                    <Datepicker
+                      id="date_of_birth"
+                      name="date_of_birth"
                       required
-                      value={formData?.first_name}
-                      onChange={handleFormChange}
+                      weekStart={1}
+                      onChange={(value) => 
+                        setFormData({ ...formData, date_of_birth: value })
+                      }
                     />
                   </div>
                   <div>
                     <div className="mb-2 block">
-                      <Label htmlFor="last_name" value="Last Name" />
+                      <Label htmlFor="telephone" value="Telephone" />
                     </div>
                     <TextInput
-                      id="last_name"
-                      name="last_name"
-                      type="text"
-                      placeholder="Doe"
-                      required
-                      value={formData?.last_name}
+                      id="telephone"
+                      name="telephone"
+                      type="tel"
+                      placeholder="(123) 456-7890"
+                      value={formData?.telephone}
                       onChange={handleFormChange}
                     />
                   </div>
-                </div>
-                <div>
-                  <div className="mb-2 block">
-                    <Label htmlFor="date_of_birth" value="Date of Birth" />
-                  </div>
-                  <Datepicker
-                    id="date_of_birth"
-                    name="date_of_birth"
-                    required
-                    weekStart={1}
-                    onChange={(value) => 
-                      setFormData({ ...formData, date_of_birth: value })
-                    }
-                  />
-                </div>
-                <div>
-                  <div className="mb-2 block">
-                    <Label htmlFor="telephone" value="Telephone" />
-                  </div>
-                  <TextInput
-                    id="telephone"
-                    name="telephone"
-                    type="tel"
-                    placeholder="(123) 456-7890"
-                    value={formData?.telephone}
-                    onChange={handleFormChange}
-                  />
-                </div>
-                <div className="grid gap-4 md:grid-cols-2">
-                  <div>
-                    <div className="mb-2 block">
-                      <Label htmlFor="address.country" value="Country" />
+                  <div className="grid gap-4 md:grid-cols-2">
+                    <div>
+                      <div className="mb-2 block">
+                        <Label htmlFor="address.country" value="Country" />
+                      </div>
+                      <TextInput
+                        id="address.country"
+                        name="address.country"
+                        type="text"
+                        placeholder=""
+                        value={formData?.address?.country}
+                        onChange={handleFormChange}
+                      />
                     </div>
-                    <TextInput
-                      id="address.country"
-                      name="address.country"
-                      type="text"
-                      placeholder=""
-                      value={formData?.address?.country}
-                      onChange={handleFormChange}
-                    />
-                  </div>
-                  <div>
-                    <div className="mb-2 block">
-                      <Label htmlFor="address.state" value="State" />
+                    <div>
+                      <div className="mb-2 block">
+                        <Label htmlFor="address.state" value="State" />
+                      </div>
+                      <TextInput
+                        id="address.state"
+                        name="address.state"
+                        type="text"
+                        placeholder=""
+                        value={formData?.address?.state}
+                        onChange={handleFormChange}
+                      />
                     </div>
-                    <TextInput
-                      id="address.state"
-                      name="address.state"
-                      type="text"
-                      placeholder=""
-                      value={formData?.address?.state}
-                      onChange={handleFormChange}
-                    />
-                  </div>
-                  <div>
-                    <div className="mb-2 block">
-                      <Label htmlFor="address.city" value="City" />
+                    <div>
+                      <div className="mb-2 block">
+                        <Label htmlFor="address.city" value="City" />
+                      </div>
+                      <TextInput
+                        id="address.city"
+                        name="address.city"
+                        type="text"
+                        placeholder=""
+                        value={formData?.address?.city}
+                        onChange={handleFormChange}
+                      />
                     </div>
-                    <TextInput
-                      id="address.city"
-                      name="address.city"
-                      type="text"
-                      placeholder=""
-                      value={formData?.address?.city}
-                      onChange={handleFormChange}
-                    />
-                  </div>
-                  <div>
-                    <div className="mb-2 block">
-                      <Label htmlFor="address.postcode" value="Postal code" />
+                    <div>
+                      <div className="mb-2 block">
+                        <Label htmlFor="address.postcode" value="Postal code" />
+                      </div>
+                      <TextInput
+                        id="address.postcode"
+                        name="address.postcode"
+                        type="text"
+                        placeholder=""
+                        value={formData?.address?.postcode}
+                        onChange={handleFormChange}
+                      />
                     </div>
-                    <TextInput
-                      id="address.postcode"
-                      name="address.postcode"
-                      type="text"
-                      placeholder=""
-                      value={formData?.address?.postcode}
-                      onChange={handleFormChange}
-                    />
                   </div>
-                </div>
-                <Button type="submit">Update</Button>
-              </form>
+                  <Button type="submit">Update</Button>
+                </form>
+              </div>
             </div>
-          </div>
-        </TabItem>
-        <TabItem title="Usage limits" icon={HiClock}>
-          <div className="flex flex-col items-center justify-center p-8">
-            <div className="w-full sm:max-w-2xl ">
-              <form
-                className="flex max-w-2xl flex-col gap-4"
-                onSubmit={handleFormSubmit}
-              >
-                <div>
-                  <p className="text-gray-900 dark:text-white">
-                    Not implemented yet...
-                  </p>
-                </div>
-              </form>
+          </TabItem>
+          <TabItem title="Usage limits" icon={HiClock}>
+            <div className="flex flex-col items-center justify-center p-8">
+              <div className="w-full sm:max-w-2xl ">
+                <form
+                  className="flex max-w-2xl flex-col gap-4"
+                  onSubmit={handleFormSubmit}
+                >
+                  <div>
+                    <p className="text-gray-900 dark:text-white">
+                      Not implemented yet...
+                    </p>
+                  </div>
+                </form>
+              </div>
             </div>
-          </div>
-        </TabItem>
-      </Tabs>
+          </TabItem>
+        </Tabs>
+      )}
       {Object.keys(alertMessage).length > 0 && (
         <div className="flex flex-col items-center justify-center">
           <div className="w-full sm:max-w-2xl ">
