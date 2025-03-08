@@ -9,7 +9,7 @@ export default function MyNavbar() {
       <div className="container mx-auto flex items-center justify-between">
         <Navbar.Brand as={Link} href="https://flowbite-react.com">
           <img
-            src="https://flowbite-react.com/favicon.svg"
+            src="/flowbite.svg"
             className="mr-3 h-6 sm:h-9"
             alt="Logo"
           />
