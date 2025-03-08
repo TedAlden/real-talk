@@ -49,6 +49,10 @@ export const register = async (req, res) => {
     // Generate a random base-32 token for MFA (two-factor authentication)
     const mfaSecret = base32_encode(crypto.randomBytes(32).toString("hex"));
 
+    // Set dummy date of birth - this will be added to the register form later
+    const date_of_birth = new Date();
+    date_of_birth.setFullYear(date_of_birth.getFullYear() - 20);
+
     // Insert the new user into the collection
     const newUser = {
       username,
@@ -56,7 +60,7 @@ export const register = async (req, res) => {
       password: hash,
       first_name: "",
       last_name: "",
-      date_of_birth: "",
+      date_of_birth,
       telephone: "",
       biography: "",
       profile_picture: "",
