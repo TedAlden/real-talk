@@ -1,10 +1,11 @@
 import { useState, useEffect } from "react";
-import { updateUser, getUserById } from "../api/userService.js";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
+import QRCode from "react-qr-code";
 import Cookies from "js-cookie";
 import _ from "lodash";
 
-import QRCode from "react-qr-code";
+import { updateUser, getUserById } from "../api/userService.js";
+import { convertImageBase64 } from "../util.js/image.js";
 
 import { HiAtSymbol, HiInformationCircle, HiMail } from "react-icons/hi";
 import {
@@ -46,57 +47,32 @@ const emptyUser = {
 };
 
 function UserSettings() {
-  const navigate = useNavigate();
   const [formData, setFormData] = useState(emptyUser);
   const [alertMessage, setAlertMessage] = useState("");
   const [userId, setUserId] = useState(Cookies.get("authUser"));
-  const [profilePic, setProfilePic] = useState();
-
   const [loggedIn, setLoggedIn] = useState(false);
 
   useEffect(() => {
     const user = Cookies.get("authUser");
-    if (!user) {
-      // navigate("/"); // Redirect immediately if no token is found
-      return;
-    }
     setUserId(user);
     setLoggedIn(true);
-    const loadUserData = async () => {
+    (async () => {
       const response = await getUserById(userId);
       if (response.success !== false) {
         response.data.date_of_birth = new Date(response.data.date_of_birth);
         setFormData(response.data);
       }
-      if (response.data.picture) {
-        setProfilePic(response.data.picture);
-      }
-    };
+    })();
+  }, [userId]);
 
-    loadUserData();
-  }, [navigate, userId]);
-
-  const convertBase64 = (file) => {
-    return new Promise((resolve, reject) => {
-      const fileReader = new FileReader();
-      fileReader.readAsDataURL(file);
-      fileReader.onload = () => {
-        resolve(fileReader.result);
-      };
-      fileReader.onerror = (error) => {
-        reject(error);
-      };
-    });
-  };
-
-  const handleFileRead = async (e) => {
+  const handleProfilePictureChange = async (e) => {
     const { files } = e.target;
     const file = files[0];
-    const base64 = await convertBase64(file);
-    base64 && setProfilePic(base64);
+    const base64 = await convertImageBase64(file);
+    base64 && setFormData({ ...formData, profile_picture: base64 });
   };
 
-  const handleChange = (e) => {
+  const handleFormChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => {
       const updated = { ...prev };
@@ -109,27 +85,19 @@ function UserSettings() {
     });
   };
 
-  // const handleChange = (e) => {
-  //   const { name, value } = e.target;
-  //   setFormData({
-  //     ...formData,
-  //     [name]: value,
-  //   });
-  // };
-
-  const handleSubmit = async (e) => {
+  const handleFormSubmit = async (e) => {
     e.preventDefault();
-
-    const submittedUser = { ...formData, _id: userId, picture: profilePic };
+    const submittedUser = {
+      ...formData,
+      _id: userId,
+    };
     const response = await updateUser(submittedUser);
-
     if (response.success !== false) {
       setAlertMessage({
         color: "success",
         title: "User updated successfully!",
       });
     } else {
-      console.log(response);
       setAlertMessage({
         color: "failure",
         title: "User update failed!",
@@ -147,13 +115,13 @@ function UserSettings() {
           </h1>
           <form
             className="flex max-w-xl flex-col gap-4"
-            onSubmit={handleSubmit}
+            onSubmit={handleFormSubmit}
           >
-            {profilePic && (
+            {formData.profile_picture && (
               <div className="flex justify-center">
                 <img
                   className="h-32 w-32 overflow-hidden rounded-full"
-                  src={profilePic}
+                  src={formData.profile_picture}
                   alt="Profile"
                   style={{
                     maxWidth: "150px",
@@ -170,7 +138,7 @@ function UserSettings() {
               <FileInput
                 id="file-upload"
                 accept="image/*"
-                onChange={handleFileRead}
+                onChange={handleProfilePictureChange}
               />
             </div>
             <div>
@@ -186,7 +154,7 @@ function UserSettings() {
                 icon={HiAtSymbol}
                 required
                 value={formData?.username}
-                onChange={handleChange}
+                onChange={handleFormChange}
               />
             </div>
             <div>
@@ -201,7 +169,7 @@ function UserSettings() {
                 icon={HiMail}
                 required
                 value={formData?.email}
-                onChange={handleChange}
+                onChange={handleFormChange}
               />
             </div>
             <div>
@@ -213,7 +181,7 @@ function UserSettings() {
                 name="password"
                 type="password"
                 placeholder="••••••••"
-                onChange={handleChange}
+                onChange={handleFormChange}
               />
             </div>
             <div className="grid gap-4 md:grid-cols-2">
@@ -228,7 +196,7 @@ function UserSettings() {
                   placeholder="John"
                   required
                   value={formData?.first_name}
-                  onChange={handleChange}
+                  onChange={handleFormChange}
                 />
               </div>
               <div>
@@ -242,7 +210,7 @@ function UserSettings() {
                   placeholder="Doe"
                   required
                   value={formData?.last_name}
-                  onChange={handleChange}
+                  onChange={handleFormChange}
                 />
               </div>
             </div>
@@ -270,7 +238,7 @@ function UserSettings() {
                 type="tel"
                 placeholder="(123) 456-7890"
                 value={formData?.telephone}
-                onChange={handleChange}
+                onChange={handleFormChange}
               />
             </div>
             <div className="grid gap-4 md:grid-cols-2">
@@ -284,7 +252,7 @@ function UserSettings() {
                   type="text"
                   placeholder=""
                   value={formData?.address?.country}
-                  onChange={handleChange}
+                  onChange={handleFormChange}
                 />
               </div>
               <div>
@@ -297,7 +265,7 @@ function UserSettings() {
                   type="text"
                   placeholder=""
                   value={formData?.address?.state}
-                  onChange={handleChange}
+                  onChange={handleFormChange}
                 />
               </div>
               <div>
@@ -310,7 +278,7 @@ function UserSettings() {
                   type="text"
                   placeholder=""
                   value={formData?.address?.city}
-                  onChange={handleChange}
+                  onChange={handleFormChange}
                 />
               </div>
               <div>
@@ -323,7 +291,7 @@ function UserSettings() {
                   type="text"
                   placeholder=""
                   value={formData?.address?.postcode}
-                  onChange={handleChange}
+                  onChange={handleFormChange}
                 />
               </div>
             </div>
@@ -338,7 +306,7 @@ function UserSettings() {
                 placeholder="Write your thoughts here!..."
                 required
                 value={formData?.biography}
-                onChange={handleChange}
+                onChange={handleFormChange}
               />
             </div>
             <div>
