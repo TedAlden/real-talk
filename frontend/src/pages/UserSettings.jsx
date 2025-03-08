@@ -38,11 +38,11 @@ const emptyUser = {
     postcode: "",
   },
   mfa: {
-    enabled: null,
+    enabled: false,
     secret: "",
   },
-  is_verified: null,
-  is_admin: null,
+  is_verified: false,
+  is_admin: false,
 };
 
 function UserSettings() {
@@ -134,7 +134,7 @@ function UserSettings() {
       setAlertMessage({
         color: "failure",
         title: "User update failed!",
-        message: response.error,
+        message: response.message,
       });
     }
   };
@@ -377,7 +377,7 @@ function UserSettings() {
               <QRCode
                 id="mfa.qr"
                 size={128}
-                value={`otpauth://totp/RealTalk:${formData?.email}?secret=${formData?.mfaSecret}&issuer=RealTalk`}
+                value={`otpauth://totp/RealTalk:${formData?.email}?secret=${formData?.mfa?.secret}&issuer=RealTalk`}
               />
             </div>
             <Button type="submit">Update</Button>

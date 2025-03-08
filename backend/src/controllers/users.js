@@ -84,12 +84,24 @@ export const updateUserById = async (req, res) => {
 
   const user = await userCollection.findOne({ _id: new ObjectId(id) });
 
+  // Check user exists
   if (!user) {
     return res.status(404).json({ error: ErrorMsg.NO_SUCH_ID });
   }
 
-  const updatedUser = matchedData(req);
+  // Check email is not taken
+  const emailExists = await userCollection.findOne({ email: req.body.email });
+  if (emailExists && emailExists._id.toString() !== id) {
+    return res.status(400).json({ error: ErrorMsg.EMAIL_TAKEN });
+  }
 
+  // Update the new user object with the validated fields
+  const updatedUser = {
+    ...user,
+    ...matchedData(req),
+  };
+
+  // Update user in database
   await userCollection.updateOne(
     { _id: new ObjectId(id) },
     { $set: updatedUser }
