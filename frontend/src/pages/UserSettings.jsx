@@ -339,7 +339,14 @@ function UserSettings() {
                   value={formData?.mfa?.secret}
                   readOnly
                 />
-                <Clipboard.WithIconText valueToCopy={formData?.mfa?.secret} />
+                <Clipboard.WithIconText
+                  onClick={(e) => {
+                    // Workaround to prevent this button from submitting the
+                    // form. Does however disable the button animation.
+                    e.preventDefault()
+                    navigator.clipboard.writeText(formData?.mfa?.secret);
+                  }}
+                />
               </div>
             </div>
             <div className="flex justify-center">
