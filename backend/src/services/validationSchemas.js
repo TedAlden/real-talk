@@ -1,5 +1,5 @@
 export const userUpdateSchema = {
-  "name.first": {
+  first_name: {
     in: ["body"],
     optional: { options: { checkFalsy: true } },
     isString: {
@@ -8,7 +8,7 @@ export const userUpdateSchema = {
     trim: true,
     escape: true,
   },
-  "name.last": {
+  last_name: {
     in: ["body"],
     optional: { options: { checkFalsy: true } },
     isString: {
@@ -17,7 +17,25 @@ export const userUpdateSchema = {
     trim: true,
     escape: true,
   },
-  "location.city": {
+  "address.line_1": {
+    in: ["body"],
+    optional: { options: { checkFalsy: true } },
+    isString: {
+      errorMessage: "Address line 1 must be a string",
+    },
+    trim: true,
+    escape: true,
+  },
+  "address.line_2": {
+    in: ["body"],
+    optional: { options: { checkFalsy: true } },
+    isString: {
+      errorMessage: "Address line 2 must be a string",
+    },
+    trim: true,
+    escape: true,
+  },
+  "address.city": {
     in: ["body"],
     optional: { options: { checkFalsy: true } },
     isString: {
@@ -26,7 +44,7 @@ export const userUpdateSchema = {
     trim: true,
     escape: true,
   },
-  "location.state": {
+  "address.state": {
     in: ["body"],
     optional: { options: { checkFalsy: true } },
     isString: {
@@ -35,11 +53,20 @@ export const userUpdateSchema = {
     trim: true,
     escape: true,
   },
-  "location.country": {
+  "address.country": {
     in: ["body"],
     optional: { options: { checkFalsy: true } },
     isString: {
       errorMessage: "Country must be a string",
+    },
+    trim: true,
+    escape: true,
+  },
+  "address.postcode": {
+    in: ["body"],
+    optional: { options: { checkFalsy: true } },
+    isString: {
+      errorMessage: "Postcode must be a string",
     },
     trim: true,
     escape: true,
@@ -76,13 +103,13 @@ export const userUpdateSchema = {
     }, */
     trim: true,
   },
-  bio: {
+  biography: {
     in: ["body"],
     optional: { options: { checkFalsy: true } },
     trim: true,
     escape: true,
   },
-  birthday: {
+  date_of_birth: {
     in: ["body"],
     optional: { options: { checkFalsy: true } },
     isISO8601: {
@@ -90,16 +117,23 @@ export const userUpdateSchema = {
     },
     toDate: true,
   },
-  phone: {
+  telephone: {
     in: ["body"],
     optional: { options: { checkFalsy: true } },
     trim: true,
     escape: true,
   },
-  picture: {
+  profile_picture: {
     in: ["body"],
     optional: { options: { checkFalsy: true } },
-
     trim: true,
+  },
+  "mfa.secret": {
+    in: ["body"],
+    optional: { options: { checkFalsy: true } },
+    trim: true,
+  },
+  "mfa.enabled": {
+    in: ["body"],
   },
 };

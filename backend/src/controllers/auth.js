@@ -54,11 +54,28 @@ export const register = async (req, res) => {
       username,
       email,
       password: hash,
-      isVerified: false,
-      isAdmin: false,
-      mfaSecret,
-      mfaEnabled: true,
+      first_name: "",
+      last_name: "",
+      date_of_birth: "",
+      telephone: "",
+      biography: "",
+      profile_picture: "",
+      address: {
+        line_1: "",
+        line_2: "",
+        city: "",
+        state: "",
+        country: "",
+        postcode: "",
+      },
+      mfa: {
+        enabled: false,
+        secret: mfaSecret,
+      },
+      is_verified: false,
+      is_admin: false,
     };
+
     const { insertedId } = await userCollection.insertOne(newUser);
 
     // Generate verification token
@@ -120,7 +137,7 @@ export const login = async (req, res) => {
     }
 
     // Check if user is verified
-    if (!user.isVerified) {
+    if (!user.is_verified) {
       return res.status(401).json({ error: ErrorMsg.UNVERIFIED_USER });
     }
 
@@ -131,7 +148,7 @@ export const login = async (req, res) => {
       if (!result) {
         // Incorrect password
         return res.status(401).json({ error: ErrorMsg.WRONG_PASSWORD });
-      } else if (user.mfaEnabled) {
+      } else if (user.mfa.enabled) {
         // Give the user a token to verify their 2FA OTP
         const token = jwt.sign(
           {
@@ -206,7 +223,7 @@ export const verifyEmail = async (req, res) => {
       // Update user's verification status to true
       await userCollection.updateOne(
         { _id: new ObjectId(decoded.userId) },
-        { $set: { isVerified: true } }
+        { $set: { is_verified: true } }
       );
 
       return res.status(200).json({ message: SuccessMsg.VERIFICATION_OK });
@@ -352,12 +369,12 @@ export const verifyOtp = async (req, res) => {
       });
 
       // Check if MFA is enabled
-      if (!user.mfaEnabled) {
+      if (!user.mfa.enabled) {
         return res.status(403).json({ error: ErrorMsg.MFA_NOT_ENABLED });
       }
 
       // Verify OTP
-      const { otp: actualOTP, expires } = TOTP.generate(user.mfaSecret);
+      const { otp: actualOTP, expires } = TOTP.generate(user.mfa.secret);
       if (parseInt(otp) !== parseInt(actualOTP)) {
         return res.status(401).json({ error: ErrorMsg.INCORRECT_OTP });
       }

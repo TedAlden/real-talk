@@ -20,22 +20,29 @@ import {
 } from "flowbite-react";
 
 const emptyUser = {
-  _id: "",
   username: "",
-  password: "",
   email: "",
-  name: {
-    first: "",
-    last: "",
-  },
-  location: {
+  password: "",
+  first_name: "",
+  last_name: "",
+  date_of_birth: "",
+  telephone: "",
+  biography: "",
+  profile_picture: "",
+  address: {
+    line_1: "",
+    line_2: "",
     city: "",
     state: "",
     country: "",
+    postcode: "",
   },
-  birthday: "",
-  phone: "",
-  bio: "",
+  mfa: {
+    enabled: null,
+    secret: "",
+  },
+  is_verified: null,
+  is_admin: null,
 };
 
 function UserSettings() {
@@ -46,8 +53,6 @@ function UserSettings() {
   const [profilePic, setProfilePic] = useState();
 
   const [loggedIn, setLoggedIn] = useState(false);
-
-  const [mfaEnabled, setMfaEnabled] = useState(false);
 
   useEffect(() => {
     const user = Cookies.get("authUser");
@@ -103,11 +108,22 @@ function UserSettings() {
     });
   };
 
+  // const handleChange = (e) => {
+  //   const { name, value } = e.target;
+  //   setFormData({
+  //     ...formData,
+  //     [name]: value,
+  //   });
+  // };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     const submittedUser = { ...formData, _id: userId, picture: profilePic };
     const response = await updateUser(submittedUser);
+
     console.log(submittedUser);
+
     if (response.success !== false) {
       setAlertMessage({
         color: "success",
@@ -160,10 +176,11 @@ function UserSettings() {
             </div>
             <div>
               <div className="mb-2 block">
-                <Label htmlFor="file-upload" value="Username" />
+                <Label htmlFor="username" value="Username" />
               </div>
               <TextInput
                 id="username"
+                name="username"
                 type="text"
                 placeholder="username"
                 // addon="@"
@@ -175,10 +192,11 @@ function UserSettings() {
             </div>
             <div>
               <div className="mb-2 block">
-                <Label htmlFor="file-upload" value="Email" />
+                <Label htmlFor="email" value="Email" />
               </div>
               <TextInput
                 id="email"
+                name="email"
                 type="text"
                 placeholder="email"
                 icon={HiMail}
@@ -189,10 +207,11 @@ function UserSettings() {
             </div>
             <div>
               <div className="mb-2 block">
-                <Label htmlFor="file-upload" value="Password" />
+                <Label htmlFor="password" value="Password" />
               </div>
               <TextInput
                 id="password"
+                name="password"
                 type="text"
                 placeholder="••••••••"
                 onChange={handleChange}
@@ -201,39 +220,42 @@ function UserSettings() {
             <div className="grid gap-4 md:grid-cols-2">
               <div>
                 <div className="mb-2 block">
-                  <Label htmlFor="file-upload" value="First Name" />
+                  <Label htmlFor="first_name" value="First Name" />
                 </div>
                 <TextInput
-                  id="first-name"
+                  id="first_name"
+                  name="first_name"
                   type="text"
                   placeholder="John"
                   required
-                  value={formData?.name?.first}
+                  value={formData?.first_name}
                   onChange={handleChange}
                 />
               </div>
               <div>
                 <div className="mb-2 block">
-                  <Label htmlFor="file-upload" value="Last Name" />
+                  <Label htmlFor="last_name" value="Last Name" />
                 </div>
                 <TextInput
-                  id="last-name"
+                  id="last_name"
+                  name="last_name"
                   type="text"
                   placeholder="Doe"
                   required
-                  value={formData?.name?.last}
+                  value={formData?.last_name}
                   onChange={handleChange}
                 />
               </div>
             </div>
             <div>
               <div className="mb-2 block">
-                <Label htmlFor="date-of-birth" value="Date of Birth" />
+                <Label htmlFor="date_of_birth" value="Date of Birth" />
               </div>
               <Datepicker
-                id="date-of-birth"
+                id="date_of_birth"
+                name="date_of_birth"
                 required
-                value={formData?.birthday}
+                value={formData?.date_of_birth}
                 onChange={handleChange}
               />
             </div>
@@ -243,57 +265,63 @@ function UserSettings() {
               </div>
               <TextInput
                 id="telephone"
+                name="telephone"
                 type="tel"
                 placeholder="(123) 456-7890"
-                value={formData?.phone}
+                value={formData?.telephone}
                 onChange={handleChange}
               />
             </div>
             <div className="grid gap-4 md:grid-cols-2">
               <div>
                 <div className="mb-2 block">
-                  <Label htmlFor="country" value="Country" />
+                  <Label htmlFor="address.country" value="Country" />
                 </div>
                 <TextInput
-                  id="country"
+                  id="address.country"
+                  name="address.country"
                   type="text"
                   placeholder=""
-                  value={formData?.location?.country}
+                  value={formData?.address?.country}
                   onChange={handleChange}
                 />
               </div>
               <div>
                 <div className="mb-2 block">
-                  <Label htmlFor="state" value="State" />
+                  <Label htmlFor="address.state" value="State" />
                 </div>
                 <TextInput
-                  id="state"
+                  id="address.state"
+                  name="address.state"
                   type="text"
                   placeholder=""
-                  value={formData?.location?.state}
+                  value={formData?.address?.state}
                   onChange={handleChange}
                 />
               </div>
               <div>
                 <div className="mb-2 block">
-                  <Label htmlFor="city" value="City" />
+                  <Label htmlFor="address.city" value="City" />
                 </div>
                 <TextInput
-                  id="city"
+                  id="address.city"
+                  name="address.city"
                   type="text"
                   placeholder=""
-                  value={formData?.location?.city}
+                  value={formData?.address?.city}
                   onChange={handleChange}
                 />
               </div>
               <div>
                 <div className="mb-2 block">
-                  <Label htmlFor="zip" value="Zip" />
+                  <Label htmlFor="address.postcode" value="Postal code" />
                 </div>
                 <TextInput
-                  id="zip"
+                  id="address.postcode"
+                  name="address.postcode"
                   type="text"
                   placeholder=""
+                  value={formData?.address?.postcode}
                   onChange={handleChange}
                 />
               </div>
@@ -304,10 +332,11 @@ function UserSettings() {
               </div>
               <Textarea
                 id="biography"
+                name="biography"
                 type="text"
                 placeholder="Write your thoughts here!..."
                 required
-                value={formData?.bio}
+                value={formData?.biography}
                 onChange={handleChange}
               />
             </div>
@@ -317,9 +346,15 @@ function UserSettings() {
               </div>
               <ToggleSwitch
                 id="mfa.enabled"
-                checked={mfaEnabled}
+                name="mfa.enabled"
+                checked={formData?.mfa?.enabled}
                 label="Enabled"
-                onChange={setMfaEnabled}
+                onChange={(value) =>
+                  setFormData({
+                    ...formData,
+                    mfa: { ...formData.mfa, enabled: value },
+                  })
+                }
               />
             </div>
             <div>
@@ -332,10 +367,10 @@ function UserSettings() {
                   id="mfa.secret"
                   type="text"
                   placeholder="2FA Secret"
-                  value={formData?.mfaSecret}
+                  value={formData?.mfa?.secret}
                   readOnly
                 />
-                <Clipboard.WithIconText valueToCopy={formData?.mfaSecret} />
+                <Clipboard.WithIconText valueToCopy={formData?.mfa?.secret} />
               </div>
             </div>
             <div className="flex justify-center">
