@@ -3,6 +3,7 @@ import { getUserById } from "../api/userService.js";
 import { useNavigate, useParams } from "react-router-dom";
 import _ from "lodash";
 import Cookies from "js-cookie";
+import { decode } from "html-entities";
 
 const emptyUser = {
   username: "",
@@ -107,7 +108,7 @@ function UserProfile() {
             <div className="col-span-3 mt-2 flex flex-col justify-start">
               <p className="text-xl font-semibold">{userData.username}</p>
               <p className="text-gray-700 dark:text-gray-300">
-                {userData.bio || "No bio available"}
+                {decode(userData.biography) || "No bio available"}
               </p>
             </div>
             <div className="col-span-4 rounded-md bg-gray-100 py-2 text-center text-gray-800 shadow dark:bg-gray-700 dark:text-gray-300">
