@@ -99,14 +99,9 @@ function UserProfile() {
             </div>
             <div className="flex items-center justify-center">
               <img
-                className="h-auto w-full rounded-full shadow-lg"
+                className="h-32 w-32 rounded-full object-cover shadow-lg"
                 src={userData?.profile_picture}
                 alt="Profile"
-                style={{
-                  maxWidth: "150px",
-                  maxHeight: "150px",
-                  objectFit: "cover",
-                }}
               />
             </div>
             <div className="col-span-3 mt-2 flex flex-col justify-start">
