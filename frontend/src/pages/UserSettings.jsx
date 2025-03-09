@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import { decode } from "html-entities";
 import QRCode from "react-qr-code";
 import Cookies from "js-cookie";
 import _ from "lodash";
@@ -68,6 +69,7 @@ function UserSettings() {
       setLoading(false);
       if (response.success !== false) {
         response.data.date_of_birth = new Date(response.data.date_of_birth);
+        response.data.biography = decode(response.data.biography);
         setFormData(response.data);
       }
     })();
