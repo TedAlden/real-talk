@@ -6,7 +6,7 @@ import Cookies from "js-cookie";
 import _ from "lodash";
 
 import { updateUser, getUserById } from "../api/userService.js";
-import { convertImageBase64 } from "../util.js/image.js";
+import { convertImageBase64 } from "../util/image.js";
 
 import AppCard from "../components/AppCard.jsx";
 
