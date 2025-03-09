@@ -53,6 +53,16 @@ export const register = async (req, res) => {
     const date_of_birth = new Date();
     date_of_birth.setFullYear(date_of_birth.getFullYear() - 20);
 
+    // Generate default profile picture
+    const b64ProfilePicture = await fetch(`https://ui-avatars.com/api/?name=${username}&size=256&background=random`)
+      .then((response) => response.arrayBuffer())
+      .then((arrayBuffer) => {
+        const buffer = Buffer.from(arrayBuffer);
+        const b64 = buffer.toString('base64');
+        return "data:image/png;base64," + b64;
+      })
+      .catch(console.error);
+
     // Insert the new user into the collection
     const newUser = {
       username,
@@ -63,7 +73,7 @@ export const register = async (req, res) => {
       date_of_birth,
       telephone: "",
       biography: "Hi there, I'm new to RealTalk!",
-      profile_picture: "",
+      profile_picture: b64ProfilePicture,
       address: {
         line_1: "",
         line_2: "",

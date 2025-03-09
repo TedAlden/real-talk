@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { decode } from "html-entities";
 import QRCode from "react-qr-code";
 import Cookies from "js-cookie";
@@ -8,9 +8,15 @@ import _ from "lodash";
 import { updateUser, getUserById } from "../api/userService.js";
 import { convertImageBase64 } from "../util/image.js";
 
-import AppCard from "../components/AppCard.jsx";
-
-import { HiAtSymbol, HiInformationCircle, HiMail, HiUser, HiCog, HiClock, HiLockClosed } from "react-icons/hi";
+import {
+  HiAtSymbol,
+  HiInformationCircle,
+  HiMail,
+  HiUser,
+  HiCog,
+  HiClock,
+  HiLockClosed,
+} from "react-icons/hi";
 import {
   Alert,
   Button,
@@ -67,15 +73,13 @@ function UserSettings() {
     setUserId(user);
     setLoggedIn(true);
     (async () => {
-      const response = await getUserById(userId)
+      const response = await getUserById(userId);
       setLoading(false);
       if (response.success !== false) {
         response.data.date_of_birth = new Date(response.data.date_of_birth);
         response.data.biography = decode(response.data.biography);
         setFormData(response.data);
       }
-      if (!response.data.profile_picture || response.data.profile_picture === "") {
-        setFormData({ ...formData, profile_picture: "https://ui-avatars.com/api/?name="+response.data.username });
     })();
   }, [userId]);
 
@@ -107,8 +111,10 @@ function UserSettings() {
     };
 
     // If a new password is specified, check if it matches the confirm password
-    if ((newPassword !== "" || confirmPassword !== "")
-        && newPassword !== confirmPassword) {
+    if (
+      (newPassword !== "" || confirmPassword !== "") &&
+      newPassword !== confirmPassword
+    ) {
       setAlertMessage({
         color: "failure",
         title: "Passwords do not match!",
@@ -136,12 +142,12 @@ function UserSettings() {
       <Tabs aria-label="Tabs with underline" variant="underline">
         <TabItem title="Profile" icon={HiUser}>
           {loading ? (
-            <div className="text-center p-16">
+            <div className="p-16 text-center">
               <Spinner aria-label="Extra large spinner example" size="xl" />
             </div>
           ) : (
             <div className="flex flex-col items-center justify-center p-8">
-              <div className="w-full sm:max-w-2xl ">
+              <div className="w-full sm:max-w-2xl">
                 <form
                   className="flex max-w-2xl flex-col gap-4"
                   onSubmit={handleFormSubmit}
@@ -203,12 +209,12 @@ function UserSettings() {
         </TabItem>
         <TabItem title="Account" icon={HiCog}>
           {loading ? (
-            <div className="text-center p-16">
+            <div className="p-16 text-center">
               <Spinner aria-label="Extra large spinner example" size="xl" />
             </div>
           ) : (
             <div className="flex flex-col items-center justify-center p-8">
-              <div className="w-full sm:max-w-2xl ">
+              <div className="w-full sm:max-w-2xl">
                 <form
                   className="flex max-w-2xl flex-col gap-4"
                   onSubmit={handleFormSubmit}
@@ -242,7 +248,10 @@ function UserSettings() {
                   </div>
                   <div>
                     <div className="mb-2 block">
-                      <Label htmlFor="confirm-password" value="Confirm Password" />
+                      <Label
+                        htmlFor="confirm-password"
+                        value="Confirm Password"
+                      />
                     </div>
                     <TextInput
                       id="confirm-password"
@@ -287,7 +296,7 @@ function UserSettings() {
                         onClick={(e) => {
                           // Workaround to prevent this button from submitting the
                           // form. Does however disable the button animation.
-                          e.preventDefault()
+                          e.preventDefault();
                           navigator.clipboard.writeText(formData?.mfa?.secret);
                         }}
                       />
@@ -308,12 +317,12 @@ function UserSettings() {
         </TabItem>
         <TabItem title="Personal" icon={HiLockClosed}>
           {loading ? (
-            <div className="text-center p-16">
+            <div className="p-16 text-center">
               <Spinner aria-label="Extra large spinner example" size="xl" />
             </div>
           ) : (
             <div className="flex flex-col items-center justify-center p-8">
-              <div className="w-full sm:max-w-2xl ">
+              <div className="w-full sm:max-w-2xl">
                 <form
                   className="flex max-w-2xl flex-col gap-4"
                   onSubmit={handleFormSubmit}
@@ -357,7 +366,7 @@ function UserSettings() {
                       name="date_of_birth"
                       required
                       weekStart={1}
-                      onChange={(value) => 
+                      onChange={(value) =>
                         setFormData({ ...formData, date_of_birth: value })
                       }
                     />
@@ -378,7 +387,10 @@ function UserSettings() {
                   <div className="grid gap-4 md:grid-cols-2">
                     <div>
                       <div className="mb-2 block">
-                        <Label htmlFor="address.line_1" value="Address Line 1" />
+                        <Label
+                          htmlFor="address.line_1"
+                          value="Address Line 1"
+                        />
                       </div>
                       <TextInput
                         id="address.line_1"
@@ -391,7 +403,10 @@ function UserSettings() {
                     </div>
                     <div>
                       <div className="mb-2 block">
-                        <Label htmlFor="address.line_2" value="Address Line 2" />
+                        <Label
+                          htmlFor="address.line_2"
+                          value="Address Line 2"
+                        />
                       </div>
                       <TextInput
                         id="address.line_2"
@@ -463,12 +478,12 @@ function UserSettings() {
         </TabItem>
         <TabItem title="Usage limits" icon={HiClock}>
           {loading ? (
-            <div className="text-center p-16">
+            <div className="p-16 text-center">
               <Spinner aria-label="Extra large spinner example" size="xl" />
             </div>
           ) : (
             <div className="flex flex-col items-center justify-center p-8">
-              <div className="w-full sm:max-w-2xl ">
+              <div className="w-full sm:max-w-2xl">
                 <form
                   className="flex max-w-2xl flex-col gap-4"
                   onSubmit={handleFormSubmit}
@@ -486,7 +501,7 @@ function UserSettings() {
       </Tabs>
       {Object.keys(alertMessage).length > 0 && (
         <div className="flex flex-col items-center justify-center">
-          <div className="w-full sm:max-w-2xl ">
+          <div className="w-full sm:max-w-2xl">
             <Alert
               color={alertMessage.color}
               icon={alertMessage.icon || HiInformationCircle}
@@ -495,7 +510,7 @@ function UserSettings() {
               {alertMessage.message}
             </Alert>
           </div>
-      </div>
+        </div>
       )}
     </>
   ) : (

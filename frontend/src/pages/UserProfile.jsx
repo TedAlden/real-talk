@@ -1,26 +1,33 @@
 import { useState, useEffect } from "react";
 import { getUserById } from "../api/userService.js";
 import { useNavigate, useParams } from "react-router-dom";
-import AppCard from "../components/AppCard";
 import _ from "lodash";
 import Cookies from "js-cookie";
+
 const emptyUser = {
-  _id: "",
   username: "",
-  password: "",
   email: "",
-  name: {
-    first: "",
-    last: "",
-  },
-  location: {
+  password: "",
+  first_name: "",
+  last_name: "",
+  date_of_birth: "",
+  telephone: "",
+  biography: "",
+  profile_picture: "",
+  address: {
+    line_1: "",
+    line_2: "",
     city: "",
     state: "",
     country: "",
+    postcode: "",
   },
-  birthday: "",
-  phone: "",
-  bio: "",
+  mfa: {
+    enabled: false,
+    secret: "",
+  },
+  is_verified: false,
+  is_admin: false,
 };
 
 const dummyPosts = [
@@ -44,15 +51,14 @@ const dummyPosts = [
 function UserProfile() {
   const navigate = useNavigate();
   const [userData, setUserData] = useState(emptyUser);
-  const [profilePic, setProfilePic] = useState();
-  const [isFollowing, setIsFollowing] = useState(false)
-  const [isCurrentUser, setIsCurrentUser] = useState(false)
-  const paramId = useParams().id
- 
+  const [isFollowing, setIsFollowing] = useState(false);
+  const [isCurrentUser, setIsCurrentUser] = useState(false);
+  const paramId = useParams().id;
+
   useEffect(() => {
     const user = Cookies.get("authUser");
-    const userId = paramId ==0 ? user :  paramId; //if id is 0 uses authUser id
-    console.log("Profile userId:",userId);
+    const userId = paramId == 0 ? user : paramId; //if id is 0 uses authUser id
+    console.log("Profile userId:", userId);
     if (userId === user) {
       setIsCurrentUser(true);
     }
@@ -60,13 +66,6 @@ function UserProfile() {
       const response = await getUserById(userId);
       if (response.success !== false) {
         setUserData(response.data);
-      }
-      if (response.data.picture) {
-        setProfilePic(response.data.picture);
-      }else{
-        if (response.data.username){
-          setProfilePic("https://ui-avatars.com/api/?name="+response.data.username)
-        }
       }
     };
 
@@ -79,60 +78,64 @@ function UserProfile() {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center p-8">
+    <div className="flex flex-col items-center justify-center p-4 sm:p-8">
       <div className="md:max-w-4xl">
-    <AppCard >
-      
-  <div className="grid grid-cols-4 gap-6 text-lg text-gray-900 dark:text-white m-4 p-4">
-  <div className="col-span-4 flex justify-between items-center">
+        <div className="rounded-lg bg-white shadow dark:border dark:border-gray-700 dark:bg-gray-800 md:mt-0 xl:p-0">
+          <div className="m-4 grid grid-cols-4 gap-6 p-4 text-lg text-gray-900 dark:text-white">
+            <div className="col-span-4 flex items-center justify-between">
               <h1 className="text-2xl font-semibold">Profile</h1>
-              {!isCurrentUser && (<button
-                onClick={handleFollow}
-                className={`px-4 py-1 rounded-md  text-sm font-medium transition ${
-                  isFollowing ? "bg-red-500 hover:bg-red-600" : "bg-blue-500 hover:bg-blue-600"
-                }`}
+              {!isCurrentUser && (
+                <button
+                  onClick={handleFollow}
+                  className={`rounded-md px-4 py-1 text-sm font-medium transition ${
+                    isFollowing
+                      ? "bg-red-500 hover:bg-red-600"
+                      : "bg-blue-500 hover:bg-blue-600"
+                  }`}
+                >
+                  {isFollowing ? "Unfollow" : "Follow"}
+                </button>
+              )}
+            </div>
+            <div className="flex items-center justify-center">
+              <img
+                className="h-auto w-full rounded-full shadow-lg"
+                src={userData?.profile_picture}
+                alt="Profile"
+                style={{
+                  maxWidth: "150px",
+                  maxHeight: "150px",
+                  objectFit: "cover",
+                }}
+              />
+            </div>
+            <div className="col-span-3 mt-2 flex flex-col justify-start">
+              <p className="text-xl font-semibold">{userData.username}</p>
+              <p className="text-gray-700 dark:text-gray-300">
+                {userData.bio || "No bio available"}
+              </p>
+            </div>
+            <div className="col-span-4 rounded-md bg-gray-100 py-2 text-center text-gray-800 shadow dark:bg-gray-700 dark:text-gray-300">
+              <p className="font-semibold">Posts Today: 0/1</p>
+            </div>
+            {dummyPosts.map((post, index) => (
+              <div
+                key={index}
+                className="col-span-4 rounded-md bg-gray-100 p-4 shadow-md dark:bg-gray-700"
               >
-                {isFollowing ? "Unfollow" : "Follow"}
-              </button>)}
-            </div>
- 
-  <div className="flex items-center justify-center">
-            <img
-              className="rounded-full  w-full shadow-lg h-auto"
-              src={profilePic}
-              alt="Profile"
-              style={{
-                maxWidth: "150px",
-                maxHeight: "150px",
-                objectFit: "cover",
-              }}
-            />
- </div>
-          <div className="col-span-3 flex flex-col justify-start  mt-2">
-            <p className="text-xl font-semibold">{userData.username}</p>
-            <p className="text-gray-700 dark:text-gray-300">{userData.bio || "No bio available"}</p>
+                <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                  Posted on {post.date}
+                </p>
+                <p className="mt-2 leading-relaxed text-gray-900 dark:text-gray-100">
+                  {post.content}
+                </p>
+              </div>
+            ))}
           </div>
-          <div className="col-span-4 text-center text-gray-800 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 py-2 rounded-md shadow">
-            <p className="font-semibold">Posts Today: 0/1</p>
-          </div>
-          {dummyPosts.map((post, index) => (
-            <div
-              key={index}
-              className="col-span-4 bg-gray-100 dark:bg-gray-700 p-4 rounded-md shadow-md"
-            >
-              <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">
-                Posted on {post.date}
-              </p>
-              <p className="mt-2 text-gray-900 dark:text-gray-100 leading-relaxed">
-                {post.content}
-              </p>
-            </div>
-          ))}
-  </div>
-  </AppCard>
-  </div>  
-  </div>
-  ) 
+        </div>
+      </div>
+    </div>
+  );
 }
 
 export default UserProfile;
