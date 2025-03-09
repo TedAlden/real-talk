@@ -52,6 +52,7 @@ const dummyPosts = [
 function UserProfile() {
   const navigate = useNavigate();
   const [userData, setUserData] = useState(emptyUser);
+  const [userFound, setUserFound] = useState(false);
   const [isFollowing, setIsFollowing] = useState(false);
   const [isCurrentUser, setIsCurrentUser] = useState(false);
   const paramId = useParams().id;
@@ -66,14 +67,13 @@ function UserProfile() {
     if (userId === user) {
       setIsCurrentUser(true);
     }
-    const loadUserData = async () => {
+    (async () => {
       const response = await getUserById(userId);
       if (response.success !== false) {
         setUserData(response.data);
+        setUserFound(true);
       }
-    };
-
-    loadUserData();
+    })();
   }, [paramId, navigate]);
 
   const handleFollow = () => {
@@ -85,7 +85,7 @@ function UserProfile() {
     // Not implemented yet
   };
 
-  return (
+  return userFound ? (
     <div className="flex flex-col items-center justify-center">
       <div className="md:max-w-4xl">
         <div className="m-4 grid grid-cols-4 gap-6 p-4 text-lg text-gray-900 dark:text-white">
@@ -169,6 +169,15 @@ function UserProfile() {
           ))}
         </div>
       </div>
+    </div>
+  ) : (
+    <div>
+      <h1 className="my-5 text-2xl font-bold text-gray-900 dark:text-white">
+        User not found!
+      </h1>
+      <p className="my-5 text-gray-900 dark:text-white">
+        The link may be invalid or the account may have been deleted.
+      </p>
     </div>
   );
 }
