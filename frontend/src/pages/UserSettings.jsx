@@ -56,6 +56,9 @@ function UserSettings() {
   const [loading, setLoading] = useState(true);
   const [loggedIn, setLoggedIn] = useState(false);
 
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+
   useEffect(() => {
     const user = Cookies.get("authUser");
     setUserId(user);
@@ -96,6 +99,18 @@ function UserSettings() {
       ...formData,
       _id: userId,
     };
+
+    // If a new password is specified, check if it matches the confirm password
+    console.log(newPassword, confirmPassword);
+    if ((newPassword !== "" || confirmPassword !== "")
+        && newPassword !== confirmPassword) {
+      setAlertMessage({
+        color: "failure",
+        title: "Passwords do not match!",
+      });
+      return;
+    }
+
     const response = await updateUser(submittedUser);
     if (response.success !== false) {
       setAlertMessage({
@@ -210,14 +225,27 @@ function UserSettings() {
                   </div>
                   <div>
                     <div className="mb-2 block">
-                      <Label htmlFor="password" value="Update Password" />
+                      <Label htmlFor="new-password" value="New Password" />
                     </div>
                     <TextInput
-                      id="password"
-                      name="password"
+                      id="new-password"
+                      name="new-password"
                       type="password"
                       placeholder="••••••••"
-                      onChange={handleFormChange}
+                      onChange={(e) => setNewPassword(e.target.value)}
+                    />
+                  </div>
+                  <div>
+                    <div className="mb-2 block">
+                      <Label htmlFor="confirm-password" value="Confirm Password" />
+                    </div>
+                    <TextInput
+                      id="confirm-password"
+                      name="confirm-password"
+                      type="password"
+                      placeholder="••••••••"
+                      // value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
                     />
                   </div>
                   <div>
