@@ -13,6 +13,7 @@
     "axios": "^1.8.1",
     "dotenv": "^16.4.7",
     "flowbite-react": "^0.10.2",
+    "html-entities": "^2.5.2",
     "js-cookie": "^3.0.5",
     "lodash": "^4.17.21",
     "prettier": "^3.5.3",
