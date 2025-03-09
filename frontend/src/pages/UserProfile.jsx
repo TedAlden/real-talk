@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { getUserById } from "../api/userService.js";
-import { useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import _ from "lodash";
 import Cookies from "js-cookie";
 import { decode } from "html-entities";
@@ -75,20 +75,61 @@ function UserProfile() {
 
   const handleFollow = () => {
     setIsFollowing((prev) => !prev);
-    // Add API stuff here
+    // Not implemented yet
+  };
+
+  const handleReport = () => {
+    // Not implemented yet
   };
 
   return (
-    <div className="flex flex-col items-center justify-center p-4 sm:p-8">
+    <div className="flex flex-col items-center justify-center">
       <div className="md:max-w-4xl">
-        <div className="rounded-lg bg-white shadow dark:border dark:border-gray-700 dark:bg-gray-800 md:mt-0 xl:p-0">
-          <div className="m-4 grid grid-cols-4 gap-6 p-4 text-lg text-gray-900 dark:text-white">
-            <div className="col-span-4 flex items-center justify-between">
-              <h1 className="text-2xl font-semibold">Profile</h1>
-              {!isCurrentUser && (
+        <div className="m-4 grid grid-cols-4 gap-6 p-4 text-lg text-gray-900 dark:text-white">
+          <div className="col-span-4 flex items-center justify-center sm:col-span-1">
+            <img
+              className="h-auto w-32 rounded-full object-cover shadow-lg"
+              src={userData?.profile_picture}
+              alt="Profile"
+            />
+          </div>
+          <div className="col-span-4 flex flex-col justify-start gap-2 sm:col-span-3">
+            <p className="text-xl font-semibold">
+              {userData.first_name} {userData.last_name}
+            </p>
+            <p className="text-base">@{userData.username}</p>
+            <p className="text-base text-gray-700 dark:text-gray-300">
+              {decode(userData.biography) || "No bio available"}
+            </p>
+            <ul className="flex text-sm">
+              <li className="me-2">
+                <Link to="#" className="hover:underline">
+                  <span className="font-semibold text-gray-900 dark:text-white">
+                    799
+                  </span>
+                  <span className="text-gray-600 dark:text-gray-400">
+                    {" "}
+                    Following
+                  </span>
+                </Link>
+              </li>
+              <li>
+                <Link to="#" className="hover:underline">
+                  <span className="font-semibold text-gray-900 dark:text-white">
+                    3,758
+                  </span>
+                  <span className="text-gray-600 dark:text-gray-400">
+                    {" "}
+                    Followers
+                  </span>
+                </Link>
+              </li>
+            </ul>
+            {!isCurrentUser && (
+              <div className="flex gap-2">
                 <button
                   onClick={handleFollow}
-                  className={`rounded-md px-4 py-1 text-sm font-medium transition ${
+                  className={`w-full rounded-md px-4 py-1 text-sm font-medium transition sm:w-min ${
                     isFollowing
                       ? "bg-red-500 hover:bg-red-600"
                       : "bg-blue-500 hover:bg-blue-600"
@@ -96,38 +137,33 @@ function UserProfile() {
                 >
                   {isFollowing ? "Unfollow" : "Follow"}
                 </button>
-              )}
-            </div>
-            <div className="flex items-center justify-center">
-              <img
-                className="h-32 w-32 rounded-full object-cover shadow-lg"
-                src={userData?.profile_picture}
-                alt="Profile"
-              />
-            </div>
-            <div className="col-span-3 mt-2 flex flex-col justify-start">
-              <p className="text-xl font-semibold">{userData.username}</p>
-              <p className="text-gray-700 dark:text-gray-300">
-                {decode(userData.biography) || "No bio available"}
+                <button
+                  onClick={handleReport}
+                  className={
+                    "w-full rounded-md bg-red-500 px-4 py-1 text-sm font-medium transition hover:bg-red-600 sm:w-min"
+                  }
+                >
+                  Report
+                </button>
+              </div>
+            )}
+          </div>
+          <div className="col-span-4 rounded-md bg-white p-2 text-center shadow dark:border dark:border-gray-700 dark:bg-gray-800">
+            <p>Posts Today: 0/1</p>
+          </div>
+          {dummyPosts.map((post, index) => (
+            <div
+              key={index}
+              className="col-span-4 rounded-md bg-white p-4 shadow dark:border dark:border-gray-700 dark:bg-gray-800"
+            >
+              <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                Posted on {post.date}
+              </p>
+              <p className="mt-2 text-sm leading-relaxed text-gray-900 dark:text-gray-100">
+                {post.content}
               </p>
             </div>
-            <div className="col-span-4 rounded-md bg-gray-100 py-2 text-center text-gray-800 shadow dark:bg-gray-700 dark:text-gray-300">
-              <p className="font-semibold">Posts Today: 0/1</p>
-            </div>
-            {dummyPosts.map((post, index) => (
-              <div
-                key={index}
-                className="col-span-4 rounded-md bg-gray-100 p-4 shadow-md dark:bg-gray-700"
-              >
-                <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
-                  Posted on {post.date}
-                </p>
-                <p className="mt-2 leading-relaxed text-gray-900 dark:text-gray-100">
-                  {post.content}
-                </p>
-              </div>
-            ))}
-          </div>
+          ))}
         </div>
       </div>
     </div>
