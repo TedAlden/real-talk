@@ -2,6 +2,7 @@ import { connectDB } from "../database/connection.js";
 import { ObjectId } from "mongodb";
 import { ErrorMsg, SuccessMsg } from "../services/responseMessages.js";
 import { matchedData } from "express-validator";
+import bcrypt from "bcrypt";
 
 /**
  * GET /users?id={}&username={}&email={}
@@ -84,12 +85,36 @@ export const updateUserById = async (req, res) => {
 
   const user = await userCollection.findOne({ _id: new ObjectId(id) });
 
+  // Check user exists
   if (!user) {
     return res.status(404).json({ error: ErrorMsg.NO_SUCH_ID });
   }
 
-  const updatedUser = matchedData(req);
+  // Check email is not taken
+  const emailExists = await userCollection.findOne({ email: req.body.email });
+  if (emailExists && emailExists._id.toString() !== id) {
+    return res.status(400).json({ error: ErrorMsg.EMAIL_TAKEN });
+  }
 
+  // Check username is not taken
+  const usernameExists = await userCollection.findOne({
+    username: req.body.username,
+  });
+  if (usernameExists && usernameExists._id.toString() !== id) {
+    return res.status(400).json({ error: ErrorMsg.USERNAME_TAKEN });
+  }
+
+  // Update the new user object with the validated fields
+  const updatedUser = {
+    ...user,
+    ...matchedData(req),
+  };
+
+  // Hash password
+  const hash = await bcrypt.hash(updatedUser.password, 10);
+  updatedUser.password = hash;
+
+  // Update user in database
   await userCollection.updateOne(
     { _id: new ObjectId(id) },
     { $set: updatedUser }

@@ -95,25 +95,45 @@ describe("User login", () => {
         username: "ExistingUser",
         email: "test.email@gmail.com",
         password: await bcrypt.hash("existing1", staticSalt),
-        isVerified: true,
+        mfa: {
+          enabled: false,
+          secret: "",
+        },
+        is_verified: true,
+        is_admin: false,
       },
       {
         username: "UnverifiedUser",
         email: "unverified.email@gmail.com",
         password: await bcrypt.hash("unverified1", staticSalt),
-        isVerified: false,
+        mfa: {
+          enabled: false,
+          secret: "",
+        },
+        is_verified: false,
+        is_admin: false,
       },
       {
         username: "VerifiedUser",
         email: "verified.email@gmail.com",
         password: await bcrypt.hash("verified1", staticSalt),
-        isVerified: true,
+        mfa: {
+          enabled: false,
+          secret: "",
+        },
+        is_verified: true,
+        is_admin: false,
       },
       {
         username: "unverifiedUser",
         email: "unverified.email@gmail.com",
         password: await bcrypt.hash("unverifiedPassword", staticSalt),
-        isVerified: false,
+        mfa: {
+          enabled: false,
+          secret: "",
+        },
+        is_verified: false,
+        is_admin: false,
       },
     ];
 
