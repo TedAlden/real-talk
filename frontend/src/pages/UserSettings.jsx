@@ -375,6 +375,32 @@ function UserSettings() {
                   <div className="grid gap-4 md:grid-cols-2">
                     <div>
                       <div className="mb-2 block">
+                        <Label htmlFor="address.line_1" value="Address Line 1" />
+                      </div>
+                      <TextInput
+                        id="address.line_1"
+                        name="address.line_1"
+                        type="text"
+                        placeholder=""
+                        value={formData?.address?.line_1}
+                        onChange={handleFormChange}
+                      />
+                    </div>
+                    <div>
+                      <div className="mb-2 block">
+                        <Label htmlFor="address.line_2" value="Address Line 2" />
+                      </div>
+                      <TextInput
+                        id="address.line_2"
+                        name="address.line_2"
+                        type="text"
+                        placeholder=""
+                        value={formData?.address?.line_2}
+                        onChange={handleFormChange}
+                      />
+                    </div>
+                    <div>
+                      <div className="mb-2 block">
                         <Label htmlFor="address.country" value="Country" />
                       </div>
                       <TextInput
