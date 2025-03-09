@@ -38,4 +38,4 @@ export function convertImageBase64(file) {
       reject(error);
     };
   });
-};
+}

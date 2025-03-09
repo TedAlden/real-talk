@@ -7,7 +7,6 @@ export async function loginUser(username, password) {
       username,
       password,
     });
-    console.log(response);
     return response;
   } catch (error) {
     return apiErrorResponse(error);
@@ -21,7 +20,6 @@ export async function registerUser(username, email, password) {
       email,
       password,
     });
-    console.log(response);
     return response;
   } catch (error) {
     return apiErrorResponse(error);
@@ -33,7 +31,6 @@ export async function sendResetEmail(email) {
     const response = await axiosInstance.post("/auth/forgot-password", {
       email,
     });
-    console.log(response);
     return response;
   } catch (error) {
     return apiErrorResponse(error);
@@ -46,7 +43,6 @@ export async function verifyEmail(email, token) {
       email,
       token,
     });
-    console.log(response);
     return response;
   } catch (error) {
     return apiErrorResponse(error);
@@ -59,7 +55,6 @@ export async function resetPassword(token, newPassword) {
       token,
       password: newPassword,
     });
-    console.log(response);
     return response;
   } catch (error) {
     return apiErrorResponse(error);
@@ -72,7 +67,6 @@ export async function verifyOTP(token, otp) {
       token,
       otp,
     });
-    console.log(response);
     return response;
   } catch (error) {
     return apiErrorResponse(error);

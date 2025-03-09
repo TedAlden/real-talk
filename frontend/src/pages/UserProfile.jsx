@@ -63,7 +63,6 @@ function UserProfile() {
   useEffect(() => {
     const user = Cookies.get("authUser");
     const userId = paramId == "me" ? user : paramId; //if id is 0 uses authUser id
-    console.log("Profile userId:", userId);
     if (userId === user) {
       setIsCurrentUser(true);
     }
