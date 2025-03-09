@@ -5,6 +5,8 @@ import _ from "lodash";
 import Cookies from "js-cookie";
 import { decode } from "html-entities";
 
+import { Spinner } from "flowbite-react";
+
 const emptyUser = {
   username: "",
   email: "",
@@ -53,6 +55,7 @@ function UserProfile() {
   const navigate = useNavigate();
   const [userData, setUserData] = useState(emptyUser);
   const [userFound, setUserFound] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [isFollowing, setIsFollowing] = useState(false);
   const [isCurrentUser, setIsCurrentUser] = useState(false);
   const paramId = useParams().id;
@@ -72,6 +75,7 @@ function UserProfile() {
         setUserData(response.data);
         setUserFound(true);
       }
+      setLoading(false);
     })();
   }, [paramId, navigate]);
 
@@ -84,7 +88,11 @@ function UserProfile() {
     // Not implemented yet
   };
 
-  return userFound ? (
+  return loading ? (
+    <div className="p-16 text-center">
+      <Spinner aria-label="Extra large spinner example" size="xl" />
+    </div>
+  ) : userFound ? (
     <div className="flex flex-col items-center justify-center">
       <div className="md:max-w-4xl">
         <div className="m-4 grid grid-cols-4 gap-6 p-4 text-lg text-gray-900 dark:text-white">
