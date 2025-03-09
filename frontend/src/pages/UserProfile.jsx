@@ -56,6 +56,9 @@ function UserProfile() {
   const [isCurrentUser, setIsCurrentUser] = useState(false);
   const paramId = useParams().id;
 
+  const followingCount = 799;
+  const followersCount = 3758;
+
   useEffect(() => {
     const user = Cookies.get("authUser");
     const userId = paramId == "me" ? user : paramId; //if id is 0 uses authUser id
@@ -105,7 +108,7 @@ function UserProfile() {
               <li className="me-2">
                 <Link to="#" className="hover:underline">
                   <span className="font-semibold text-gray-900 dark:text-white">
-                    799
+                    {followingCount.toLocaleString()}
                   </span>
                   <span className="text-gray-600 dark:text-gray-400">
                     {" "}
@@ -116,7 +119,7 @@ function UserProfile() {
               <li>
                 <Link to="#" className="hover:underline">
                   <span className="font-semibold text-gray-900 dark:text-white">
-                    3,758
+                    {followersCount.toLocaleString()}
                   </span>
                   <span className="text-gray-600 dark:text-gray-400">
                     {" "}
