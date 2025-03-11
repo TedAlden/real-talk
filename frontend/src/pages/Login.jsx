@@ -13,11 +13,11 @@ function Login() {
   const [loggedIn, setLoggedIn] = useState(false);
   const [alertMessage, setAlertMessage] = useState({});
 
-  // useEffect(() => {
-  //   if (auth.user) {
-  //     console.log("Already logged in!");
-  //   }
-  // }, [auth.user]);
+  useEffect(() => {
+    if (auth.user) {
+      setLoggedIn(true);
+    }
+  }, [auth.user]);
 
   const handleLogin = async (e) => {
     e.preventDefault();

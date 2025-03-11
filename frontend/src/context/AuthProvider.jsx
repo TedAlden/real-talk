@@ -45,6 +45,8 @@ const AuthProvider = ({ children }) => {
         setToken(token);
         navigate("/");
       }
+    } else {
+      throw new Error(response.message);
     }
   };
 
