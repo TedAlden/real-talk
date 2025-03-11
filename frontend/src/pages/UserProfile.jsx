@@ -69,7 +69,7 @@ function UserProfile() {
   useEffect(() => {
     auth.getUser().then((user) => {
       // Check if trying to view own profile
-      if (user._id === paramId) {
+      if (paramId === user._id || paramId === "me" ) {
         setIsCurrentUser(true);
       }
       // Get user data for this profile
@@ -80,8 +80,10 @@ function UserProfile() {
         }
         setLoading(false);
       });
-    });
-  }, [paramId, navigate]);
+    }).catch(() => {
+      setLoading(false);
+    })
+  }, [paramId, navigate, auth]);
 
   const handleFollow = () => {
     setIsFollowing((prev) => !prev);

@@ -64,7 +64,7 @@ function UserSettings() {
   const auth = useAuth();
   const [formData, setFormData] = useState(emptyUser);
   const [alertMessage, setAlertMessage] = useState("");
-  const [userId, setUserId] = useState(Cookies.get("authUser"));
+  const [userId, setUserId] = useState(null);
   const [loading, setLoading] = useState(true);
   const [loggedIn, setLoggedIn] = useState(false);
 
@@ -76,9 +76,14 @@ function UserSettings() {
       getUserById(user._id).then((response) => {
         if (response.success !== false) {
           setFormData(response.data);
+          setLoggedIn(true);
+          setUserId(user._id);
+          setLoading(false);
         }
         setLoading(false);
       });
+    }).catch(() => {
+      setLoading(false);
     });
   }, [auth]);
 
@@ -136,7 +141,11 @@ function UserSettings() {
     }
   };
 
-  return loggedIn ? (
+  return loading ? (
+    <div className="p-16 text-center">
+      <Spinner aria-label="Extra large spinner example" size="xl" />
+    </div>
+  ): loggedIn ? (
     <>
       <Tabs aria-label="Tabs with underline" variant="underline">
         <TabItem title="Profile" icon={HiUser}>
