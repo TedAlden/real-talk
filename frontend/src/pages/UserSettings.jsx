@@ -1,9 +1,11 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, use } from "react";
 import { Link } from "react-router-dom";
 import { decode } from "html-entities";
 import QRCode from "react-qr-code";
 import Cookies from "js-cookie";
 import _ from "lodash";
+
+import useAuth from "../hooks/useAuth.js";
 
 import { updateUser, getUserById } from "../api/userService.js";
 import { convertImageBase64 } from "../util/image.js";
@@ -59,6 +61,7 @@ const emptyUser = {
 };
 
 function UserSettings() {
+  const auth = useAuth();
   const [formData, setFormData] = useState(emptyUser);
   const [alertMessage, setAlertMessage] = useState("");
   const [userId, setUserId] = useState(Cookies.get("authUser"));
@@ -69,19 +72,15 @@ function UserSettings() {
   const [confirmPassword, setConfirmPassword] = useState("");
 
   useEffect(() => {
-    const user = Cookies.get("authUser");
-    setUserId(user);
-    setLoggedIn(true);
-    (async () => {
-      const response = await getUserById(userId);
-      setLoading(false);
-      if (response.success !== false) {
-        response.data.date_of_birth = new Date(response.data.date_of_birth);
-        response.data.biography = decode(response.data.biography);
-        setFormData(response.data);
-      }
-    })();
-  }, [userId]);
+    auth.getUser().then((user) => {
+      getUserById(user._id).then((response) => {
+        if (response.success !== false) {
+          setFormData(response.data);
+        }
+        setLoading(false);
+      });
+    });
+  }, [auth]);
 
   const handleProfilePictureChange = async (e) => {
     const { files } = e.target;

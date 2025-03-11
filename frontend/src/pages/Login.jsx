@@ -1,66 +1,36 @@
 import { useEffect, useState } from "react";
-import { loginUser } from "../api/authService";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import Cookies from "js-cookie";
+import useAuth from "../hooks/useAuth";
 
 import { HiInformationCircle } from "react-icons/hi";
 import { Alert, Button, Checkbox, Label, TextInput } from "flowbite-react";
 
 function Login() {
-  const navigate = useNavigate();
+  const auth = useAuth();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [loggedIn, setLoggedIn] = useState(false);
   const [alertMessage, setAlertMessage] = useState({});
 
-  useEffect(() => {
-    if (Cookies.get("authToken")) {
-      const token = JSON.parse(Cookies.get("authToken"));
-      if (token && token.type === "authenticated") {
-        setLoggedIn(true);
-      }
-    }
-  }, []);
+  // useEffect(() => {
+  //   if (auth.user) {
+  //     console.log("Already logged in!");
+  //   }
+  // }, [auth.user]);
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    const response = await loginUser(username, password);
-
-    if (response.status === 200) {
-      setAlertMessage({});
-      const { token, type, userId } = response.data;
-
-      if (response.data.type === "awaiting-otp") {
-        Cookies.set("authToken", JSON.stringify({ token, type }), {
-          expires: 7,
-          secure: true,
-          sameSite: "strict",
+    if (username !== "" && password !== "") {
+      try {
+        await auth.login(username, password);
+      } catch (err) {
+        setAlertMessage({
+          color: "failure",
+          title: "Login failed!",
+          message: err.message,
         });
-        Cookies.set("authUser", userId, {
-          expires: 7,
-          secure: true,
-          sameSite: "strict",
-        });
-        navigate("/enter-otp");
-      } else if (response.data.type === "authenticated") {
-        Cookies.set("authToken", JSON.stringify({ token, type }), {
-          expires: 7,
-          secure: true,
-          sameSite: "strict",
-        });
-        Cookies.set("authUser", userId, {
-          expires: 7,
-          secure: true,
-          sameSite: "strict",
-        });
-        setLoggedIn(true);
       }
-    } else {
-      setAlertMessage({
-        color: "failure",
-        title: "Login failed!",
-        message: response.message,
-      });
     }
   };
 

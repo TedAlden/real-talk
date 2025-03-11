@@ -7,6 +7,8 @@ import { decode } from "html-entities";
 
 import { Spinner } from "flowbite-react";
 
+import useAuth from "../hooks/useAuth.js";
+
 const emptyUser = {
   username: "",
   email: "",
@@ -53,6 +55,7 @@ const dummyPosts = [
 
 function UserProfile() {
   const navigate = useNavigate();
+  const auth = useAuth();
   const [userData, setUserData] = useState(emptyUser);
   const [userFound, setUserFound] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -64,19 +67,20 @@ function UserProfile() {
   const followersCount = 3758;
 
   useEffect(() => {
-    const user = Cookies.get("authUser");
-    const userId = paramId == "me" ? user : paramId; //if id is 0 uses authUser id
-    if (userId === user) {
-      setIsCurrentUser(true);
-    }
-    (async () => {
-      const response = await getUserById(userId);
-      if (response.success !== false) {
-        setUserData(response.data);
-        setUserFound(true);
+    auth.getUser().then((user) => {
+      // Check if trying to view own profile
+      if (user._id === paramId) {
+        setIsCurrentUser(true);
       }
-      setLoading(false);
-    })();
+      // Get user data for this profile
+      getUserById(user._id).then((response) => {
+        if (response.success !== false) {
+          setUserData(response.data);
+          setUserFound(true);
+        }
+        setLoading(false);
+      });
+    });
   }, [paramId, navigate]);
 
   const handleFollow = () => {

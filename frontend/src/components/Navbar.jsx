@@ -1,9 +1,12 @@
 import { Link } from "react-router-dom";
 import { Navbar, DarkThemeToggle } from "flowbite-react";
 
+import useAuth from "../hooks/useAuth";
 import NavbarLink from "./NavbarLink";
 
 export default function MyNavbar() {
+  const auth = useAuth();
+
   return (
     <Navbar>
       <div className="container mx-auto flex items-center justify-between">
@@ -17,10 +20,22 @@ export default function MyNavbar() {
         <div className="flex items-center space-x-8">
           <Navbar.Collapse>
             <NavbarLink to="/" text="Home" />
-            <NavbarLink to="/login" text="Login" />
-            <NavbarLink to="/register" text="Register" />
-            <NavbarLink to="/profile/me" text="Profile" />
-            <NavbarLink to="/settings" text="Settings" />
+            {auth.user ? (
+              <>
+                <NavbarLink to="/profile/me" text="Profile" />
+                <NavbarLink to="/settings" text="Settings" />
+                <NavbarLink
+                  to="#"
+                  text="Logout"
+                  onClick={() => auth.logout()}
+                />
+              </>
+            ) : (
+              <>
+                <NavbarLink to="/login" text="Login" />
+                <NavbarLink to="/register" text="Register" />
+              </>
+            )}
           </Navbar.Collapse>
           <DarkThemeToggle />
         </div>
