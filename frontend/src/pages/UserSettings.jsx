@@ -205,7 +205,7 @@ function UserSettings() {
                       type="text"
                       placeholder="Write your thoughts here!..."
                       required
-                      value={formData?.biography}
+                      value={decode(formData?.biography)}
                       onChange={handleFormChange}
                     />
                   </div>
