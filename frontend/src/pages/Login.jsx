@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import Cookies from "js-cookie";
 import useAuth from "../hooks/useAuth";
 
 import { HiInformationCircle } from "react-icons/hi";
@@ -36,8 +35,7 @@ function Login() {
 
   const handleLogout = () => {
     setLoggedIn(false);
-    Cookies.remove("authToken");
-    Cookies.remove("authUser");
+    auth.logout();
   };
 
   return (
