@@ -1,13 +1,12 @@
 import { useState, useEffect } from "react";
-import { getUserById } from "../api/userService.js";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import _ from "lodash";
-import Cookies from "js-cookie";
 import { decode } from "html-entities";
+import _ from "lodash";
+
+import { getUserById } from "../api/userService.js";
+import useAuth from "../hooks/useAuth.js";
 
 import { Spinner } from "flowbite-react";
-
-import useAuth from "../hooks/useAuth.js";
 
 const emptyUser = {
   username: "",

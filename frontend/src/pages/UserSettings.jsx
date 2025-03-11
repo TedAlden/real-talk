@@ -1,14 +1,12 @@
-import { useState, useEffect, use } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { decode } from "html-entities";
 import QRCode from "react-qr-code";
-import Cookies from "js-cookie";
 import _ from "lodash";
-
-import useAuth from "../hooks/useAuth.js";
 
 import { updateUser, getUserById } from "../api/userService.js";
 import { convertImageBase64 } from "../util/image.js";
+import useAuth from "../hooks/useAuth.js";
 
 import {
   HiAtSymbol,
