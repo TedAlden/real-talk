@@ -12,6 +12,8 @@ import ResetPassword from "./pages/ResetPassword";
 import UserSettings from "./pages/UserSettings";
 import EnterOTP from "./pages/EnterOTP";
 import UserProfile from "./pages/UserProfile";
+import Followers from "./pages/Followers";
+import Following from "./pages/Following";
 
 function App() {
   return (
@@ -30,6 +32,8 @@ function App() {
               <Route path="/settings" element={<UserSettings />} />
               <Route path="/enter-otp" element={<EnterOTP />} />
               <Route path="/profile/:id" element={<UserProfile />} />
+              <Route path="/user/:id/followers" element={<Followers />} />
+              <Route path="/user/:id/following" element={<Following />} />
             </Routes>
           </div>
         </AuthProvider>
