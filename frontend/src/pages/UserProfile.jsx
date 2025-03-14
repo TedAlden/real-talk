@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
-import { getUserById } from "../api/userService.js";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import _ from "lodash";
-import Cookies from "js-cookie";
 import { decode } from "html-entities";
+import _ from "lodash";
+
+import { getUserById } from "../api/userService.js";
+import useAuth from "../hooks/useAuth.js";
 
 import { Spinner } from "flowbite-react";
 
@@ -53,6 +54,7 @@ const dummyPosts = [
 
 function UserProfile() {
   const navigate = useNavigate();
+  const auth = useAuth();
   const [userData, setUserData] = useState(emptyUser);
   const [userFound, setUserFound] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -64,20 +66,23 @@ function UserProfile() {
   const followersCount = 3758;
 
   useEffect(() => {
-    const user = Cookies.get("authUser");
-    const userId = paramId == "me" ? user : paramId; //if id is 0 uses authUser id
-    if (userId === user) {
-      setIsCurrentUser(true);
-    }
-    (async () => {
-      const response = await getUserById(userId);
-      if (response.success !== false) {
-        setUserData(response.data);
-        setUserFound(true);
+    auth.getUser().then((user) => {
+      // Check if trying to view own profile
+      if (paramId === user._id || paramId === "me" ) {
+        setIsCurrentUser(true);
       }
+      // Get user data for this profile
+      getUserById(user._id).then((response) => {
+        if (response.success !== false) {
+          setUserData(response.data);
+          setUserFound(true);
+        }
+        setLoading(false);
+      });
+    }).catch(() => {
       setLoading(false);
-    })();
-  }, [paramId, navigate]);
+    })
+  }, [paramId, navigate, auth]);
 
   const handleFollow = () => {
     setIsFollowing((prev) => !prev);

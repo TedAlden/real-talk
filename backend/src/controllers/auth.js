@@ -54,11 +54,13 @@ export const register = async (req, res) => {
     date_of_birth.setFullYear(date_of_birth.getFullYear() - 20);
 
     // Generate default profile picture
-    const b64ProfilePicture = await fetch(`https://ui-avatars.com/api/?name=${username}&size=256&background=random`)
+    const b64ProfilePicture = await fetch(
+      `https://ui-avatars.com/api/?name=${username}&size=256&background=random`
+    )
       .then((response) => response.arrayBuffer())
       .then((arrayBuffer) => {
         const buffer = Buffer.from(arrayBuffer);
-        const b64 = buffer.toString('base64');
+        const b64 = buffer.toString("base64");
         return "data:image/png;base64," + b64;
       })
       .catch(console.error);

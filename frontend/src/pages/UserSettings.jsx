@@ -1,12 +1,15 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import { decode } from "html-entities";
 import QRCode from "react-qr-code";
-import Cookies from "js-cookie";
 import _ from "lodash";
+
+import deepDiff from "../util/deepDiff";
+import deepCopy from "../util/deepCopy";
 
 import { updateUser, getUserById } from "../api/userService.js";
 import { convertImageBase64 } from "../util/image.js";
+import useAuth from "../hooks/useAuth.js";
 
 import {
   HiAtSymbol,
@@ -17,6 +20,7 @@ import {
   HiClock,
   HiLockClosed,
 } from "react-icons/hi";
+
 import {
   Alert,
   Button,
@@ -32,56 +36,39 @@ import {
   ToggleSwitch,
 } from "flowbite-react";
 
-const emptyUser = {
-  username: "",
-  email: "",
-  password: "",
-  first_name: "",
-  last_name: "",
-  date_of_birth: "",
-  telephone: "",
-  biography: "",
-  profile_picture: "",
-  address: {
-    line_1: "",
-    line_2: "",
-    city: "",
-    state: "",
-    country: "",
-    postcode: "",
-  },
-  mfa: {
-    enabled: false,
-    secret: "",
-  },
-  is_verified: false,
-  is_admin: false,
-};
-
 function UserSettings() {
-  const [formData, setFormData] = useState(emptyUser);
+  const auth = useAuth();
+  const [formData, setFormData] = useState({});
   const [alertMessage, setAlertMessage] = useState("");
-  const [userId, setUserId] = useState(Cookies.get("authUser"));
+  const [userId, setUserId] = useState(null);
   const [loading, setLoading] = useState(true);
   const [loggedIn, setLoggedIn] = useState(false);
 
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
+  const originalData = useRef({}); // Initial user data fetched from the server
+  // to populate the form fields.
+
   useEffect(() => {
-    const user = Cookies.get("authUser");
-    setUserId(user);
-    setLoggedIn(true);
-    (async () => {
-      const response = await getUserById(userId);
-      setLoading(false);
-      if (response.success !== false) {
-        response.data.date_of_birth = new Date(response.data.date_of_birth);
-        response.data.biography = decode(response.data.biography);
-        setFormData(response.data);
-      }
-    })();
-  }, [userId]);
+    auth
+      .getUser()
+      .then((user) => {
+        getUserById(user._id).then((response) => {
+          if (response.success !== false) {
+            originalData.current = deepCopy(response.data);
+            setFormData(response.data);
+            setLoggedIn(true);
+            setUserId(user._id);
+            setLoading(false);
+          }
+          setLoading(false);
+        });
+      })
+      .catch(() => {
+        setLoading(false);
+      });
+  }, [auth]);
 
   const handleProfilePictureChange = async (e) => {
     const { files } = e.target;
@@ -105,24 +92,28 @@ function UserSettings() {
 
   const handleFormSubmit = async (e) => {
     e.preventDefault();
-    const submittedUser = {
+    const newUser = {
       ...formData,
       _id: userId,
     };
 
-    // If a new password is specified, check if it matches the confirm password
-    if (
-      (newPassword !== "" || confirmPassword !== "") &&
-      newPassword !== confirmPassword
-    ) {
-      setAlertMessage({
-        color: "failure",
-        title: "Passwords do not match!",
-      });
-      return;
+    // Update password, if confirm password is matching
+    if (newPassword !== "" || confirmPassword !== "") {
+      if (newPassword == confirmPassword) {
+        newUser.password = newPassword;
+      } else {
+        setAlertMessage({
+          color: "failure",
+          title: "Passwords do not match!",
+        });
+      }
     }
 
-    const response = await updateUser(submittedUser);
+    // Only submit the fields that were changed, since this is an HTTP
+    // PATCH request.
+    const changes = deepDiff(originalData.current, newUser);
+    const response = await updateUser(userId, changes);
+
     if (response.success !== false) {
       setAlertMessage({
         color: "success",
@@ -135,9 +126,14 @@ function UserSettings() {
         message: response.message,
       });
     }
+    // window.location.reload();
   };
 
-  return loggedIn ? (
+  return loading ? (
+    <div className="p-16 text-center">
+      <Spinner aria-label="Extra large spinner example" size="xl" />
+    </div>
+  ) : loggedIn ? (
     <>
       <Tabs aria-label="Tabs with underline" variant="underline">
         <TabItem title="Profile" icon={HiUser}>
@@ -197,7 +193,7 @@ function UserSettings() {
                       type="text"
                       placeholder="Write your thoughts here!..."
                       required
-                      value={formData?.biography}
+                      value={decode(formData?.biography)}
                       onChange={handleFormChange}
                     />
                   </div>

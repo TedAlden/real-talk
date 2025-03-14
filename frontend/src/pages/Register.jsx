@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react";
 import { registerUser } from "../api/authService";
 import { Link } from "react-router-dom";
-import Cookies from "js-cookie";
+import useAuth from "../hooks/useAuth";
 
 import { HiInformationCircle } from "react-icons/hi";
 import { Alert, Button, Checkbox, Label, TextInput } from "flowbite-react";
 
 function Register() {
+  const auth = useAuth();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [email, setEmail] = useState("");
@@ -14,13 +15,10 @@ function Register() {
   const [alertMessage, setAlertMessage] = useState({});
 
   useEffect(() => {
-    if (Cookies.get("authToken")) {
-      const token = JSON.parse(Cookies.get("authToken"));
-      if (token && token.type === "authenticated") {
-        setLoggedIn(true);
-      }
+    if (auth.user) {
+      setLoggedIn(true);
     }
-  }, []);
+  }, [auth.user]);
 
   const handleRegister = async (e) => {
     e.preventDefault();
@@ -43,8 +41,7 @@ function Register() {
 
   const handleLogout = () => {
     setLoggedIn(false);
-    Cookies.remove("authToken");
-    Cookies.remove("authUser");
+    auth.logout();
   };
 
   return (
