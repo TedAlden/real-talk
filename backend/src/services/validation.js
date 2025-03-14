@@ -1,6 +1,6 @@
 import { body, query, validationResult, checkSchema } from "express-validator";
 import { ErrorMsg } from "./responseMessages.js";
-import { userUpdateSchema } from "./validationSchemas.js";
+import { userUpdateSchema, followIdSchema } from "./validationSchemas.js";
 
 const validatorMap = {
   email: () =>
@@ -22,6 +22,7 @@ const validatorMap = {
     query(["username", "email", "id"]).optional().trim().escape(),
 
   user_update: () => checkSchema(userUpdateSchema),
+  follows: () => checkSchema(followIdSchema),
   // Add additional fields as needed
 };
 

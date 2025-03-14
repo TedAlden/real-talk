@@ -12,7 +12,7 @@ if (process.env.MONGO_URL) {
 
 export async function connectDB() {
   if (!client) {
-    client = new MongoClient(connString);
+    client = new MongoClient(connString, { autoSelectFamily: false });
     await client.connect();
     db = client.db(databaseName);
   }
