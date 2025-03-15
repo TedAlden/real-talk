@@ -11,8 +11,7 @@ if (process.env.NODE_ENV === "test") {
     throw new Error("In-memory test database unable to be initialized");
   }
   connString = global.__MONGO_URI__;
-  databaseName = "jest";
-  console.log(`Using test database: ${databaseName}`);
+  databaseName = `test_db${process.env.JEST_WORKER_ID}`;
 }
 
 export async function connectDB() {
