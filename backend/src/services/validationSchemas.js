@@ -137,3 +137,27 @@ export const userUpdateSchema = {
     in: ["body"],
   },
 };
+
+export const followIdSchema = {
+  id: {
+    in: ["params", "body"],
+    optional: true,
+    isMongoId: {
+      errorMessage: "Invalid ID",
+    },
+  },
+  followed_id: {
+    in: ["params", "body"],
+    optional: true,
+    isMongoId: {
+      errorMessage: "Invalid followed ID",
+    },
+  },
+  follower_id: {
+    in: ["params", "body"],
+    optional: true,
+    isMongoId: {
+      errorMessage: "Invalid follower ID",
+    },
+  },
+};

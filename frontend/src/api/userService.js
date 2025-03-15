@@ -21,10 +21,9 @@ export async function getUserById(_id) {
   }
 }
 
-export async function updateUser(user) {
+export async function updateUser(_id, user) {
   try {
-    const { _id } = user;
-    const response = await axiosInstance.put(`/api/users/${_id}`, user);
+    const response = await axiosInstance.patch(`/api/users/${_id}`, user);
     return response;
   } catch (error) {
     return apiErrorResponse(error);

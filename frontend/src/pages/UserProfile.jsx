@@ -1,9 +1,16 @@
 import { useState, useEffect } from "react";
-import { getUserById } from "../api/userService.js";
+import {
+  getFollowStatsById,
+  checkIsFollowing,
+  followUser,
+  unfollowUser,
+} from "../api/followersService.js";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import _ from "lodash";
-import Cookies from "js-cookie";
 import { decode } from "html-entities";
+import _ from "lodash";
+
+import { getUserById } from "../api/userService.js";
+import useAuth from "../hooks/useAuth.js";
 
 import { Spinner } from "flowbite-react";
 
@@ -53,35 +60,78 @@ const dummyPosts = [
 
 function UserProfile() {
   const navigate = useNavigate();
+  const auth = useAuth();
   const [userData, setUserData] = useState(emptyUser);
   const [userFound, setUserFound] = useState(false);
   const [loading, setLoading] = useState(true);
   const [isFollowing, setIsFollowing] = useState(false);
+  const [followStats, setFollowStats] = useState({
+    followingUser: 0,
+    followedByUser: 0,
+  });
   const [isCurrentUser, setIsCurrentUser] = useState(false);
   const paramId = useParams().id;
 
-  const followingCount = 799;
-  const followersCount = 3758;
-
   useEffect(() => {
-    const user = Cookies.get("authUser");
-    const userId = paramId == "me" ? user : paramId; //if id is 0 uses authUser id
-    if (userId === user) {
-      setIsCurrentUser(true);
-    }
-    (async () => {
-      const response = await getUserById(userId);
-      if (response.success !== false) {
-        setUserData(response.data);
-        setUserFound(true);
+    const fetchUserData = async () => {
+      setLoading(true);
+      try {
+        setLoading(true);
+        const user = await auth.getUser();
+        const profileUserId = paramId === "me" ? user._id : paramId;
+
+        if (profileUserId === user._id) {
+          setIsCurrentUser(true);
+        }
+
+        const responses = await Promise.all([
+          getUserById(profileUserId),
+          getFollowStatsById(profileUserId),
+          checkIsFollowing(user._id, profileUserId),
+        ]);
+
+        const setters = [setUserData, setFollowStats, setIsFollowing];
+
+        responses.forEach((response, idx) => {
+          if (response.success !== false) {
+            setters[idx](response.data);
+            idx === 0 && setUserFound(true);
+          }
+        });
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+        setUserFound(false);
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
-    })();
+    };
+
+    fetchUserData();
   }, [paramId, navigate]);
 
-  const handleFollow = () => {
-    setIsFollowing((prev) => !prev);
-    // Not implemented yet
+  const handleFollow = async () => {
+    try {
+      const user = await auth.getUser();
+      const profileUserId = paramId === "me" ? user._id : paramId;
+      const followed = profileUserId;
+      const followAction = isFollowing ? unfollowUser : followUser;
+      const prev = isFollowing;
+      setIsFollowing(!isFollowing);
+      console.log("Follow action:", followAction);
+      console.log("Follower:", user._id);
+      console.log("Followed:", followed);
+
+      const followResponse = await followAction(user._id, followed);
+      if (followResponse.success == false) {
+        setIsFollowing(prev);
+      }
+      const statsUpdated = await getFollowStatsById(profileUserId);
+      if (statsUpdated.success !== false) {
+        setFollowStats(statsUpdated.data);
+      }
+    } catch (error) {
+      console.error("Error updating follow stats:", error);
+    }
   };
 
   const handleReport = () => {
@@ -113,9 +163,12 @@ function UserProfile() {
             </p>
             <ul className="flex text-sm">
               <li className="me-2">
-                <Link to="#" className="hover:underline">
+                <Link
+                  to={`/user/${userData._id}/following`}
+                  className="hover:underline"
+                >
                   <span className="font-semibold text-gray-900 dark:text-white">
-                    {followingCount.toLocaleString()}
+                    {followStats.followedByUser.toLocaleString()}
                   </span>
                   <span className="text-gray-600 dark:text-gray-400">
                     {" "}
@@ -124,9 +177,12 @@ function UserProfile() {
                 </Link>
               </li>
               <li>
-                <Link to="#" className="hover:underline">
+                <Link
+                  to={`/user/${userData._id}/followers`}
+                  className="hover:underline"
+                >
                   <span className="font-semibold text-gray-900 dark:text-white">
-                    {followersCount.toLocaleString()}
+                    {followStats.followingUser.toLocaleString()}
                   </span>
                   <span className="text-gray-600 dark:text-gray-400">
                     {" "}

@@ -117,13 +117,15 @@ export const updateUserById = async (req, res) => {
 
     // Update the new user object with the validated fields
     const updatedUser = {
-      ...user,
       ...matchedData(req),
     };
 
+    console.log(req.body);
+
     // Hash password
-    const hash = await bcrypt.hash(updatedUser.password, 10);
-    updatedUser.password = hash;
+    if (updatedUser.password) {
+      updatedUser.password = await bcrypt.hash(updatedUser.password, 10);
+    }
 
     // Update user in database
     await userCollection.updateOne(
