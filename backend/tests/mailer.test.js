@@ -19,10 +19,8 @@ describe("User email verification", () => {
         // Immediately invoke the callback to simulate successful sending
         callback(null, { success: true });
       });
-    await db.collection("users").deleteMany({}); // Delete all users from table
-  });
 
-  beforeEach(async () => {
+    await db.collection("users").deleteMany({}); // Delete all users from table
     await request(app).post("/auth/register").send({
       username: "UserToBeVerified",
       email: "test@example.com",
@@ -34,11 +32,6 @@ describe("User email verification", () => {
   afterAll(async () => {
     sendMailMock.mockRestore();
     await closeDB(db);
-  });
-
-  afterEach(async () => {
-    await db.collection("users").deleteMany({});
-    sendMailMock.mockClear();
   });
 
   test("registration should send a verification email", async () => {
