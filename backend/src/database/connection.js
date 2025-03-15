@@ -1,22 +1,31 @@
 import { MongoClient } from "mongodb";
 
 let connString = process.env.DATABASE_URI || "";
+
 let databaseName = process.env.DATABASE_NAME || "";
 let client;
 let db;
 
-if (process.env.MONGO_URL) {
-  connString = process.env.MONGO_URL;
+if (process.env.NODE_ENV === "test") {
+  if (!global.__MONGO_URI__) {
+    throw new Error("In-memory test database unable to be initialized");
+  }
+  connString = global.__MONGO_URI__;
   databaseName = "jest";
+  console.log(`Using test database: ${databaseName}`);
 }
 
 export async function connectDB() {
-  if (!client) {
-    client = new MongoClient(connString, { autoSelectFamily: false });
-    await client.connect();
-    db = client.db(databaseName);
+  try {
+    if (!client) {
+      client = new MongoClient(connString, { autoSelectFamily: false });
+      await client.connect();
+      db = client.db(databaseName);
+    }
+    return db;
+  } catch (err) {
+    console.log("Error connecting to database: ", err);
   }
-  return db;
 }
 
 export async function closeDB() {
