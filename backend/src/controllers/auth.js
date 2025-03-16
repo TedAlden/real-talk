@@ -411,7 +411,9 @@ export const verifyOtp = async (req, res) => {
           expiresIn: "1h",
         }
       );
-      return res.status(200).json({ token: authToken, type: TokenTypes.AUTH });
+      return res
+        .status(200)
+        .json({ token: authToken, type: TokenTypes.AUTH, userId: user._id });
     });
   } catch (err) {
     console.error("Verify OTP error:", err);
