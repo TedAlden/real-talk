@@ -21,5 +21,5 @@
 | **GET**     | `/api/users?username=...` | Query users by username.       |
 | **GET**     | `/api/users?email=...`    | Query users by email.          |
 | **GET**     | `/api/users/:userid`      | Get user by user ID.           |
-| **PUT**     | `/api/users/:userid`      | Update a user with a given ID. |
+| **PATCH**   | `/api/users/:userid`      | Update a user with a given ID. |
 | **DELETE**  | `/api/users/:userid`      | Delete a user with a given ID. |
