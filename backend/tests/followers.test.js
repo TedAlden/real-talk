@@ -55,6 +55,46 @@ describe("Follower functionality", () => {
       expect(Array.isArray(res.body)).toBe(true);
       expect(res.body).toHaveLength(2);
     });
+
+    test("should correctly mark which users the viewer is following", async () => {
+      /* 
+       userToFollow : testIds[0]
+       viewer : testIds[3]
+       followers: testIds[1], testIds[2]
+      */
+
+      await db.collection("followers").insertMany([
+        {
+          follower_id: testIds[1],
+          followed_id: testIds[0],
+        },
+        {
+          follower_id: testIds[2],
+          followed_id: testIds[0],
+        },
+        {
+          follower_id: testIds[3],
+          followed_id: testIds[1],
+        },
+      ]);
+
+      const res = await request(app).get(
+        `/api/users/${testIds[0]}/followers?viewer_id=${testIds[3]}`
+      );
+
+      expect(res.status).toBe(200);
+      expect(Array.isArray(res.body)).toBe(true);
+      expect(res.body).toHaveLength(2);
+
+      const follower1Response = res.body.find(
+        (u) => u._id === testIds[1].toString()
+      );
+      const follower2Response = res.body.find(
+        (u) => u._id === testIds[2].toString()
+      );
+      expect(follower1Response).toHaveProperty("isFollowing", true);
+      expect(follower2Response).toHaveProperty("isFollowing", false);
+    });
   });
 
   describe("GET /api/users/:id/followed", () => {
