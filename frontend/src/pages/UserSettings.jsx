@@ -41,7 +41,6 @@ function UserSettings() {
   const [formData, setFormData] = useState({});
   const [alertMessage, setAlertMessage] = useState("");
   const [loading, setLoading] = useState(true);
-  const [loggedIn, setLoggedIn] = useState(false);
 
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -56,12 +55,13 @@ function UserSettings() {
         .then((user) => {
           originalData.current = deepCopy(user);
           setFormData(user);
-          setLoggedIn(true);
           setLoading(false);
         })
         .catch(() => {
           setLoading(false);
         });
+    } else {
+      setLoading(false);
     }
   }, [auth]);
 
@@ -127,7 +127,7 @@ function UserSettings() {
     <div className="p-16 text-center">
       <Spinner aria-label="Extra large spinner example" size="xl" />
     </div>
-  ) : loggedIn ? (
+  ) : auth.loggedIn ? (
     <>
       <Tabs aria-label="Tabs with underline" variant="underline">
         <TabItem title="Profile" icon={HiUser}>
