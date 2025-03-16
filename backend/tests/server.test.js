@@ -45,17 +45,17 @@ describe("Server", () => {
     delete process.env.PORT;
     await import("../src/server.js");
 
-    expect(mockListen).toHaveBeenCalledWith("5001", expect.any(Function));
+    expect(mockListen).toHaveBeenCalledWith(5001, expect.any(Function));
     expect(consoleLogSpy).toHaveBeenCalledWith(
       "Server is running on port: 5001"
     );
   });
 
   test("should start on the port specified in PORT env var", async () => {
-    process.env.PORT = "8000";
+    process.env.PORT = 8000;
     await import("../src/server.js");
 
-    expect(mockListen).toHaveBeenCalledWith("8000", expect.any(Function));
+    expect(mockListen).toHaveBeenCalledWith(8000, expect.any(Function));
     expect(consoleLogSpy).toHaveBeenCalledWith(
       "Server is running on port: 8000"
     );
