@@ -207,12 +207,8 @@ export const unfollowUser = async (req, res) => {
       followed_id: new ObjectId(followed_id),
     };
 
-    try {
-      const result = await db.collection("followers").deleteOne(followToDelete);
-      res.status(200).json(result);
-    } catch (error) {
-      res.status(500).json({ message: error.message });
-    }
+    const result = await db.collection("followers").deleteOne(followToDelete);
+    res.status(200).json(result);
   } catch (err) {
     console.error("Unfollow user error:", err);
     return res.status(500).json({ error: err.message });
