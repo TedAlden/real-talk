@@ -6,24 +6,26 @@ import { HiInformationCircle } from "react-icons/hi";
 import { Alert } from "flowbite-react";
 
 function VerifyUser() {
+  const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [alertMessage, setAlertMessage] = useState({
     color: "info",
-    title: "Verifying token, please wait!",
+    title: "Verifying token!",
+    message: "Please wait...",
   });
-  const navigate = useNavigate();
+
   const token = searchParams.get("token");
   const email = searchParams.get("email");
 
   useEffect(() => {
+    // Redirect away immediately if no token is found
     if (!(token && email)) {
-      navigate("/"); // Redirect immediately if no token is found
+      navigate("/");
       return;
     }
 
-    const verifyUser = async () => {
-      const response = await verifyEmail(email, token);
-
+    // Verify email using auth service
+    verifyEmail(email, token).then((response) => {
       if (response.success !== false) {
         setAlertMessage({
           color: "success",
@@ -37,10 +39,8 @@ function VerifyUser() {
           message: response.error || "Unknown error",
         });
       }
-    };
-
-    verifyUser();
-  }, [token, email, navigate]);
+    });
+  }, [navigate, email, token]);
 
   return (
     <div className="flex flex-col items-center justify-center p-8">
