@@ -59,6 +59,7 @@ export const getFollowedUsersById = async (req, res) => {
     const db = await connectDB();
     const { id } = req.params;
     const { viewer_id } = req.query;
+    const viewerId = viewer_id || id;
 
     const followed = await db
       .collection("followers")
@@ -73,7 +74,7 @@ export const getFollowedUsersById = async (req, res) => {
 
     const followed_by_viewer = await db
       .collection("followers")
-      .find({ follower_id: new ObjectId(viewer_id) })
+      .find({ follower_id: new ObjectId(viewerId) })
       .toArray();
     const followed_by_viewer_ids = followed_by_viewer.map((f) => f.followed_id);
 
