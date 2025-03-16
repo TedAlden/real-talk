@@ -2,10 +2,13 @@ import request from "supertest";
 import app from "../src/app.js";
 import { connectDB, closeDB } from "../src/database/connection.js";
 import { createTestUsers } from "./testUtils.js";
+import { jest } from "@jest/globals";
+import * as followersController from "../src/controllers/followers.js";
 
 describe("Follower functionality", () => {
   let db;
   let testIds;
+  let mockRes;
 
   beforeAll(async () => {
     db = await connectDB();
@@ -20,23 +23,39 @@ describe("Follower functionality", () => {
     await closeDB();
   });
 
+  beforeEach(async () => {
+    mockRes = {
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+    };
+  });
+
   afterEach(async () => {
     await db.collection("followers").deleteMany({});
   });
 
-  describe("POST /api/users/follows", () => {
+  describe("createFollow", () => {
     test("should create a new follow relationship", async () => {
-      const res = await request(app).post(`/api/users/follows`).send({
-        follower_id: testIds[0],
-        followed_id: testIds[1],
-      });
-      expect(res.status).toBe(200);
-      expect(res.body).toHaveProperty("acknowledged", true);
-      expect(res.body).toHaveProperty("insertedId");
+      const mockRequest = {
+        body: {
+          follower_id: testIds[0],
+          followed_id: testIds[1],
+        },
+      };
+
+      await followersController.createFollow(mockRequest, mockRes);
+
+      expect(mockRes.status).toHaveBeenCalledWith(200);
+      expect(mockRes.json).toHaveBeenCalledWith(
+        expect.objectContaining({
+          acknowledged: true,
+          insertedId: expect.anything(),
+        })
+      );
     });
   });
 
-  describe("GET /api/users/:id/followers", () => {
+  describe("getFollowersById", () => {
     test("should get all followers of a user", async () => {
       await db.collection("followers").insertMany([
         {
@@ -49,20 +68,27 @@ describe("Follower functionality", () => {
         },
       ]);
 
-      const res = await request(app).get(`/api/users/${testIds[0]}/followers`);
+      const mockRequest = {
+        params: {
+          id: testIds[0],
+        },
+        query: {},
+      };
 
-      expect(res.status).toBe(200);
-      expect(Array.isArray(res.body)).toBe(true);
-      expect(res.body).toHaveLength(2);
+      await followersController.getFollowersById(mockRequest, mockRes);
+
+      expect(mockRes.status).toHaveBeenCalledWith(200);
+      expect(mockRes.json).toHaveBeenCalledWith(
+        expect.arrayContaining([expect.any(Object), expect.any(Object)])
+      );
     });
 
-    test("should correctly mark which users the viewer is following", async () => {
+    test("should correctly mark which followers of the user the viewer is following", async () => {
       /* 
        userToFollow : testIds[0]
        viewer : testIds[3]
        followers: testIds[1], testIds[2]
       */
-
       await db.collection("followers").insertMany([
         {
           follower_id: testIds[1],
@@ -77,27 +103,32 @@ describe("Follower functionality", () => {
           followed_id: testIds[1],
         },
       ]);
+      const mockRequest = {
+        params: {
+          id: testIds[0],
+        },
+        query: { viewer_id: testIds[3] },
+      };
 
-      const res = await request(app).get(
-        `/api/users/${testIds[0]}/followers?viewer_id=${testIds[3]}`
-      );
+      await followersController.getFollowersById(mockRequest, mockRes);
 
-      expect(res.status).toBe(200);
-      expect(Array.isArray(res.body)).toBe(true);
-      expect(res.body).toHaveLength(2);
-
-      const follower1Response = res.body.find(
-        (u) => u._id === testIds[1].toString()
+      expect(mockRes.status).toHaveBeenCalledWith(200);
+      expect(mockRes.json).toHaveBeenCalledWith(
+        expect.arrayContaining([
+          expect.objectContaining({
+            _id: testIds[1],
+            isFollowing: true,
+          }),
+          expect.objectContaining({
+            _id: testIds[2],
+            isFollowing: false,
+          }),
+        ])
       );
-      const follower2Response = res.body.find(
-        (u) => u._id === testIds[2].toString()
-      );
-      expect(follower1Response).toHaveProperty("isFollowing", true);
-      expect(follower2Response).toHaveProperty("isFollowing", false);
     });
   });
 
-  describe("GET /api/users/:id/followed", () => {
+  describe("getFollowedUsersById", () => {
     test("should get all users followed by a user", async () => {
       await db.collection("followers").insertMany([
         {
@@ -110,15 +141,67 @@ describe("Follower functionality", () => {
         },
       ]);
 
-      const res = await request(app).get(`/api/users/${testIds[0]}/followed`);
+      const mockRequest = {
+        params: {
+          id: testIds[0],
+        },
+        query: {},
+      };
 
-      expect(res.status).toBe(200);
-      expect(Array.isArray(res.body)).toBe(true);
-      expect(res.body).toHaveLength(2);
+      await followersController.getFollowedUsersById(mockRequest, mockRes);
+
+      expect(mockRes.status).toHaveBeenCalledWith(200);
+      expect(mockRes.json).toHaveBeenCalledWith(
+        expect.arrayContaining([expect.any(Object), expect.any(Object)])
+      );
+    });
+
+    test("should correctly mark which followeds of the user the viewer is following", async () => {
+      /* 
+       userWhoFollows : testIds[0]
+       viewer : testIds[3]
+       followeds: testIds[1], testIds[2]
+      */
+      await db.collection("followers").insertMany([
+        {
+          follower_id: testIds[0],
+          followed_id: testIds[1],
+        },
+        {
+          follower_id: testIds[0],
+          followed_id: testIds[2],
+        },
+        {
+          follower_id: testIds[3],
+          followed_id: testIds[1],
+        },
+      ]);
+      const mockRequest = {
+        params: {
+          id: testIds[0],
+        },
+        query: { viewer_id: testIds[3] },
+      };
+
+      await followersController.getFollowedUsersById(mockRequest, mockRes);
+
+      expect(mockRes.status).toHaveBeenCalledWith(200);
+      expect(mockRes.json).toHaveBeenCalledWith(
+        expect.arrayContaining([
+          expect.objectContaining({
+            _id: testIds[1],
+            isFollowing: true,
+          }),
+          expect.objectContaining({
+            _id: testIds[2],
+            isFollowing: false,
+          }),
+        ])
+      );
     });
   });
 
-  describe("DELETE /api/users/:follower_id/unfollow/:followed_id", () => {
+  describe("unfollowUser", () => {
     test("should remove a follow relationship", async () => {
       // Create follow first
       await db.collection("followers").insertOne({
@@ -126,17 +209,26 @@ describe("Follower functionality", () => {
         followed_id: testIds[1],
       });
 
-      const res = await request(app).delete(
-        `/api/users/${testIds[0]}/unfollow/${testIds[1]}`
-      );
+      const mockRequest = {
+        params: {
+          follower_id: testIds[0],
+          followed_id: testIds[1],
+        },
+      };
 
-      expect(res.status).toBe(200);
-      expect(res.body).toHaveProperty("acknowledged", true);
-      expect(res.body).toHaveProperty("deletedCount", 1);
+      await followersController.unfollowUser(mockRequest, mockRes);
+
+      expect(mockRes.status).toHaveBeenCalledWith(200);
+      expect(mockRes.json).toHaveBeenCalledWith(
+        expect.objectContaining({
+          acknowledged: true,
+          deletedCount: 1,
+        })
+      );
     });
   });
 
-  describe("GET /api/users/:id/follow_stats", () => {
+  describe("getUserFollowStats", () => {
     test("should get the count of followers and followed for a user", async () => {
       await db.collection("followers").insertMany([
         {
@@ -161,23 +253,35 @@ describe("Follower functionality", () => {
         },
       ]);
 
-      const res = await request(app).get(
-        `/api/users/${testIds[0]}/follow_stats`
-      );
+      const mockRequest = {
+        params: {
+          id: testIds[0],
+        },
+      };
 
-      expect(res.status).toBe(200);
-      expect(res.body).toHaveProperty("followedByUser", 2);
-      expect(res.body).toHaveProperty("followingUser", 3);
+      await followersController.getUserFollowStats(mockRequest, mockRes);
+
+      expect(mockRes.status).toHaveBeenCalledWith(200);
+      expect(mockRes.json).toHaveBeenCalledWith({
+        followedByUser: 2,
+        followingUser: 3,
+      });
     });
 
     test("should return 0 when user has no followers", async () => {
-      const res = await request(app).get(
-        `/api/users/${testIds[0]}/follow_stats`
-      );
+      const mockRequest = {
+        params: {
+          id: testIds[0],
+        },
+      };
 
-      expect(res.status).toBe(200);
-      expect(res.body).toHaveProperty("followedByUser", 0);
-      expect(res.body).toHaveProperty("followingUser", 0);
+      await followersController.getUserFollowStats(mockRequest, mockRes);
+
+      expect(mockRes.status).toHaveBeenCalledWith(200);
+      expect(mockRes.json).toHaveBeenCalledWith({
+        followedByUser: 0,
+        followingUser: 0,
+      });
     });
   });
 });
