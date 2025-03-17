@@ -38,7 +38,7 @@ function Followers() {
     };
 
     fetchFollowerData();
-  }, [paramId, navigate]);
+  }, [auth, paramId, navigate]);
 
   const handleFollow = async (followed) => {
     const user = await auth.getUser();
