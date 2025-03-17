@@ -61,6 +61,7 @@ const dummyPosts = [
 function UserProfile() {
   const navigate = useNavigate();
   const auth = useAuth();
+  const auth = useAuth();
   const [userData, setUserData] = useState(emptyUser);
   const [userFound, setUserFound] = useState(false);
   const [loading, setLoading] = useState(true);

@@ -3,11 +3,10 @@ import { Link } from "react-router-dom";
 import { decode } from "html-entities";
 import QRCode from "react-qr-code";
 import _ from "lodash";
-
 import deepDiff from "../util/deepDiff";
 import deepCopy from "../util/deepCopy";
 
-import { updateUser, getUserById } from "../api/userService.js";
+import { updateUser } from "../api/userService.js";
 import { convertImageBase64 } from "../util/image.js";
 import useAuth from "../hooks/useAuth.js";
 
@@ -40,9 +39,7 @@ function UserSettings() {
   const auth = useAuth();
   const [formData, setFormData] = useState({});
   const [alertMessage, setAlertMessage] = useState("");
-  const [userId, setUserId] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [loggedIn, setLoggedIn] = useState(false);
 
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -51,23 +48,20 @@ function UserSettings() {
   // to populate the form fields.
 
   useEffect(() => {
-    auth
-      .getUser()
-      .then((user) => {
-        getUserById(user._id).then((response) => {
-          if (response.success !== false) {
-            originalData.current = deepCopy(response.data);
-            setFormData(response.data);
-            setLoggedIn(true);
-            setUserId(user._id);
-            setLoading(false);
-          }
+    if (auth.loggedIn) {
+      auth
+        .getUser()
+        .then((user) => {
+          originalData.current = deepCopy(user);
+          setFormData(user);
+          setLoading(false);
+        })
+        .catch(() => {
           setLoading(false);
         });
-      })
-      .catch(() => {
-        setLoading(false);
-      });
+    } else {
+      setLoading(false);
+    }
   }, [auth]);
 
   const handleProfilePictureChange = async (e) => {
@@ -94,7 +88,6 @@ function UserSettings() {
     e.preventDefault();
     const newUser = {
       ...formData,
-      _id: userId,
     };
 
     // Update password, if confirm password is matching
@@ -112,7 +105,7 @@ function UserSettings() {
     // Only submit the fields that were changed, since this is an HTTP
     // PATCH request.
     const changes = deepDiff(originalData.current, newUser);
-    const response = await updateUser(userId, changes);
+    const response = await updateUser(originalData.current._id, changes);
 
     if (response.success !== false) {
       setAlertMessage({
@@ -133,7 +126,7 @@ function UserSettings() {
     <div className="p-16 text-center">
       <Spinner aria-label="Extra large spinner example" size="xl" />
     </div>
-  ) : loggedIn ? (
+  ) : auth.loggedIn ? (
     <>
       <Tabs aria-label="Tabs with underline" variant="underline">
         <TabItem title="Profile" icon={HiUser}>

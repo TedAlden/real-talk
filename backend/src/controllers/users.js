@@ -71,7 +71,7 @@ export const getUserById = async (req, res) => {
 };
 
 /**
- * PUT /users/:id
+ * PATCH /users/:id
  *
  * Update a user by ID.
  *
@@ -84,7 +84,8 @@ export const getUserById = async (req, res) => {
  * {
  *  username: string,
  *  email: string,
- *  password: string
+ *  password: string,
+ *  ...
  * }
  */
 export const updateUserById = async (req, res) => {
