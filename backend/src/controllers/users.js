@@ -26,15 +26,11 @@ export const getUsersByQuery = async (req, res) => {
     if (email) filter.email = email;
     if (id) filter._id = new ObjectId(id);
 
-    try {
-      const users = await db
-        .collection("users")
-        .find(filter, { projection: { password: false } }) // Exclude password
-        .toArray();
-      res.status(200).json(users);
-    } catch (error) {
-      res.status(500).json({ message: error.message });
-    }
+    const users = await db
+      .collection("users")
+      .find(filter, { projection: { password: false } }) // Exclude password
+      .toArray();
+    return res.status(200).json(users);
   } catch (err) {
     console.error("Get users by query error:", err);
     return res.status(500).json({ error: err.message });
