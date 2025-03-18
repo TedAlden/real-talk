@@ -57,7 +57,10 @@ export const getUserById = async (req, res) => {
     const db = await connectDB();
     const userCollection = db.collection("users");
 
-    const user = await userCollection.findOne({ _id: new ObjectId(id) });
+    const user = await userCollection.findOne(
+      { _id: new ObjectId(id) },
+      { projection: { password: false } }
+    );
 
     if (!user) {
       return res.status(404).json({ error: ErrorMsg.NO_SUCH_ID });
