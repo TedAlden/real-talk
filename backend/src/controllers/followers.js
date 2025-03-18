@@ -138,12 +138,8 @@ export const isUserFollowing = async (req, res) => {
       follower_id: new ObjectId(follower_id),
       followed_id: new ObjectId(followed_id),
     };
-    try {
-      const count = await db.collection("followers").countDocuments(filter);
-      res.status(200).json(count > 0);
-    } catch (error) {
-      res.status(500).json({ message: error.message });
-    }
+    const count = await db.collection("followers").countDocuments(filter);
+    res.status(200).json(count > 0);
   } catch (err) {
     console.error("Check following error:", err);
     return res.status(500).json({ error: err.message });
