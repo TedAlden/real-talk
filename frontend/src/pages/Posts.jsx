@@ -57,19 +57,20 @@ function Posts({ userId, isCurrentUser }) {
   ) : (
     <div>
       {isCurrentUser && <PostCreator onPostCreated={fetchPostData} />}
-      {posts.map((post, index) => (
-        <div
-          key={index}
-          className="col-span-4 mb-3 rounded-md bg-white p-4 shadow dark:border dark:border-gray-700 dark:bg-gray-800"
-        >
-          <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
-            Posted {parseDate(post.created_at)}
-          </p>
-          <p className="mt-2 text-sm leading-relaxed text-gray-900 dark:text-gray-100">
-            {post.content}
-          </p>
-        </div>
-      ))}
+      {posts &&
+        posts.map((post, index) => (
+          <div
+            key={index}
+            className="col-span-4 mb-3 rounded-md bg-white p-4 shadow dark:border dark:border-gray-700 dark:bg-gray-800"
+          >
+            <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
+              Posted {parseDate(post.created_at)}
+            </p>
+            <p className="mt-2 text-sm leading-relaxed text-gray-900 dark:text-gray-100">
+              {post.content}
+            </p>
+          </div>
+        ))}
     </div>
   );
 }
