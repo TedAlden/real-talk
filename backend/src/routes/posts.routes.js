@@ -12,7 +12,7 @@ import {
   getComments,
   getCommentById,
   updateComment,
-  deleteComment
+  deleteComment,
 } from "../controllers/comments.js";
 import { setLike } from "../controllers/likes.js";
 
