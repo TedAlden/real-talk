@@ -21,8 +21,24 @@ const validatorMap = {
   search_query: () =>
     query(["username", "email", "id"]).optional().trim().escape(),
 
+  user_id: () =>
+    body("user_id").trim().notEmpty().withMessage(ErrorMsg.NEEDS_USER_ID),
+
+  post_content: () =>
+    body("content")
+      .trim()
+      .escape()
+      .optional({ values: "falsy" })
+      .withMessage(ErrorMsg.EMPTY_POST),
+  post_media: () =>
+    body("media")
+      .trim()
+      .optional({ values: "falsy" })
+      .withMessage(ErrorMsg.EMPTY_POST),
+
   user_update: () => checkSchema(userUpdateSchema),
   follows: () => checkSchema(followIdSchema),
+  post_update: () => checkSchema(postUpdateSchema),
   // Add additional fields as needed
 };
 
