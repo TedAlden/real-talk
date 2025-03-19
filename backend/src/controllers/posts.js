@@ -22,7 +22,7 @@ export const createPost = async (req, res) => {
 
     // Insert the new user into the collection
     const newPost = {
-      user_id,
+      user_id: new ObjectId(user_id),
       content,
       media,
       likes: [],
@@ -62,6 +62,7 @@ export const getPostsByQuery = async (req, res) => {
     if (tag) filter.tags = { $in: [tag] };
     if (user_id) filter.user_id = new ObjectId(user_id);
 
+    console.log(filter);
     const posts = await db
       .collection("posts")
       .find(filter)
