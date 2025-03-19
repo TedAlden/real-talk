@@ -60,9 +60,13 @@ export const getPostsByQuery = async (req, res) => {
     const { user_id, tag } = req.query;
     const filter = {};
     if (tag) filter.tags = { $in: [tag] };
-    if (user_id) filter.user_id = new ObjectId(id);
+    if (user_id) filter.user_id = new ObjectId(user_id);
 
-    const posts = await db.collection("posts").find(filter).toArray();
+    const posts = await db
+      .collection("posts")
+      .find(filter)
+      .sort({ created_at: -1 })
+      .toArray();
     return res.status(200).json(posts);
   } catch (err) {
     console.error("Get posts by query error:", err);
