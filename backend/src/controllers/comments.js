@@ -7,6 +7,8 @@ export const createComment = async (req, res) => {
     const { id } = req.params;
     const { userId, content } = req.body;
 
+    // TODO: userId should be passed from auth middleware when implemented
+
     // Check if post exists
     const post = await db
       .collection("posts")
