@@ -1,5 +1,6 @@
 import { connectDB } from "../database/connection.js";
 import { ObjectId } from "mongodb";
+import { ErrorMsg, SuccessMsg } from "../services/responseMessages.js";
 
 export const createComment = async (req, res) => {
   try {
@@ -15,7 +16,7 @@ export const createComment = async (req, res) => {
       .findOne({ _id: new ObjectId(id) });
 
     if (!post) {
-      return res.status(404).json({ message: "Post not found" });
+      return res.status(404).json({ message: ErrorMsg.NO_SUCH_POST });
     }
 
     // Create comment object
@@ -34,7 +35,7 @@ export const createComment = async (req, res) => {
     );
 
     if (result.acknowledged) {
-      return res.status(201).json({ message: "Comment created successfully" });
+      return res.status(201).json({ message: SuccessMsg.COMMENT_CREATE_OK });
     } else {
       return res.sendStatus(500);
     }
@@ -55,7 +56,7 @@ export const getComments = async (req, res) => {
       .findOne({ _id: new ObjectId(id) });
 
     if (!post) {
-      return res.status(404).json({ message: "Post not found" });
+      return res.status(404).json({ message: ErrorMsg.NO_SUCH_POST });
     }
 
     return res.status(200).json(post.comments);
@@ -76,7 +77,7 @@ export const getCommentById = async (req, res) => {
       .findOne({ _id: new ObjectId(id) });
 
     if (!post) {
-      return res.status(404).json({ message: "Post not found" });
+      return res.status(404).json({ message: ErrorMsg.NO_SUCH_POST });
     }
 
     // Check if comment exists
@@ -85,7 +86,7 @@ export const getCommentById = async (req, res) => {
     );
 
     if (!comment) {
-      return res.status(404).json({ message: "Comment not found" });
+      return res.status(404).json({ message: ErrorMsg.NO_SUCH_COMMENT });
     }
 
     return res.status(200).json(comment);
@@ -107,7 +108,7 @@ export const updateComment = async (req, res) => {
       .findOne({ _id: new ObjectId(id) });
 
     if (!post) {
-      return res.status(404).json({ message: "Post not found" });
+      return res.status(404).json({ message: ErrorMsg.NO_SUCH_POST });
     }
 
     // Check if comment exists
@@ -116,7 +117,7 @@ export const updateComment = async (req, res) => {
     );
 
     if (!comment) {
-      return res.status(404).json({ message: "Comment not found" });
+      return res.status(404).json({ message: ErrorMsg.NO_SUCH_COMMENT });
     }
 
     // Update comment
@@ -126,7 +127,7 @@ export const updateComment = async (req, res) => {
     );
 
     if (result.acknowledged) {
-      return res.status(201).json({ message: "Comment updated successfully" });
+      return res.status(201).json({ message: SuccessMsg.COMMENT_UPDATE_OK });
     } else {
       return res.sendStatus(500);
     }
@@ -147,7 +148,7 @@ export const deleteComment = async (req, res) => {
       .findOne({ _id: new ObjectId(id) });
 
     if (!post) {
-      return res.status(404).json({ message: "Post not found" });
+      return res.status(404).json({ message: ErrorMsg.NO_SUCH_POST });
     }
 
     // Check if comment exists
@@ -156,7 +157,7 @@ export const deleteComment = async (req, res) => {
     );
 
     if (!comment) {
-      return res.status(404).json({ message: "Comment not found" });
+      return res.status(404).json({ message: ErrorMsg.NO_SUCH_COMMENT });
     }
 
     // Delete comment
@@ -166,7 +167,7 @@ export const deleteComment = async (req, res) => {
     );
 
     if (result.acknowledged) {
-      return res.status(204).json({ message: "Comment deleted successfully" });
+      return res.status(204).json({ message: SuccessMsg.COMMENT_DELETE_OK });
     } else {
       return res.sendStatus(500);
     }

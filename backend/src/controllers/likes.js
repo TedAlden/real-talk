@@ -1,5 +1,6 @@
 import { connectDB } from "../database/connection.js";
 import { ObjectId } from "mongodb";
+import { ErrorMsg, SuccessMsg } from "../services/responseMessages.js";
 
 export const setLike = async (req, res) => {
   try {
@@ -15,12 +16,12 @@ export const setLike = async (req, res) => {
       .findOne({ _id: new ObjectId(id) });
 
     if (!post) {
-      return res.status(404); // Not found
+      return res.status(404).json({ message: ErrorMsg.NO_SUCH_POST });
     }
 
     // If isLiked is not valid boolean
     if (typeof isLiked !== "boolean") {
-      return res.sendStatus(400); // Bad request
+      return res.status(400).json({ message: ErrorMsg.INVALID_LIKE_VALUE });
     }
 
     // Add userId to likes array if isLiked is true, or remove userId from likes
@@ -36,9 +37,8 @@ export const setLike = async (req, res) => {
     );
 
     if (result.acknowledged) {
-      console.log("Set like success");
       return res.status(200).json({
-        message: "Like updated successfully",
+        message: SuccessMsg.LIKE_UPDATE_OK,
         isLiked
       });
     } else {
