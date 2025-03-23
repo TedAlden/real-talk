@@ -22,7 +22,9 @@ export const ErrorMsg = Object.freeze({
   WRONG_PASSWORD: "Incorrect password.",
   SERVER_ERROR: "Server error.",
   NO_SUCH_POST: "No post with that ID.",
+  NO_SUCH_COMMENT: "No comment with that ID.",
 
+  INVALID_LIKE_VALUE: "Invalid like value.",
   INCORRECT_OTP: "Incorrect OTP.",
   OTP_EXPIRED: "OTP has expired.",
   MFA_NOT_ENABLED: "MFA is not enabled for this user.",
@@ -38,4 +40,8 @@ export const SuccessMsg = Object.freeze({
   PASSWORD_UPDATE_OK: "Password successfully updated.",
   USER_DELETE_OK: "User deleted successfully.",
   USER_UPDATE_OK: "User updated successfully.",
+  LIKE_UPDATE_OK: "Like updated successfully.",
+  COMMENT_UPDATE_OK: "Comment updated successfully.",
+  COMMENT_CREATE_OK: "Comment created successfully.",
+  COMMENT_DELETE_OK: "Comment deleted successfully.",
 });

@@ -68,6 +68,7 @@ export const getPostsByQuery = async (req, res) => {
       .find(filter)
       .sort({ created_at: -1 })
       .toArray();
+
     return res.status(200).json(posts);
   } catch (err) {
     console.error("Get posts by query error:", err);
