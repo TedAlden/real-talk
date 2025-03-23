@@ -29,21 +29,19 @@ export const createNotification = async (target_id, actor_id, type) => {
     };
 
     const notification = {
-      timestamp: Date.now(),
-      actor_id,
+      timestamp: new Date(),
+      actor_id: new ObjectId(actor_id),
       content: actor.username + message[type],
       read: false,
-    };
-
-    const updatedUser = {
-      ...target,
-      notifications: [notification, ...target.notifications],
     };
 
     // Update target
     const result = await db
       .collection("users")
-      .updateOne({ _id: new ObjectId(id) }, updatedUser);
+      .updateOne(
+        { _id: new ObjectId(target_id) },
+        { $push: { notifications: notification } }
+      );
 
     if (!result.acknowledged) {
       throw new Error(ErrorMsg.NOTIFICATION_ERROR);

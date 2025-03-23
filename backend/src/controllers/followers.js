@@ -1,6 +1,7 @@
 import { connectDB } from "../database/connection.js";
 import { ObjectId } from "mongodb";
 import { ErrorMsg } from "../services/responseMessages.js";
+import { createNotification } from "./notifications.js";
 /**
  * GET /users/:id/followers
  *
@@ -177,6 +178,8 @@ export const createFollow = async (req, res) => {
     }
 
     const result = await db.collection("followers").insertOne(newFollow);
+    createNotification(followed_id, follower_id, "follow");
+
     res.status(200).json(result);
   } catch (err) {
     console.error("Follow user error:", err);
