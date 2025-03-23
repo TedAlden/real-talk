@@ -3,7 +3,7 @@ import { Navbar, DarkThemeToggle } from "flowbite-react";
 
 import useAuth from "../hooks/useAuth";
 import NavbarLink from "./NavbarLink";
-
+import Notifications from "./NotificationIcon";
 export default function MyNavbar() {
   const auth = useAuth();
 
@@ -37,6 +37,7 @@ export default function MyNavbar() {
               </>
             )}
           </Navbar.Collapse>
+          <Notifications />
           <DarkThemeToggle />
         </div>
       </div>
