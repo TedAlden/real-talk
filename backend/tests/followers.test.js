@@ -4,7 +4,7 @@ import { connectDB, closeDB } from "../src/database/connection.js";
 import { createTestUsers } from "./testUtils.js";
 import { jest } from "@jest/globals";
 import * as followersController from "../src/controllers/followers.js";
-
+import { ErrorMsg } from "../src/services/responseMessages.js";
 describe("Follower functionality", () => {
   let db;
   let testIds;
@@ -66,7 +66,7 @@ describe("Follower functionality", () => {
 
       expect(mockRes.status).toHaveBeenCalledWith(400);
       expect(mockRes.json).toHaveBeenCalledWith({
-        error: "Cannot follow yourself",
+        error: ErrorMsg.FOLLOW_SELF_ERROR,
       });
     });
 
@@ -86,7 +86,7 @@ describe("Follower functionality", () => {
 
       expect(mockRes.status).toHaveBeenCalledWith(409);
       expect(mockRes.json).toHaveBeenCalledWith({
-        error: "Already following user",
+        error: ErrorMsg.ALREADY_FOLLOWING,
       });
     });
 
