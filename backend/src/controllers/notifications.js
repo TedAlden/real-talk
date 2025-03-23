@@ -23,15 +23,16 @@ export const createNotification = async (target_id, actor_id, type) => {
     }
 
     const message = {
-      like: " has liked your post.",
-      comment: " has commented on your post.",
-      follow: " has started following you.",
+      like: "  liked your post.",
+      comment: " commented on your post.",
+      follow: " followed you.",
     };
 
     const notification = {
-      timestamp: new Date(),
+      _id: new ObjectId(),
       actor_id: new ObjectId(actor_id),
-      content: actor.username + message[type],
+      actor_username: actor.username,
+      content: message[type],
       read: false,
     };
 
@@ -53,39 +54,47 @@ export const createNotification = async (target_id, actor_id, type) => {
   }
 };
 
-export const deleteNotification = async (req, res) => {
+export const getNotifications = async (req, res) => {
   try {
     const db = await connectDB();
-    const { id } = req.params;
-    const { timestamp } = req.body;
+    const { user_id } = req.params;
 
     const user = await db
       .collection("users")
-      .findOne({ _id: new ObjectId(id) });
+      .findOne({ _id: new ObjectId(user_id) });
 
     if (!user) {
       return res.status(404).json({ message: ErrorMsg.INVALID_ID });
     }
 
-    const newNotifications = user.notifications.filter(
-      (notification) => notification.timestamp !== timestamp
-    );
+    return res.status(200).json(user.notifications);
+  } catch (err) {
+    console.error("Get notifications error:", err);
+    return res.status(500).json({ error: err.message });
+  }
+};
 
-    if (newNotifications.length === user.notifications.length) {
-      return res.status(404).json({ message: ErrorMsg.NO_SUCH_NOTIFICATION });
-    }
-
-    const updatedUser = {
-      ...user,
-      notifications: newNotifications,
-    };
-
+export const deleteNotification = async (req, res) => {
+  try {
+    const db = await connectDB();
+    const { user_id, notification_id } = req.params;
+    console.log("Delete notification:", user_id, notification_id);
     const result = await db
       .collection("users")
-      .updateOne({ _id: new ObjectId(id) }, updatedUser);
+      .updateOne(
+        { _id: new ObjectId(user_id) },
+        { $pull: { notifications: { _id: new ObjectId(notification_id) } } }
+      );
 
-    if (!result.acknowledged) {
-      throw new Error("Unable to update user notifications.");
+    if (result.modifiedCount === 0) {
+      const user = await db
+        .collection("users")
+        .findOne({ _id: new ObjectId(user_id) });
+
+      if (!user) {
+        return res.status(404).json({ message: ErrorMsg.INVALID_ID });
+      }
+      return res.status(404).json({ message: ErrorMsg.NO_SUCH_NOTIFICATION });
     }
 
     return res.status(200).json({ message: SuccessMsg.NOTIFICATION_DELETE_OK });
@@ -98,12 +107,11 @@ export const deleteNotification = async (req, res) => {
 export const readNotification = async (req, res) => {
   try {
     const db = await connectDB();
-    const { id } = req.params;
-    const { timestamp } = req.body;
+    const { user_id, timestamp } = req.params;
 
     const user = await db
       .collection("users")
-      .findOne({ _id: new ObjectId(id) });
+      .findOne({ _id: new ObjectId(user_id) });
 
     if (!user) {
       return res.status(404).json({ message: ErrorMsg.INVALID_ID });
@@ -130,7 +138,7 @@ export const readNotification = async (req, res) => {
 
     const result = await db
       .collection("users")
-      .updateOne({ _id: new ObjectId(id) }, updatedUser);
+      .updateOne({ _id: new ObjectId(user_id) }, updatedUser);
 
     if (!result.acknowledged) {
       return res.status(500).json({ message: ErrorMsg.NOTIFICATION_ERROR });
