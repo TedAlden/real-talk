@@ -11,7 +11,7 @@ import _ from "lodash";
 
 import { getUserById } from "../api/userService.js";
 import useAuth from "../hooks/useAuth.js";
-
+import Posts from "./Posts.jsx";
 import { Spinner } from "flowbite-react";
 
 const emptyUser = {
@@ -39,24 +39,6 @@ const emptyUser = {
   is_verified: false,
   is_admin: false,
 };
-
-const dummyPosts = [
-  {
-    date: "24th Oct 2034",
-    content:
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
-  },
-  {
-    date: "10th Jan 2009",
-    content:
-      "Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.",
-  },
-  {
-    date: "5th Apr 1623",
-    content:
-      "Parturient facilisis amet laoreet curae aliquam. Sit rutrum maximus posuere netus; purus fermentum feugiat quis. Parturient pretium ligula non felis cubilia cubilia. Quam habitant et nisl risus sit. Ultrices fringilla primis porttitor nulla placerat ultricies ornare. Quam amet ullamcorper velit nisi aliquet. Suscipit justo quisque euismod vestibulum pharetra eros. Finibus proin eu proin natoque ultrices ultrices.",
-  },
-];
 
 function UserProfile() {
   const navigate = useNavigate();
@@ -214,22 +196,12 @@ function UserProfile() {
               </div>
             )}
           </div>
-          <div className="col-span-4 rounded-md bg-white p-2 text-center shadow dark:border dark:border-gray-700 dark:bg-gray-800">
-            <p>Posts Today: 0/1</p>
-          </div>
-          {dummyPosts.map((post, index) => (
-            <div
-              key={index}
-              className="col-span-4 rounded-md bg-white p-4 shadow dark:border dark:border-gray-700 dark:bg-gray-800"
-            >
-              <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
-                Posted on {post.date}
-              </p>
-              <p className="mt-2 text-sm leading-relaxed text-gray-900 dark:text-gray-100">
-                {post.content}
-              </p>
+          <div className="col-span-4">
+            <div className="mb-2 rounded-md bg-white p-2 text-center shadow dark:border dark:border-gray-700 dark:bg-gray-800">
+              <p>Posts Today: 0/1</p>
             </div>
-          ))}
+            <Posts userId={userData._id} isCurrentUser={isCurrentUser} />
+          </div>
         </div>
       </div>
     </div>
