@@ -23,6 +23,10 @@ export const ErrorMsg = Object.freeze({
   SERVER_ERROR: "Server error.",
   NO_SUCH_POST: "No post with that ID.",
   NO_SUCH_COMMENT: "No comment with that ID.",
+  NO_SUCH_NOTIFICATION: "No notification with that timestamp.",
+  NOTIFICATION_ERROR: "Unable to update user notifications.",
+  FOLLOW_SELF_ERROR: "Cannot follow yourself.",
+  ALREADY_FOLLOWING: "Already following user.",
 
   INVALID_LIKE_VALUE: "Invalid like value.",
   INCORRECT_OTP: "Incorrect OTP.",
@@ -44,4 +48,5 @@ export const SuccessMsg = Object.freeze({
   COMMENT_UPDATE_OK: "Comment updated successfully.",
   COMMENT_CREATE_OK: "Comment created successfully.",
   COMMENT_DELETE_OK: "Comment deleted successfully.",
+  NOTIFICATION_DELETE_OK: "Notification deleted successfully.",
 });

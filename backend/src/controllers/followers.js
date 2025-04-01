@@ -1,5 +1,7 @@
 import { connectDB } from "../database/connection.js";
 import { ObjectId } from "mongodb";
+import { ErrorMsg } from "../services/responseMessages.js";
+import { createNotification } from "./notifications.js";
 /**
  * GET /users/:id/followers
  *
@@ -163,7 +165,7 @@ export const createFollow = async (req, res) => {
     const { follower_id, followed_id } = req.body;
 
     if (followed_id === follower_id) {
-      return res.status(400).json({ error: "Cannot follow yourself" });
+      return res.status(400).json({ error: ErrorMsg.FOLLOW_SELF_ERROR });
     }
 
     const newFollow = {
@@ -172,10 +174,12 @@ export const createFollow = async (req, res) => {
     };
     const existing = await db.collection("followers").countDocuments(newFollow);
     if (existing > 0) {
-      return res.status(409).json({ error: "Already following user" });
+      return res.status(409).json({ error: ErrorMsg.ALREADY_FOLLOWING });
     }
 
     const result = await db.collection("followers").insertOne(newFollow);
+    createNotification(followed_id, follower_id, "follow");
+
     res.status(200).json(result);
   } catch (err) {
     console.error("Follow user error:", err);

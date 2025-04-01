@@ -7,6 +7,8 @@ import usersRouter from "./routes/users.routes.js";
 import followersRouter from "./routes/followers.routes.js";
 import postsRouter from "./routes/posts.routes.js";
 import feedsRouter from "./routes/feeds.routes.js";
+import notifyRouter from "./routes/notifications.routes.js";
+
 // Secret key required for GitHub Actions testing workflow where a .env file
 // does not exist
 process.env.SECRET_KEY = process.env.SECRET_KEY
@@ -21,6 +23,7 @@ app.use(express.json({ limit: "1mb" })); // Allows the backend to parse JSON obj
 app.use("/auth", authRouter);
 app.use("/api/users", usersRouter);
 app.use("/api/users", followersRouter);
+app.use("/api/users", notifyRouter);
 app.use("/api/posts", postsRouter);
 app.use("/api/feeds", feedsRouter);
 export default app;
