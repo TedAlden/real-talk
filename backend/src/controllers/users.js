@@ -24,7 +24,18 @@ export const getUsersByQuery = async (req, res) => {
     const filter = {};
     if (username) filter.username = username;
     if (email) filter.email = email;
-    if (id) filter._id = new ObjectId(id);
+    if (id) {
+      const ids = id.split(",").filter(Boolean);
+      if (ids.length === 0) {
+        return res.status(400).json({ error: ErrorMsg.INVALID_ID });
+      }
+
+      try {
+        filter._id = { $in: ids.map((userId) => new ObjectId(userId)) };
+      } catch (err) {
+        return res.status(400).json({ error: ErrorMsg.INVALID_ID });
+      }
+    }
 
     const users = await db
       .collection("users")

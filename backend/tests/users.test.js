@@ -91,7 +91,7 @@ describe("Users Controller", () => {
     });
 
     test("should filter users by ID", async () => {
-      const mockReq = { query: { id: testIds[0] } };
+      const mockReq = { query: { id: testIds[0].toString() } };
 
       await usersController.getUsersByQuery(mockReq, mockRes);
 
