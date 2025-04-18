@@ -1,17 +1,18 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import {
   getFollowStatsById,
   checkIsFollowing,
   followUser,
   unfollowUser,
 } from "../api/followersService.js";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { decode } from "html-entities";
 import _ from "lodash";
-
-import { getUserById } from "../api/userService.js";
+import { getPostByQuery } from "../api/postService.js";
+import { getUserById, getUsersByQuery } from "../api/userService.js";
 import useAuth from "../hooks/useAuth.js";
-
+import Post from "../components/Post.jsx";
+import PostCreator from "../components/PostCreator.jsx";
 import { Spinner } from "flowbite-react";
 
 const emptyUser = {
@@ -59,55 +60,98 @@ const dummyPosts = [
 ];
 
 function UserProfile() {
-  const navigate = useNavigate();
   const auth = useAuth();
   const [userData, setUserData] = useState(emptyUser);
-  const [userFound, setUserFound] = useState(false);
   const [loading, setLoading] = useState(true);
   const [isFollowing, setIsFollowing] = useState(false);
   const [followStats, setFollowStats] = useState({
     followingUser: 0,
     followedByUser: 0,
   });
-  const [isCurrentUser, setIsCurrentUser] = useState(false);
+  const [viewer, setViewer] = useState(null);
+  const [posts, setPosts] = useState(false);
+  const [userCache, setUserCache] = useState({});
   const paramId = useParams().id;
 
   useEffect(() => {
-    const fetchUserData = async () => {
-      setLoading(true);
-      try {
-        setLoading(true);
-        const user = await auth.getUser();
-        const profileUserId = paramId === "me" ? user._id : paramId;
+    auth.getUser().then(setViewer);
+  }, [auth]);
 
-        if (profileUserId === user._id) {
-          setIsCurrentUser(true);
+  const updateUserCache = useCallback(async (userIds) => {
+    const newIds = Array.from(new Set(userIds));
+    if (newIds.length === 0) return;
+    try {
+      const response = await getUsersByQuery("id", newIds);
+
+      if (response.success !== false) {
+        setUserCache((prev) => {
+          const next = { ...prev };
+          response.data.forEach((user) => {
+            if (!next[user._id]) next[user._id] = user;
+          });
+          return next;
+        });
+      }
+    } catch (err) {
+      console.error("Error updating user cache:", err);
+    }
+  }, []);
+
+  const fetchUserData = useCallback(async () => {
+    if (!viewer) return;
+    setLoading(true);
+    try {
+      const profileUserId = paramId === "me" ? viewer._id : paramId;
+
+      if (profileUserId === viewer._id) {
+        setUserData(viewer);
+        setUserCache((prev) => ({
+          ...prev,
+          [viewer._id]: viewer,
+        }));
+        setIsFollowing(false);
+      } else {
+        const userRes = await getUserById(profileUserId);
+        if (userRes.success !== false) {
+          setUserData(userRes.data);
+          if (!userCache[userRes.data._id]) {
+            setUserCache((prev) => ({
+              ...prev,
+              [userRes.data._id]: userRes.data,
+            }));
+          }
         }
 
-        const responses = await Promise.all([
-          getUserById(profileUserId),
-          getFollowStatsById(profileUserId),
-          checkIsFollowing(user._id, profileUserId),
-        ]);
-
-        const setters = [setUserData, setFollowStats, setIsFollowing];
-
-        responses.forEach((response, idx) => {
-          if (response.success !== false) {
-            setters[idx](response.data);
-            idx === 0 && setUserFound(true);
-          }
-        });
-      } catch (error) {
-        console.error("Error fetching user data:", error);
-        setUserFound(false);
-      } finally {
-        setLoading(false);
+        const followRes = await checkIsFollowing(viewer._id, profileUserId);
+        if (followRes.success !== false) setIsFollowing(followRes.data);
       }
-    };
 
+      const postsRes = await getPostByQuery("user_id", profileUserId);
+      if (postsRes.success !== false) {
+        setPosts(postsRes.data);
+        const allIds = postsRes.data.map((p) => p.user_id);
+
+        const userIds = Array.from(new Set(allIds)).filter(
+          (id) => !userCache[id],
+        );
+
+        if (userIds.length > 0) updateUserCache(userIds);
+      }
+
+      const statsRes = await getFollowStatsById(profileUserId);
+      if (statsRes.success !== false) setFollowStats(statsRes.data);
+    } catch (error) {
+      console.error("Error fetching user data:", error);
+    } finally {
+      setLoading(false);
+    }
+  }, [viewer, paramId, updateUserCache]);
+
+  const isUserFound = userData && userData._id;
+
+  useEffect(() => {
     fetchUserData();
-  }, [auth, paramId, navigate]);
+  }, [fetchUserData]);
 
   const handleFollow = async () => {
     try {
@@ -138,99 +182,96 @@ function UserProfile() {
     // Not implemented yet
   };
 
-  return loading ? (
-    <div className="p-16 text-center">
-      <Spinner aria-label="Extra large spinner example" size="xl" />
-    </div>
-  ) : userFound ? (
-    <div className="flex flex-col items-center justify-center">
-      <div className="md:max-w-4xl">
-        <div className="m-4 grid grid-cols-4 gap-6 p-4 text-lg text-gray-900 dark:text-white">
-          <div className="col-span-4 flex items-center justify-center sm:col-span-1">
-            <img
-              className="h-auto w-32 rounded-full object-cover shadow-lg"
-              src={userData?.profile_picture}
-              alt="Profile"
-            />
-          </div>
-          <div className="col-span-4 flex flex-col justify-start gap-2 sm:col-span-3">
-            <p className="text-xl font-semibold">
-              {userData.first_name} {userData.last_name}
-            </p>
-            <p className="text-base">@{userData.username}</p>
-            <p className="text-base text-gray-700 dark:text-gray-300">
-              {decode(userData.biography) || "No bio available"}
-            </p>
-            <ul className="flex text-sm">
-              <li className="me-2">
-                <Link
-                  to={`/user/${userData._id}/following`}
-                  className="hover:underline"
-                >
-                  <span className="font-semibold text-gray-900 dark:text-white">
-                    {followStats.followedByUser.toLocaleString()}
-                  </span>
-                  <span className="text-gray-600 dark:text-gray-400">
-                    {" "}
-                    Following
-                  </span>
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to={`/user/${userData._id}/followers`}
-                  className="hover:underline"
-                >
-                  <span className="font-semibold text-gray-900 dark:text-white">
-                    {followStats.followingUser.toLocaleString()}
-                  </span>
-                  <span className="text-gray-600 dark:text-gray-400">
-                    {" "}
-                    Followers
-                  </span>
-                </Link>
-              </li>
-            </ul>
-            {!isCurrentUser && (
-              <div className="flex gap-2">
-                <button
-                  onClick={handleFollow}
-                  className={`w-full rounded-md px-4 py-1 text-sm font-medium transition sm:w-min ${
-                    isFollowing
-                      ? "bg-red-500 hover:bg-red-600"
-                      : "bg-blue-500 hover:bg-blue-600"
-                  }`}
-                >
-                  {isFollowing ? "Unfollow" : "Follow"}
-                </button>
-                <button
-                  onClick={handleReport}
-                  className={
-                    "w-full rounded-md bg-red-500 px-4 py-1 text-sm font-medium transition hover:bg-red-600 sm:w-min"
-                  }
-                >
-                  Report
-                </button>
-              </div>
-            )}
-          </div>
-          <div className="col-span-4 rounded-md bg-white p-2 text-center shadow dark:border dark:border-gray-700 dark:bg-gray-800">
-            <p>Posts Today: 0/1</p>
-          </div>
-          {dummyPosts.map((post, index) => (
-            <div
-              key={index}
-              className="col-span-4 rounded-md bg-white p-4 shadow dark:border dark:border-gray-700 dark:bg-gray-800"
+  if (loading) return <Spinner className="p-16 text-center" size="xl" />;
+
+  return isUserFound ? (
+    <div className="m-4 mx-auto grid max-w-xl gap-6 p-4 text-lg text-gray-900 dark:text-white">
+      <div className="col-span-4 flex items-center justify-center sm:col-span-1">
+        <img
+          className="h-auto w-32 rounded-full object-cover shadow-lg"
+          src={userData?.profile_picture}
+          alt="Profile"
+        />
+      </div>
+      <div className="col-span-4 flex flex-col justify-start gap-2 sm:col-span-3">
+        <p className="text-xl font-semibold">
+          {userData.first_name} {userData.last_name}
+        </p>
+        <p className="text-base">@{userData.username}</p>
+        <p className="text-base text-gray-700 dark:text-gray-300">
+          {decode(userData.biography) || "No bio available"}
+        </p>
+        <ul className="flex text-sm">
+          <li className="me-2">
+            <Link
+              to={`/user/${userData._id}/following`}
+              className="hover:underline"
             >
-              <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
-                Posted on {post.date}
-              </p>
-              <p className="mt-2 text-sm leading-relaxed text-gray-900 dark:text-gray-100">
-                {post.content}
-              </p>
-            </div>
-          ))}
+              <span className="font-semibold text-gray-900 dark:text-white">
+                {followStats.followedByUser.toLocaleString()}
+              </span>
+              <span className="text-gray-600 dark:text-gray-400">
+                {" "}
+                Following
+              </span>
+            </Link>
+          </li>
+          <li>
+            <Link
+              to={`/user/${userData._id}/followers`}
+              className="hover:underline"
+            >
+              <span className="font-semibold text-gray-900 dark:text-white">
+                {followStats.followingUser.toLocaleString()}
+              </span>
+              <span className="text-gray-600 dark:text-gray-400">
+                {" "}
+                Followers
+              </span>
+            </Link>
+          </li>
+        </ul>
+        {viewer._id !== userData._id && (
+          <div className="flex gap-2">
+            <button
+              onClick={handleFollow}
+              className={`w-full rounded-md px-4 py-1 text-sm font-medium transition sm:w-min ${
+                isFollowing
+                  ? "bg-red-500 hover:bg-red-600"
+                  : "bg-blue-500 hover:bg-blue-600"
+              }`}
+            >
+              {isFollowing ? "Unfollow" : "Follow"}
+            </button>
+            <button
+              onClick={handleReport}
+              className={
+                "w-full rounded-md bg-red-500 px-4 py-1 text-sm font-medium transition hover:bg-red-600 sm:w-min"
+              }
+            >
+              Report
+            </button>
+          </div>
+        )}
+      </div>
+      <div className="col-span-4">
+        <div className="mb-2 rounded-md p-2 text-center shadow dark:border dark:border-gray-700 dark:bg-gray-800">
+          Posts Today: 0/1
         </div>
+
+        {viewer._id == userData._id && (
+          <PostCreator onPostCreated={fetchUserData} />
+        )}
+
+        {posts?.map((post) => (
+          <Post
+            key={post._id}
+            post={post}
+            viewer={viewer}
+            updateUserCache={updateUserCache}
+            userCache={userCache}
+          />
+        ))}
       </div>
     </div>
   ) : (
