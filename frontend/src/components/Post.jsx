@@ -7,6 +7,7 @@ import {
   getPostComments,
 } from "../api/postService";
 import { Textarea } from "flowbite-react";
+import { decode } from "html-entities";
 
 function Post({ post, viewer, userCache, updateUserCache }) {
   const [likes, setLikes] = useState([]);
@@ -115,9 +116,10 @@ function Post({ post, viewer, userCache, updateUserCache }) {
           </p>
         </div>
       </div>
-      <div className="text-md mt-4 leading-relaxed text-gray-900 dark:text-gray-100">
-        {post.content}
-      </div>
+      <div
+        dangerouslySetInnerHTML={{ __html: decode(post.content) }}
+        className="text-md mt-4 leading-relaxed"
+      ></div>
 
       <div className="mt-2 flex items-center justify-around space-x-4 text-sm text-gray-500 dark:text-gray-400">
         <button

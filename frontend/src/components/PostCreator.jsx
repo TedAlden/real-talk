@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { createPost } from "../api/postService.js";
 import useAuth from "../hooks/useAuth.js";
+import ReactQuill from "react-quill-new";
+import "react-quill-new/dist/quill.bubble.css";
 
 // Will update with rich text stuff later
 
@@ -35,14 +37,14 @@ function PostCreator({ onPostCreated }) {
   };
 
   return (
-    <div className="col-span-4 mb-3 rounded-md bg-white p-4 shadow dark:border dark:border-gray-700 dark:bg-gray-800">
-      <textarea
-        className="w-full rounded-md border border-gray-300 p-2 text-sm dark:border-gray-700 dark:bg-gray-800 dark:text-white"
-        placeholder="Write your post here..."
-        rows="4"
-        value={postContent}
-        onChange={(e) => setPostContent(e.target.value)}
-      ></textarea>
+    <div className="col-span-4 mb-3 rounded-md p-4 shadow dark:border dark:border-gray-700 dark:bg-gray-800">
+      <div className="rounded-md p-1 dark:border dark:border-gray-700 dark:bg-gray-800">
+        <ReactQuill
+          theme="bubble"
+          value={postContent}
+          onChange={setPostContent}
+        />
+      </div>
       <button
         onClick={handleSubmit}
         disabled={isSubmitting || !postContent.trim()}
