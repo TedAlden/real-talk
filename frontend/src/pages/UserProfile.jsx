@@ -2,8 +2,6 @@ import { useState, useEffect, useCallback } from "react";
 import {
   getFollowStatsById,
   checkIsFollowing,
-  followUser,
-  unfollowUser,
 } from "../api/followersService.js";
 import { Link, useParams } from "react-router-dom";
 import { decode } from "html-entities";
@@ -14,54 +12,11 @@ import useAuth from "../hooks/useAuth.js";
 import Post from "../components/Post.jsx";
 import PostCreator from "../components/PostCreator.jsx";
 import { Spinner } from "flowbite-react";
-
-const emptyUser = {
-  username: "",
-  email: "",
-  password: "",
-  first_name: "",
-  last_name: "",
-  date_of_birth: "",
-  telephone: "",
-  biography: "",
-  profile_picture: "",
-  address: {
-    line_1: "",
-    line_2: "",
-    city: "",
-    state: "",
-    country: "",
-    postcode: "",
-  },
-  mfa: {
-    enabled: false,
-    secret: "",
-  },
-  is_verified: false,
-  is_admin: false,
-};
-
-const dummyPosts = [
-  {
-    date: "24th Oct 2034",
-    content:
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
-  },
-  {
-    date: "10th Jan 2009",
-    content:
-      "Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.",
-  },
-  {
-    date: "5th Apr 1623",
-    content:
-      "Parturient facilisis amet laoreet curae aliquam. Sit rutrum maximus posuere netus; purus fermentum feugiat quis. Parturient pretium ligula non felis cubilia cubilia. Quam habitant et nisl risus sit. Ultrices fringilla primis porttitor nulla placerat ultricies ornare. Quam amet ullamcorper velit nisi aliquet. Suscipit justo quisque euismod vestibulum pharetra eros. Finibus proin eu proin natoque ultrices ultrices.",
-  },
-];
+import UserInteractionButtons from "../components/UserInteractionButtons.jsx";
 
 function UserProfile() {
   const auth = useAuth();
-  const [userData, setUserData] = useState(emptyUser);
+  const [userData, setUserData] = useState({});
   const [loading, setLoading] = useState(true);
   const [isFollowing, setIsFollowing] = useState(false);
   const [followStats, setFollowStats] = useState({
@@ -153,33 +108,16 @@ function UserProfile() {
     fetchUserData();
   }, [fetchUserData]);
 
-  const handleFollow = async () => {
+  const onFollowChange = async (targetId, isFollow) => {
+    setIsFollowing(isFollow);
     try {
-      const user = await auth.getUser();
-      const profileUserId = paramId === "me" ? user._id : paramId;
-      const followed = profileUserId;
-      const followAction = isFollowing ? unfollowUser : followUser;
-      const prev = isFollowing;
-      setIsFollowing(!isFollowing);
-      console.log("Follow action:", followAction);
-      console.log("Follower:", user._id);
-      console.log("Followed:", followed);
-
-      const followResponse = await followAction(user._id, followed);
-      if (followResponse.success == false) {
-        setIsFollowing(prev);
-      }
-      const statsUpdated = await getFollowStatsById(profileUserId);
-      if (statsUpdated.success !== false) {
-        setFollowStats(statsUpdated.data);
+      const response = await getFollowStatsById(userData._id);
+      if (response.success !== false) {
+        setFollowStats(response.data);
       }
     } catch (error) {
       console.error("Error updating follow stats:", error);
     }
-  };
-
-  const handleReport = () => {
-    // Not implemented yet
   };
 
   if (loading) return <Spinner className="p-16 text-center" size="xl" />;
@@ -231,28 +169,12 @@ function UserProfile() {
             </Link>
           </li>
         </ul>
-        {viewer._id !== userData._id && (
-          <div className="flex gap-2">
-            <button
-              onClick={handleFollow}
-              className={`w-full rounded-md px-4 py-1 text-sm font-medium transition sm:w-min ${
-                isFollowing
-                  ? "bg-red-500 hover:bg-red-600"
-                  : "bg-blue-500 hover:bg-blue-600"
-              }`}
-            >
-              {isFollowing ? "Unfollow" : "Follow"}
-            </button>
-            <button
-              onClick={handleReport}
-              className={
-                "w-full rounded-md bg-red-500 px-4 py-1 text-sm font-medium transition hover:bg-red-600 sm:w-min"
-              }
-            >
-              Report
-            </button>
-          </div>
-        )}
+        <UserInteractionButtons
+          viewerId={viewer._id}
+          targetId={userData._id}
+          onFollowChange={onFollowChange}
+          isFollowing={isFollowing}
+        />
       </div>
       <div className="col-span-4">
         <div className="mb-2 rounded-md p-2 text-center shadow dark:border dark:border-gray-700 dark:bg-gray-800">

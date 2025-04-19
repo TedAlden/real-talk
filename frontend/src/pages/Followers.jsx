@@ -1,12 +1,9 @@
 import { useState, useEffect } from "react";
-import {
-  getFollowersById,
-  followUser,
-  unfollowUser,
-} from "../api/followersService.js";
+import { getFollowersById } from "../api/followersService.js";
 import { useNavigate, useParams } from "react-router-dom";
 import _ from "lodash";
 import useAuth from "../hooks/useAuth.js";
+import UserInteractionButtons from "../components/UserInteractionButtons.jsx";
 
 import { Spinner, Card } from "flowbite-react";
 
@@ -15,7 +12,7 @@ function Followers() {
   const auth = useAuth();
   const [loading, setLoading] = useState(true);
   const [followers, setFollowers] = useState(false);
-  const [currentUserId, setCurrentUserId] = useState();
+  const [viewerId, setCurrentUserId] = useState();
   const paramId = useParams().id;
 
   useEffect(() => {
@@ -40,26 +37,15 @@ function Followers() {
     fetchFollowerData();
   }, [auth, paramId, navigate]);
 
-  const handleFollow = async (followed) => {
-    const user = await auth.getUser();
-    const userId = user._id;
-    const followAction = followed.isFollowing ? unfollowUser : followUser;
-
-    const response = await followAction(userId, followed._id);
-    if (response.success !== false) {
-      setFollowers(
-        followers.map((f) => {
-          if (f._id === followed._id) {
-            return { ...f, isFollowing: !f.isFollowing };
-          }
-          return f;
-        }),
-      );
-    }
-  };
-
-  const handleReport = () => {
-    // Not implemented yet
+  const onFollowChange = (targetId, isFollow) => {
+    setFollowers((prev) => {
+      return prev.map((user) => {
+        if (user._id === targetId) {
+          return { ...user, isFollowing: isFollow };
+        }
+        return user;
+      });
+    });
   };
 
   return loading ? (
@@ -96,28 +82,13 @@ function Followers() {
                         0 mutual friends
                       </p>
                     </div>
-                    {follower._id != currentUserId && (
-                      <div className="inline-flex items-center gap-2 text-base font-semibold">
-                        <button
-                          onClick={() => handleFollow(follower)}
-                          className={`w-full rounded-md px-4 py-1 text-sm font-medium transition sm:w-min ${
-                            follower.isFollowing
-                              ? "bg-red-500 hover:bg-red-600"
-                              : "bg-blue-500 hover:bg-blue-600"
-                          }`}
-                        >
-                          {follower.isFollowing ? "Unfollow" : "Follow"}
-                        </button>
-                        <button
-                          onClick={handleReport}
-                          className={
-                            "w-full rounded-md bg-red-500 px-4 py-1 text-sm font-medium transition hover:bg-red-600 sm:w-min"
-                          }
-                        >
-                          Report
-                        </button>
-                      </div>
-                    )}
+
+                    <UserInteractionButtons
+                      viewerId={viewerId}
+                      targetId={follower._id}
+                      onFollowChange={onFollowChange}
+                      isFollowing={follower.isFollowing}
+                    />
                   </div>
                 </li>
               ))}
