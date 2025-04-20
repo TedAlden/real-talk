@@ -5,11 +5,13 @@ import {
   likePost,
   createPostComment,
   getPostComments,
+  deletePostById,
 } from "../api/postService";
 import { Textarea } from "flowbite-react";
 import { decode } from "html-entities";
+import DropdownMenu from "./DropdownMenu";
 
-function Post({ post, viewer, userCache, updateUserCache }) {
+function Post({ post, viewer, userCache, updateUserCache, onDelete }) {
   const [likes, setLikes] = useState([]);
   const [comments, setComments] = useState([]);
   const [commentContent, setCommentContent] = useState("");
@@ -94,27 +96,104 @@ function Post({ post, viewer, userCache, updateUserCache }) {
     console.log("Shared post:", postId);
   };
 
+  const handleDeletePost = async () => {
+    try {
+      const response = await deletePostById(post._id);
+      if (response.success !== false) {
+        // Call the parent component's callback to handle UI updates
+        if (onDelete) {
+          onDelete(post._id);
+        }
+      }
+    } catch (error) {
+      console.error("Error deleting post:", error);
+    }
+  };
+
+  const handleEditPost = () => {
+    console.log("Edit post:", post._id);
+  };
+
+  const handleReportPost = () => {
+    console.log("Report post:", post._id);
+  };
+  const handleReportComment = (comment) => {
+    console.log("Report comment:", comment._id);
+  };
+  const handleEditComment = (comment) => {
+    console.log("Edit comment:", comment._id);
+  };
+  const handleDeleteComment = (comment) => {
+    console.log("Delete comment:", comment._id);
+  };
+
+  const getPostOptions = () => {
+    const items = [];
+
+    if (viewer._id === post.user_id) {
+      items.push({
+        label: "Delete post",
+        action: handleDeletePost,
+      });
+      items.push({
+        label: "Edit post",
+        action: handleEditPost,
+      });
+    }
+
+    items.push({
+      label: "Report post",
+      action: () => handleReportPost,
+    });
+
+    return items;
+  };
+
+  const getCommentOptions = (comment) => {
+    const items = [];
+    if (viewer._id === comment.user_id) {
+      items.push({
+        label: "Delete comment",
+        action: () => handleDeleteComment(comment),
+      });
+      items.push({
+        label: "Edit comment",
+        action: () => handleEditComment(comment),
+      });
+    }
+
+    items.push({
+      label: "Report comment",
+      action: () => handleReportComment(comment),
+    });
+
+    return items;
+  };
+
   return (
     <div className="col-span-4 mb-3 rounded-md bg-white px-4 pb-1 pt-4 shadow dark:border dark:border-gray-700 dark:bg-gray-800">
-      <div className="flex items-center space-x-4">
-        <a href={`/profile/${post.user_id}`} className="shrink-0">
-          <img
-            className="h-auto w-12 rounded-full object-cover shadow-lg"
-            src={userCache[post.user_id]?.profile_picture}
-            alt="Profile"
-          />
-        </a>
-        <div className="min-w-0 flex-1">
-          <a
-            href={`/profile/${post.user_id}`}
-            className="text-lg font-semibold hover:underline"
-          >
-            @{userCache[post.user_id]?.username}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center space-x-4">
+          <a href={`/profile/${post.user_id}`} className="shrink-0">
+            <img
+              className="h-auto w-12 rounded-full object-cover shadow-lg"
+              src={userCache[post.user_id]?.profile_picture}
+              alt="Profile"
+            />
           </a>
-          <p className="text-sm text-gray-500 dark:text-gray-400">
-            Posted {getTimeAgo(post.created_at)}
-          </p>
+          <div className="min-w-0 flex-1">
+            <a
+              href={`/profile/${post.user_id}`}
+              className="text-lg font-semibold hover:underline"
+            >
+              @{userCache[post.user_id]?.username}
+            </a>
+            <p className="text-sm text-gray-500 dark:text-gray-400">
+              Posted {getTimeAgo(post.created_at)}
+            </p>
+          </div>
         </div>
+        <DropdownMenu items={getPostOptions()} />
       </div>
       <div
         dangerouslySetInnerHTML={{ __html: decode(post.content) }}
@@ -151,8 +230,8 @@ function Post({ post, viewer, userCache, updateUserCache }) {
       </div>
       <div>
         {commentsShown && (
-          <div className="mt-4 flex flex-col space-y-2">
-            <ul className="divide-y divide-gray-200 dark:divide-gray-700">
+          <div className="mt-4 flex flex-col space-y-2 p-2">
+            <ul className="divide-y divide-gray-200 border border-0 border-t border-t-gray-200 dark:divide-gray-700 dark:border-t-gray-700">
               {comments.map((comment, index) => (
                 <li key={index} className="flex items-center space-x-4 p-4">
                   <a href={`/profile/${comment.user_id}`} className="shrink-0">
@@ -162,31 +241,41 @@ function Post({ post, viewer, userCache, updateUserCache }) {
                       alt="Profile"
                     />
                   </a>
-                  <div className="flex flex-col items-start">
-                    <div className="flex min-w-0 flex-row items-center space-x-2">
-                      <a
-                        href={`/profile/${comment.user_id}`}
-                        className="text-sm font-semibold hover:underline"
-                      >
-                        @{getUserData(comment.user_id)?.username}
-                      </a>
-                      <div className="text-xs text-gray-500 dark:text-gray-400">
-                        {getTimeAgo(comment.created_at)}
+                  <div className="flex flex-1 flex-col">
+                    {/* Header with username, time and dropdown */}
+                    <div className="mb-1 flex items-center justify-between">
+                      <div className="flex items-center space-x-2">
+                        <a
+                          href={`/profile/${comment.user_id}`}
+                          className="text-sm font-semibold hover:underline"
+                        >
+                          @{getUserData(comment.user_id)?.username}
+                        </a>
+                        <span className="text-xs text-gray-500 dark:text-gray-400">
+                          {getTimeAgo(comment.created_at)}
+                        </span>
+                      </div>
+
+                      {/* Dropdown in the top right */}
+                      <div className="ml-auto">
+                        <DropdownMenu items={getCommentOptions(comment)} />
                       </div>
                     </div>
+
+                    {/* Comment text */}
                     <p className="text-sm">{comment.content}</p>
                   </div>
                 </li>
               ))}
             </ul>
             <Textarea
-              className="mt-2 w-full resize-none rounded-md border border-gray-300 p-2 dark:border-gray-700 dark:bg-gray-800"
+              className="w-full resize-none rounded-md border border-gray-300 p-2 dark:border-gray-700 dark:bg-gray-800"
               placeholder="Add a comment..."
               value={commentContent}
               onChange={(e) => setCommentContent(e.target.value)}
             />
             <button
-              className="mt-2 rounded-md bg-blue-500 px-4 py-1 text-sm font-medium text-white hover:bg-blue-600"
+              className="rounded-md bg-blue-500 px-4 py-1 text-sm font-medium text-white hover:bg-blue-600"
               onClick={() => handleCreateComment()}
             >
               Comment

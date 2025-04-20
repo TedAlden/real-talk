@@ -120,6 +120,10 @@ function UserProfile() {
     }
   };
 
+  const onPostDeleted = async (postId) => {
+    setPosts((prevPosts) => prevPosts.filter((post) => post._id !== postId));
+  };
+
   if (loading) return <Spinner className="p-16 text-center" size="xl" />;
 
   return isUserFound ? (
@@ -192,6 +196,7 @@ function UserProfile() {
             viewer={viewer}
             updateUserCache={updateUserCache}
             userCache={userCache}
+            onDelete={onPostDeleted}
           />
         ))}
       </div>
