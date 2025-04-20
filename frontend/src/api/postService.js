@@ -81,3 +81,25 @@ export async function getPostComments(_id) {
     return apiErrorResponse(error);
   }
 }
+
+export async function updateComment(_id, commentId) {
+  try {
+    const response = await axiosInstance.put(
+      `/api/posts/${_id}/comments/${commentId}`,
+    );
+    return response;
+  } catch (error) {
+    return apiErrorResponse(error);
+  }
+}
+
+export async function deleteComment(_id, commentId) {
+  try {
+    const response = await axiosInstance.delete(
+      `/api/posts/${_id}/comments/${commentId}`,
+    );
+    return response;
+  } catch (error) {
+    return apiErrorResponse(error);
+  }
+}
