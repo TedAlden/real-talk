@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { createPost } from "../api/postService.js";
+import { createPost, updatePost } from "../api/postService.js";
 import useAuth from "../hooks/useAuth.js";
 import ReactQuill from "react-quill-new";
 import "react-quill-new/dist/quill.snow.css";
@@ -9,10 +9,14 @@ const MAX_POST_LENGTH = 5000;
 
 const formats = ["bold", "italic", "underline", "list", "bullet", "link"];
 
-function PostCreator({ onPostCreated }) {
-  const [postContent, setPostContent] = useState("");
+function PostCreator({
+  onSubmit,
+  mode = "create",
+  initialContent = "",
+  prevID = "",
+}) {
+  const [postContent, setPostContent] = useState(initialContent);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
   const [isFocused, setIsFocused] = useState(false);
   const auth = useAuth();
   const modules = {
@@ -32,42 +36,60 @@ function PostCreator({ onPostCreated }) {
   const handleContentChange = (content) => {
     if (content.length <= MAX_POST_LENGTH) {
       setPostContent(content);
-      setErrorMessage("");
-    } else {
-      setErrorMessage(
-        `Post exceeds maximum length of ${MAX_POST_LENGTH} characters`,
-      );
+    }
+  };
+
+  const handleCreatePost = async (user, content) => {
+    const post = {
+      user_id: user._id,
+      content: content,
+      tags: ["test"],
+    };
+
+    setIsSubmitting(true);
+    try {
+      const response = await createPost(post);
+      if (response.success !== false) {
+        setPostContent("");
+        onSubmit();
+      }
+    } catch (error) {
+      console.error("Error creating post:", error);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleEditPost = async (user, content) => {
+    const post = {
+      content: content,
+    };
+    setIsSubmitting(true);
+    try {
+      const response = await updatePost(prevID, post);
+
+      if (response.success !== false) {
+        console.log(content);
+        onSubmit(content);
+      }
+    } catch (error) {
+      console.error("Error creating post:", error);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
   const handleSubmit = async () => {
-    try {
-      // Don't submit if empty or already submitting
-      if (!postContent.trim() || isSubmitting) return;
+    // Don't submit if empty or already submitting
+    if (!postContent.trim() || isSubmitting) return;
 
-      setIsSubmitting(true);
-      const user = await auth.getUser();
-      const sanitizedContent = DOMPurify.sanitize(postContent);
+    const user = await auth.getUser();
+    const sanitizedContent = DOMPurify.sanitize(postContent);
 
-      const post = {
-        user_id: user._id,
-        content: sanitizedContent,
-        tags: ["test"],
-      };
-
-      const response = await createPost(post);
-      if (response.success !== false) {
-        setPostContent("");
-        onPostCreated();
-        setErrorMessage("");
-      } else {
-        setErrorMessage("Failed to create post. Please try again.");
-      }
-    } catch (error) {
-      console.error("Error creating post:", error);
-      setErrorMessage("Failed to create post. Please try again.");
-    } finally {
-      setIsSubmitting(false);
+    if (mode === "create") {
+      handleCreatePost(user, sanitizedContent);
+    } else if (mode === "edit") {
+      handleEditPost(user, sanitizedContent);
     }
   };
 
@@ -109,22 +131,30 @@ function PostCreator({ onPostCreated }) {
             onFocus={() => setIsFocused(true)}
             onBlur={() => setIsFocused(false)}
           />
-          {errorMessage && (
-            <div className="mt-1 text-sm text-red-500">{errorMessage}</div>
-          )}
         </div>
 
-        <button
-          onClick={handleSubmit}
-          disabled={isSubmitting || !postContent.trim()}
-          className={`mt-2 w-full rounded-md bg-blue-500 p-2 text-sm font-medium text-white transition ${
-            isSubmitting || !postContent.trim()
-              ? "cursor-not-allowed opacity-70"
-              : "hover:bg-blue-600"
-          }`}
-        >
-          {isSubmitting ? "Posting..." : "Post"}
-        </button>
+        <div className="mt-2 flex items-center justify-between gap-2">
+          <button
+            onClick={handleSubmit}
+            disabled={isSubmitting || !postContent.trim()}
+            className={`mt-2 w-full rounded-md bg-blue-500 p-2 text-sm font-medium text-white transition ${
+              isSubmitting || !postContent.trim()
+                ? "cursor-not-allowed opacity-70"
+                : "hover:bg-blue-600"
+            }`}
+          >
+            {isSubmitting ? "Posting..." : "Post"}
+          </button>
+          {mode === "edit" && (
+            <button
+              onClick={handleSubmit}
+              disabled={isSubmitting || !postContent.trim()}
+              className={`mt-2 w-full rounded-md bg-red-500 p-2 text-sm font-medium text-white transition hover:bg-red-700`}
+            >
+              Cancel
+            </button>
+          )}
+        </div>
       </div>
     </>
   );

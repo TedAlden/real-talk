@@ -6,16 +6,20 @@ import {
   createPostComment,
   getPostComments,
   deletePostById,
+  getPostById,
 } from "../api/postService";
 import { Textarea } from "flowbite-react";
 import { decode } from "html-entities";
 import DropdownMenu from "./DropdownMenu";
+import PostCreator from "./PostCreator";
 
 function Post({ post, viewer, userCache, updateUserCache, onDelete }) {
   const [likes, setLikes] = useState([]);
   const [comments, setComments] = useState([]);
+  const [postContent, setPostContent] = useState("");
   const [commentContent, setCommentContent] = useState("");
   const [commentsShown, setCommentsShown] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
 
   useEffect(() => {
     if (!userCache[post.user_id]) {
@@ -26,7 +30,8 @@ function Post({ post, viewer, userCache, updateUserCache, onDelete }) {
   useEffect(() => {
     setLikes(post.likes);
     setComments(post.comments);
-  }, [post.likes, post.comments]);
+    setPostContent(post.content);
+  }, [post.likes, post.comments, post.content]);
 
   const handleLike = async (postId, isLiked) => {
     try {
@@ -111,7 +116,12 @@ function Post({ post, viewer, userCache, updateUserCache, onDelete }) {
   };
 
   const handleEditPost = () => {
-    console.log("Edit post:", post._id);
+    setIsEditing(true);
+  };
+
+  const handleEditSubmit = async (content) => {
+    setPostContent(content);
+    setIsEditing(false);
   };
 
   const handleReportPost = () => {
@@ -195,10 +205,20 @@ function Post({ post, viewer, userCache, updateUserCache, onDelete }) {
         </div>
         <DropdownMenu items={getPostOptions()} />
       </div>
-      <div
-        dangerouslySetInnerHTML={{ __html: decode(post.content) }}
-        className="text-md mt-4 leading-relaxed"
-      ></div>
+      {isEditing ? (
+        <PostCreator
+          initialContent={post.content}
+          mode="edit"
+          onSubmit={handleEditSubmit}
+          onCancel={() => setIsEditing(false)}
+          prevID={post._id}
+        />
+      ) : (
+        <div
+          dangerouslySetInnerHTML={{ __html: decode(postContent) }}
+          className="text-md mt-4 leading-relaxed"
+        />
+      )}
 
       <div className="mt-2 flex items-center justify-around space-x-4 text-sm text-gray-500 dark:text-gray-400">
         <button
@@ -242,7 +262,6 @@ function Post({ post, viewer, userCache, updateUserCache, onDelete }) {
                     />
                   </a>
                   <div className="flex flex-1 flex-col">
-                    {/* Header with username, time and dropdown */}
                     <div className="mb-1 flex items-center justify-between">
                       <div className="flex items-center space-x-2">
                         <a
@@ -256,13 +275,10 @@ function Post({ post, viewer, userCache, updateUserCache, onDelete }) {
                         </span>
                       </div>
 
-                      {/* Dropdown in the top right */}
                       <div className="ml-auto">
                         <DropdownMenu items={getCommentOptions(comment)} />
                       </div>
                     </div>
-
-                    {/* Comment text */}
                     <p className="text-sm">{comment.content}</p>
                   </div>
                 </li>
