@@ -7,12 +7,13 @@ import { Link, useParams } from "react-router-dom";
 import { decode } from "html-entities";
 import _ from "lodash";
 import { getPostByQuery } from "../api/postService.js";
-import { getUserById, getUsersByQuery } from "../api/userService.js";
+import { getUserById } from "../api/userService.js";
 import useAuth from "../hooks/useAuth.js";
 import Post from "../components/Post.jsx";
 import PostCreator from "../components/PostCreator.jsx";
 import { Spinner } from "flowbite-react";
 import UserInteractionButtons from "../components/UserInteractionButtons.jsx";
+import { useCacheUpdater } from "../hooks/useUserCache";
 
 function UserProfile() {
   const auth = useAuth();
@@ -25,32 +26,20 @@ function UserProfile() {
   });
   const [viewer, setViewer] = useState(null);
   const [posts, setPosts] = useState(false);
-  const [userCache, setUserCache] = useState({});
   const paramId = useParams().id;
+
+  const updateCache = useCacheUpdater();
 
   useEffect(() => {
     auth.getUser().then(setViewer);
   }, [auth]);
 
-  const updateUserCache = useCallback(async (userIds) => {
-    const newIds = Array.from(new Set(userIds));
-    if (newIds.length === 0) return;
-    try {
-      const response = await getUsersByQuery("id", newIds);
-
-      if (response.success !== false) {
-        setUserCache((prev) => {
-          const next = { ...prev };
-          response.data.forEach((user) => {
-            if (!next[user._id]) next[user._id] = user;
-          });
-          return next;
-        });
-      }
-    } catch (err) {
-      console.error("Error updating user cache:", err);
+  useEffect(() => {
+    if (viewer) {
+      const userId = paramId === "me" ? viewer._id : paramId;
+      updateCache([userId]);
     }
-  }, []);
+  }, [viewer, updateCache, paramId]);
 
   const fetchUserData = useCallback(async () => {
     if (!viewer) return;
@@ -60,38 +49,17 @@ function UserProfile() {
 
       if (profileUserId === viewer._id) {
         setUserData(viewer);
-        setUserCache((prev) => ({
-          ...prev,
-          [viewer._id]: viewer,
-        }));
         setIsFollowing(false);
       } else {
         const userRes = await getUserById(profileUserId);
-        if (userRes.success !== false) {
-          setUserData(userRes.data);
-          if (!userCache[userRes.data._id]) {
-            setUserCache((prev) => ({
-              ...prev,
-              [userRes.data._id]: userRes.data,
-            }));
-          }
-        }
+        if (userRes.success !== false) setUserData(userRes.data);
 
         const followRes = await checkIsFollowing(viewer._id, profileUserId);
         if (followRes.success !== false) setIsFollowing(followRes.data);
       }
 
       const postsRes = await getPostByQuery("user_id", profileUserId);
-      if (postsRes.success !== false) {
-        setPosts(postsRes.data);
-        const allIds = postsRes.data.map((p) => p.user_id);
-
-        const userIds = Array.from(new Set(allIds)).filter(
-          (id) => !userCache[id],
-        );
-
-        if (userIds.length > 0) updateUserCache(userIds);
-      }
+      if (postsRes.success !== false) setPosts(postsRes.data);
 
       const statsRes = await getFollowStatsById(profileUserId);
       if (statsRes.success !== false) setFollowStats(statsRes.data);
@@ -100,7 +68,7 @@ function UserProfile() {
     } finally {
       setLoading(false);
     }
-  }, [viewer, paramId, updateUserCache]);
+  }, [viewer, paramId]);
 
   const isUserFound = userData && userData._id;
 
@@ -192,8 +160,6 @@ function UserProfile() {
             key={post._id}
             post={post}
             viewer={viewer}
-            updateUserCache={updateUserCache}
-            userCache={userCache}
             onDelete={onPostDeleted}
           />
         ))}

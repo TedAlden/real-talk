@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 import getTimeAgo from "../util/getTimeAgo";
 import { FaCommentDots, FaHeart, FaShare } from "react-icons/fa6";
 import {
@@ -6,14 +6,20 @@ import {
   createPostComment,
   getPostComments,
   deletePostById,
-  getPostById,
 } from "../api/postService";
 import { Textarea } from "flowbite-react";
-import { decode } from "html-entities";
 import DropdownMenu from "./DropdownMenu";
-import PostCreator from "./PostCreator";
+import PostCreater from "./PostCreator";
+import { useCacheUpdater, useCachedUser } from "../hooks/useUserCache";
 
-function Post({ post, viewer, userCache, updateUserCache, onDelete }) {
+const defaultUser = {
+  _id: "",
+  username: "Loading...",
+  profile_picture:
+    "https://static.vecteezy.com/system/resources/thumbnails/003/337/584/small/default-avatar-photo-placeholder-profile-icon-vector.jpg",
+};
+
+function Post({ post, viewer, onDelete }) {
   const [likes, setLikes] = useState([]);
   const [comments, setComments] = useState([]);
   const [postContent, setPostContent] = useState("");
@@ -21,17 +27,14 @@ function Post({ post, viewer, userCache, updateUserCache, onDelete }) {
   const [commentsShown, setCommentsShown] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
 
-  useEffect(() => {
-    if (!userCache[post.user_id]) {
-      updateUserCache([post.user_id]);
-    }
-  }, [post, userCache, updateUserCache]);
+  useCacheUpdater([post.user_id]);
+  const author = useCachedUser(post.user_id) || defaultUser;
 
   useEffect(() => {
     setLikes(post.likes);
     setComments(post.comments);
     setPostContent(post.content);
-  }, [post.likes, post.comments, post.content]);
+  }, [post.user_id, post.likes, post.comments, post.content]);
 
   const handleLike = async (postId, isLiked) => {
     try {
@@ -49,15 +52,6 @@ function Post({ post, viewer, userCache, updateUserCache, onDelete }) {
     } catch (error) {
       console.error("Error (un)liking post:", error);
     }
-  };
-
-  const getUserData = (userId) => {
-    return (
-      userCache[userId] || {
-        username: "Loading...",
-        profile_picture: "/default-avatar.png",
-      }
-    );
   };
 
   const fetchComments = async () => {
@@ -130,12 +124,6 @@ function Post({ post, viewer, userCache, updateUserCache, onDelete }) {
   const handleReportComment = (comment) => {
     console.log("Report comment:", comment._id);
   };
-  const handleEditComment = (comment) => {
-    console.log("Edit comment:", comment._id);
-  };
-  const handleDeleteComment = (comment) => {
-    console.log("Delete comment:", comment._id);
-  };
 
   const getPostOptions = () => {
     const items = [];
@@ -159,44 +147,23 @@ function Post({ post, viewer, userCache, updateUserCache, onDelete }) {
     return items;
   };
 
-  const getCommentOptions = (comment) => {
-    const items = [];
-    if (viewer._id === comment.user_id) {
-      items.push({
-        label: "Delete comment",
-        action: () => handleDeleteComment(comment),
-      });
-      items.push({
-        label: "Edit comment",
-        action: () => handleEditComment(comment),
-      });
-    }
-
-    items.push({
-      label: "Report comment",
-      action: () => handleReportComment(comment),
-    });
-
-    return items;
-  };
-
   return (
     <div className="col-span-4 mb-3 rounded-md bg-white px-4 pb-1 pt-4 shadow dark:border dark:border-gray-700 dark:bg-gray-800">
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-4">
-          <a href={`/profile/${post.user_id}`} className="shrink-0">
+          <a href={`/profile/${author?._id}`} className="shrink-0">
             <img
               className="h-auto w-12 rounded-full object-cover shadow-lg"
-              src={userCache[post.user_id]?.profile_picture}
+              src={author?.profile_picture}
               alt="Profile"
             />
           </a>
           <div className="min-w-0 flex-1">
             <a
-              href={`/profile/${post.user_id}`}
+              href={`/profile/${author?._id}`}
               className="text-lg font-semibold hover:underline"
             >
-              @{userCache[post.user_id]?.username}
+              @{author?.username}
             </a>
             <p className="text-sm text-gray-500 dark:text-gray-400">
               Posted {getTimeAgo(post.created_at)}
@@ -206,7 +173,7 @@ function Post({ post, viewer, userCache, updateUserCache, onDelete }) {
         <DropdownMenu items={getPostOptions()} />
       </div>
       {isEditing ? (
-        <PostCreator
+        <PostCreater
           initialContent={post.content}
           mode="edit"
           onSubmit={handleEditSubmit}
@@ -214,9 +181,15 @@ function Post({ post, viewer, userCache, updateUserCache, onDelete }) {
           prevID={post._id}
         />
       ) : (
-        <div
-          dangerouslySetInnerHTML={{ __html: decode(postContent) }}
-          className="text-md mt-4 leading-relaxed"
+        <PostCreater
+          initialContent={postContent}
+          mode="read"
+          onSubmit={handleEditSubmit}
+          onCancel={() => {
+            setIsEditing(false);
+          }}
+          prevID={post._id}
+          className="mt-2"
         />
       )}
 
