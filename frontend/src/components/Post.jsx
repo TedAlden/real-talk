@@ -9,7 +9,7 @@ import {
 } from "../api/postService";
 import { Textarea } from "flowbite-react";
 import DropdownMenu from "./DropdownMenu";
-import PostCreater from "./PostCreator";
+import Composer from "./Composer";
 import { useCacheUpdater, useCachedUser } from "../hooks/useUserCache";
 import Comment from "./Comment";
 
@@ -176,7 +176,7 @@ function Post({ post, viewer, onDelete }) {
         <DropdownMenu items={getPostOptions()} />
       </div>
       {isEditing ? (
-        <PostCreater
+        <Composer
           initialContent={post.content}
           mode="edit"
           onSubmit={handleEditSubmit}
@@ -184,7 +184,7 @@ function Post({ post, viewer, onDelete }) {
           prevID={post._id}
         />
       ) : (
-        <PostCreater
+        <Composer
           initialContent={postContent}
           mode="read"
           onSubmit={handleEditSubmit}

@@ -9,7 +9,7 @@ const MAX_POST_LENGTH = 5000;
 
 const formats = ["bold", "italic", "underline", "list", "bullet", "link"];
 
-function PostCreator({
+function Composer({
   onSubmit,
   mode = "create",
   initialContent = "",
@@ -160,4 +160,4 @@ function PostCreator({
   );
 }
 
-export default PostCreator;
+export default Composer;

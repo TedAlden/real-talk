@@ -10,7 +10,7 @@ import { getPostByQuery } from "../api/postService.js";
 import { getUserById } from "../api/userService.js";
 import useAuth from "../hooks/useAuth.js";
 import Post from "../components/Post.jsx";
-import PostCreator from "../components/PostCreator.jsx";
+import Composer from "../components/Composer.jsx";
 import { Spinner } from "flowbite-react";
 import UserInteractionButtons from "../components/UserInteractionButtons.jsx";
 import { useCacheUpdater } from "../hooks/useUserCache";
@@ -153,7 +153,7 @@ function UserProfile() {
           Posts Today: 0/1
         </div>
 
-        {viewer._id == userData._id && <PostCreator onSubmit={fetchUserData} />}
+        {viewer._id == userData._id && <Composer onSubmit={fetchUserData} />}
 
         {posts?.map((post) => (
           <Post
