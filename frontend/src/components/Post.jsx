@@ -1,4 +1,4 @@
-import { use, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import getTimeAgo from "../util/getTimeAgo";
 import { FaCommentDots, FaHeart, FaShare } from "react-icons/fa6";
 import {
@@ -11,6 +11,7 @@ import { Textarea } from "flowbite-react";
 import DropdownMenu from "./DropdownMenu";
 import PostCreater from "./PostCreator";
 import { useCacheUpdater, useCachedUser } from "../hooks/useUserCache";
+import Comment from "./Comment";
 
 const defaultUser = {
   _id: "",
@@ -27,14 +28,21 @@ function Post({ post, viewer, onDelete }) {
   const [commentsShown, setCommentsShown] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
 
-  useCacheUpdater([post.user_id]);
   const author = useCachedUser(post.user_id) || defaultUser;
+  const updateCache = useCacheUpdater();
 
   useEffect(() => {
     setLikes(post.likes);
     setComments(post.comments);
     setPostContent(post.content);
   }, [post.user_id, post.likes, post.comments, post.content]);
+
+  useEffect(() => {
+    if (comments && commentsShown) {
+      const commentorIds = comments.map((c) => c.user_id);
+      updateCache(commentorIds);
+    }
+  }, [comments, commentsShown, updateCache]);
 
   const handleLike = async (postId, isLiked) => {
     try {
@@ -58,9 +66,7 @@ function Post({ post, viewer, onDelete }) {
     try {
       const response = await getPostComments(post._id);
       if (response.success !== false) {
-        const commentorIds = response.data.map((c) => c.user_id);
         setComments(response.data);
-        updateUserCache(commentorIds);
       }
     } catch (error) {
       console.error("Error fetching comments:", error);
@@ -120,9 +126,6 @@ function Post({ post, viewer, onDelete }) {
 
   const handleReportPost = () => {
     console.log("Report post:", post._id);
-  };
-  const handleReportComment = (comment) => {
-    console.log("Report comment:", comment._id);
   };
 
   const getPostOptions = () => {
@@ -225,36 +228,8 @@ function Post({ post, viewer, onDelete }) {
         {commentsShown && (
           <div className="mt-4 flex flex-col space-y-2 p-2">
             <ul className="divide-y divide-gray-200 border border-0 border-t border-t-gray-200 dark:divide-gray-700 dark:border-t-gray-700">
-              {comments.map((comment, index) => (
-                <li key={index} className="flex items-center space-x-4 p-4">
-                  <a href={`/profile/${comment.user_id}`} className="shrink-0">
-                    <img
-                      className="h-auto w-10 rounded-full object-cover shadow-lg"
-                      src={getUserData(comment.user_id)?.profile_picture}
-                      alt="Profile"
-                    />
-                  </a>
-                  <div className="flex flex-1 flex-col">
-                    <div className="mb-1 flex items-center justify-between">
-                      <div className="flex items-center space-x-2">
-                        <a
-                          href={`/profile/${comment.user_id}`}
-                          className="text-sm font-semibold hover:underline"
-                        >
-                          @{getUserData(comment.user_id)?.username}
-                        </a>
-                        <span className="text-xs text-gray-500 dark:text-gray-400">
-                          {getTimeAgo(comment.created_at)}
-                        </span>
-                      </div>
-
-                      <div className="ml-auto">
-                        <DropdownMenu items={getCommentOptions(comment)} />
-                      </div>
-                    </div>
-                    <p className="text-sm">{comment.content}</p>
-                  </div>
-                </li>
+              {comments.map((comment) => (
+                <Comment comment={comment} />
               ))}
             </ul>
             <Textarea
