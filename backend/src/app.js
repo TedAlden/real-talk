@@ -23,4 +23,9 @@ app.use("/api/users", usersRouter);
 app.use("/api/users", followersRouter);
 app.use("/api/posts", postsRouter);
 app.use("/api/feeds", feedsRouter);
+
+app.get("/health", (req, res) => {
+  res.sendStatus(200);
+});
+
 export default app;
