@@ -121,7 +121,7 @@ function Composer({ onSubmit, onCancel, target, mode = "view" }) {
       }
       if (response.success !== false) {
         onSubmit();
-        if (mode === "createPost" || mode === "crateComment") {
+        if (mode === "createPost" || mode === "createComment") {
           setPostContent("");
         }
         setResetKey((prevKey) => prevKey + 1);
