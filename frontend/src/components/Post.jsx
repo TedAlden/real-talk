@@ -23,10 +23,9 @@ const defaultUser = {
 function Post({ post, viewer, onDelete }) {
   const [likes, setLikes] = useState([]);
   const [comments, setComments] = useState([]);
-  const [postContent, setPostContent] = useState("");
   const [commentContent, setCommentContent] = useState("");
   const [commentsShown, setCommentsShown] = useState(false);
-  const [isEditing, setIsEditing] = useState(false);
+  const [mode, setMode] = useState("view");
 
   const author = useCachedUser(post.user_id) || defaultUser;
   const updateCache = useCacheUpdater();
@@ -34,8 +33,11 @@ function Post({ post, viewer, onDelete }) {
   useEffect(() => {
     setLikes(post.likes);
     setComments(post.comments);
-    setPostContent(post.content);
-  }, [post.user_id, post.likes, post.comments, post.content]);
+  }, [post.user_id, post.likes, post.comments]);
+
+  useEffect(() => {
+    console.log("Post mode:", mode);
+  }, [mode]);
 
   useEffect(() => {
     if (comments && commentsShown) {
@@ -116,12 +118,7 @@ function Post({ post, viewer, onDelete }) {
   };
 
   const handleEditPost = () => {
-    setIsEditing(true);
-  };
-
-  const handleEditSubmit = async (content) => {
-    setPostContent(content);
-    setIsEditing(false);
+    setMode("editPost");
   };
 
   const handleReportPost = () => {
@@ -175,26 +172,19 @@ function Post({ post, viewer, onDelete }) {
         </div>
         <DropdownMenu items={getPostOptions()} />
       </div>
-      {isEditing ? (
-        <Composer
-          initialContent={post.content}
-          mode="edit"
-          onSubmit={handleEditSubmit}
-          onCancel={() => setIsEditing(false)}
-          prevID={post._id}
-        />
-      ) : (
-        <Composer
-          initialContent={postContent}
-          mode="read"
-          onSubmit={handleEditSubmit}
-          onCancel={() => {
-            setIsEditing(false);
-          }}
-          prevID={post._id}
-          className="mt-2"
-        />
-      )}
+
+      <Composer
+        target={post}
+        mode={mode}
+        onSubmit={() => {
+          setMode("view");
+        }}
+        onCancel={() => {
+          setMode("view");
+        }}
+        prevID={post._id}
+        className="mt-2"
+      />
 
       <div className="mt-2 flex items-center justify-around space-x-4 text-sm text-gray-500 dark:text-gray-400">
         <button

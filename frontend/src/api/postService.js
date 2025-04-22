@@ -82,10 +82,11 @@ export async function getPostComments(_id) {
   }
 }
 
-export async function updateComment(_id, commentId) {
+export async function updateComment(_id, commentId, comment) {
   try {
     const response = await axiosInstance.put(
       `/api/posts/${_id}/comments/${commentId}`,
+      comment,
     );
     return response;
   } catch (error) {

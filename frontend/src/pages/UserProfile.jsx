@@ -153,7 +153,9 @@ function UserProfile() {
           Posts Today: 0/1
         </div>
 
-        {viewer._id == userData._id && <Composer onSubmit={fetchUserData} />}
+        {viewer._id == userData._id && (
+          <Composer onSubmit={fetchUserData} mode="createPost" />
+        )}
 
         {posts?.map((post) => (
           <Post
