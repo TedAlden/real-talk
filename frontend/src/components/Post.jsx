@@ -6,6 +6,7 @@ import DropdownMenu from "./DropdownMenu";
 import Composer from "./Composer";
 import { useCacheUpdater, useCachedUser } from "../hooks/useUserCache";
 import Comment from "./Comment";
+import Markdown from "react-markdown";
 
 const defaultUser = {
   _id: "",
@@ -23,6 +24,7 @@ function Post({ post, viewer, onDelete }) {
   const author = useCachedUser(post.user_id) || defaultUser;
   const updateCache = useCacheUpdater();
 
+  console.log("content", post.content);
   useEffect(() => {
     setLikes(post.likes);
     setComments(post.comments);
@@ -156,7 +158,11 @@ function Post({ post, viewer, onDelete }) {
         </div>
         <DropdownMenu items={getPostOptions()} />
       </div>
-      <div className="p-2">
+      {mode === "view" ? (
+        <div className="p-3">
+          <Markdown>{post.content}</Markdown>
+        </div>
+      ) : (
         <Composer
           target={post}
           mode={mode}
@@ -167,7 +173,7 @@ function Post({ post, viewer, onDelete }) {
             setMode("view");
           }}
         />
-      </div>
+      )}
 
       <div className="flex items-center justify-around space-x-4 text-sm text-gray-500 dark:text-gray-400">
         <button

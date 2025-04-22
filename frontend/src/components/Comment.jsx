@@ -6,7 +6,7 @@ import { useState, useEffect } from "react";
 import { deleteComment } from "../api/postService";
 import _ from "lodash";
 import Composer from "./Composer";
-
+import Markdown from "react-markdown";
 const defaultUser = {
   _id: "",
   username: "Loading...",
@@ -105,16 +105,22 @@ export default function Comment({ postId, comment, onDelete }) {
           </div>
         </div>
         <div className="-mt-4">
-          <Composer
-            target={commentWithPost}
-            mode={mode}
-            onSubmit={() => {
-              setMode("view");
-            }}
-            onCancel={() => {
-              setMode("view");
-            }}
-          />
+          {mode === "view" ? (
+            <div className="py-3">
+              <Markdown>{comment.content}</Markdown>
+            </div>
+          ) : (
+            <Composer
+              target={commentWithPost}
+              mode={mode}
+              onSubmit={() => {
+                setMode("view");
+              }}
+              onCancel={() => {
+                setMode("view");
+              }}
+            />
+          )}
         </div>
       </div>
     </div>

@@ -34,7 +34,7 @@ const stripMarkdown = (md) => {
   );
 };
 
-function Composer({ onSubmit, onCancel, target, mode = "view" }) {
+function Composer({ onSubmit, onCancel, target, mode }) {
   const [postContent, setPostContent] = useState(() => {
     if (mode === "createComment") return "";
     return target?.content || "";
@@ -71,6 +71,7 @@ function Composer({ onSubmit, onCancel, target, mode = "view" }) {
     if (isSubmitting) return;
 
     const user = await auth.getUser();
+
     const sanitizedContent = DOMPurify.sanitize(postContent);
     setIsSubmitting(true);
     let response;
@@ -169,9 +170,8 @@ function Composer({ onSubmit, onCancel, target, mode = "view" }) {
           markdown={postContent}
           onChange={handleContentChange}
           autoFocus={true}
-          placeholder={mode !== "view" ? "Write something..." : ""}
-          className={`w-full rounded-md ${mode !== "view" ? "border border-gray-700" : ""} }`}
-          readOnly={mode === "view"}
+          placeholder="Write something..."
+          className="w-full rounded-md border border-gray-700"
           plugins={
             isPost
               ? [
@@ -189,35 +189,33 @@ function Composer({ onSubmit, onCancel, target, mode = "view" }) {
           }
         />
 
-        {mode !== "view" && (
-          <div className="flex w-full items-start justify-between p-1">
-            <div className="ml-1 text-right text-xs text-gray-500">
-              {stripMarkdown(postContent).length}/{MAX_POST_LENGTH}
-            </div>
-            <div className="w-50 mt-1 flex items-center justify-end gap-2">
-              <button
-                onClick={handleSubmit}
-                disabled={isSubmitting}
-                className={`w-24 rounded-md bg-blue-500 p-2 text-sm font-medium text-white transition ${
-                  isSubmitting
-                    ? "cursor-not-allowed opacity-70"
-                    : "hover:bg-blue-600"
-                }`}
-              >
-                {isPost ? "Post" : "Comment"}
-              </button>
-              {(mode === "editPost" || mode === "editComment") && (
-                <button
-                  onClick={handleCancel}
-                  disabled={isSubmitting}
-                  className={`w-24 rounded-md bg-red-500 p-2 text-sm font-medium text-white transition hover:bg-red-700`}
-                >
-                  Cancel
-                </button>
-              )}
-            </div>
+        <div className="flex w-full items-start justify-between p-1">
+          <div className="ml-1 text-right text-xs text-gray-500">
+            {stripMarkdown(postContent).length}/{MAX_POST_LENGTH}
           </div>
-        )}
+          <div className="w-50 mt-1 flex items-center justify-end gap-2">
+            <button
+              onClick={handleSubmit}
+              disabled={isSubmitting}
+              className={`w-24 rounded-md bg-blue-500 p-2 text-sm font-medium text-white transition ${
+                isSubmitting
+                  ? "cursor-not-allowed opacity-70"
+                  : "hover:bg-blue-600"
+              }`}
+            >
+              {isPost ? "Post" : "Comment"}
+            </button>
+            {(mode === "editPost" || mode === "editComment") && (
+              <button
+                onClick={handleCancel}
+                disabled={isSubmitting}
+                className={`w-24 rounded-md bg-red-500 p-2 text-sm font-medium text-white transition hover:bg-red-700`}
+              >
+                Cancel
+              </button>
+            )}
+          </div>
+        </div>
       </div>
     </>
   );
