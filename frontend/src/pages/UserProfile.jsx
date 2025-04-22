@@ -58,7 +58,7 @@ function UserProfile() {
         if (followRes.success !== false) setIsFollowing(followRes.data);
       }
 
-      const postsRes = await getPostByQuery("user_id", profileUserId);
+      const postsRes = await getPostByQuery("userId", profileUserId);
       if (postsRes.success !== false) setPosts(postsRes.data);
 
       const statsRes = await getFollowStatsById(profileUserId);
@@ -92,69 +92,83 @@ function UserProfile() {
     setPosts((prevPosts) => prevPosts.filter((post) => post._id !== postId));
   };
 
+  const cardStyle =
+    "p-4 bg-gray-100 rounded-md shadow dark:border dark:border-gray-700 dark:bg-gray-800";
+
   if (loading) return <Spinner className="p-16 text-center" size="xl" />;
 
   return isUserFound ? (
-    <div className="m-4 mx-auto grid max-w-xl gap-6 p-4 text-lg text-gray-900 dark:text-white">
-      <div className="col-span-4 flex items-center justify-center sm:col-span-1">
-        <img
-          className="h-auto w-32 rounded-full object-cover shadow-lg"
-          src={userData?.profile_picture}
-          alt="Profile"
-        />
+    <div className="m-4 mx-auto max-w-2xl p-4 text-lg text-gray-900 dark:text-white">
+      <div
+        className={`grid grid-cols-4 items-center justify-center ${cardStyle}`}
+      >
+        <div className="col-span-4 flex items-start sm:col-span-1">
+          <img
+            className="h-auto w-28 rounded-full object-cover"
+            src={userData?.profile_picture}
+            alt="Profile"
+          />
+        </div>
+        <div className="col-span-4 ml-2 flex flex-col justify-start gap-2 sm:col-span-3">
+          <div>
+            {" "}
+            <p className="text-xl font-semibold">
+              {userData.first_name} {userData.last_name}
+            </p>
+            <p className="text-base">@{userData.username}</p>
+          </div>
+
+          <p className="text-base text-gray-700 dark:text-gray-300">
+            {decode(userData.biography) || "No bio available"}
+          </p>
+          <ul className="flex text-sm">
+            <li className="me-2">
+              <Link
+                to={`/user/${userData._id}/following`}
+                className="hover:underline"
+              >
+                <span className="font-semibold text-gray-900 dark:text-white">
+                  {followStats.followedByUser.toLocaleString()}
+                </span>
+                <span className="text-gray-600 dark:text-gray-400">
+                  {" "}
+                  Following
+                </span>
+              </Link>
+            </li>
+            <li>
+              <Link
+                to={`/user/${userData._id}/followers`}
+                className="hover:underline"
+              >
+                <span className="font-semibold text-gray-900 dark:text-white">
+                  {followStats.followingUser.toLocaleString()}
+                </span>
+                <span className="text-gray-600 dark:text-gray-400">
+                  {" "}
+                  Followers
+                </span>
+              </Link>
+            </li>
+          </ul>
+          <UserInteractionButtons
+            viewerId={viewer._id}
+            targetId={userData._id}
+            onFollowChange={onFollowChange}
+            isFollowing={isFollowing}
+          />
+        </div>
       </div>
-      <div className="col-span-4 flex flex-col justify-start gap-2 sm:col-span-3">
-        <p className="text-xl font-semibold">
-          {userData.first_name} {userData.last_name}
-        </p>
-        <p className="text-base">@{userData.username}</p>
-        <p className="text-base text-gray-700 dark:text-gray-300">
-          {decode(userData.biography) || "No bio available"}
-        </p>
-        <ul className="flex text-sm">
-          <li className="me-2">
-            <Link
-              to={`/user/${userData._id}/following`}
-              className="hover:underline"
-            >
-              <span className="font-semibold text-gray-900 dark:text-white">
-                {followStats.followedByUser.toLocaleString()}
-              </span>
-              <span className="text-gray-600 dark:text-gray-400">
-                {" "}
-                Following
-              </span>
-            </Link>
-          </li>
-          <li>
-            <Link
-              to={`/user/${userData._id}/followers`}
-              className="hover:underline"
-            >
-              <span className="font-semibold text-gray-900 dark:text-white">
-                {followStats.followingUser.toLocaleString()}
-              </span>
-              <span className="text-gray-600 dark:text-gray-400">
-                {" "}
-                Followers
-              </span>
-            </Link>
-          </li>
-        </ul>
-        <UserInteractionButtons
-          viewerId={viewer._id}
-          targetId={userData._id}
-          onFollowChange={onFollowChange}
-          isFollowing={isFollowing}
-        />
-      </div>
-      <div className="col-span-4">
-        <div className="mb-2 rounded-md p-2 text-center shadow dark:border dark:border-gray-700 dark:bg-gray-800">
+
+      <div className="">
+        <div className="my-3 rounded-md p-2 text-center shadow dark:border dark:border-gray-700 dark:bg-gray-800">
           Posts Today: 0/1
         </div>
 
         {viewer._id == userData._id && (
-          <Composer onSubmit={fetchUserData} mode="createPost" />
+          <div className={`mb-3 p-2 ${cardStyle}`}>
+            <Composer onSubmit={fetchUserData} mode="createPost" />
+          </div>
         )}
 
         {posts?.map((post) => (

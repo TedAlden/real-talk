@@ -1,13 +1,7 @@
 import { useEffect, useState } from "react";
 import getTimeAgo from "../util/getTimeAgo";
 import { FaCommentDots, FaHeart, FaShare } from "react-icons/fa6";
-import {
-  likePost,
-  createPostComment,
-  getPostComments,
-  deletePostById,
-} from "../api/postService";
-import { Textarea } from "flowbite-react";
+import { likePost, getPostComments, deletePostById } from "../api/postService";
 import DropdownMenu from "./DropdownMenu";
 import Composer from "./Composer";
 import { useCacheUpdater, useCachedUser } from "../hooks/useUserCache";
@@ -23,7 +17,6 @@ const defaultUser = {
 function Post({ post, viewer, onDelete }) {
   const [likes, setLikes] = useState([]);
   const [comments, setComments] = useState([]);
-  const [commentContent, setCommentContent] = useState("");
   const [commentsShown, setCommentsShown] = useState(false);
   const [mode, setMode] = useState("view");
 
@@ -83,22 +76,6 @@ function Post({ post, viewer, onDelete }) {
     }
   };
 
-  const handleCreateComment = async () => {
-    try {
-      const newComment = {
-        userId: viewer._id,
-        content: commentContent,
-      };
-      const response = await createPostComment(post._id, newComment);
-      if (response.success !== false) {
-        fetchComments();
-        setCommentContent("");
-      }
-    } catch (error) {
-      console.error("Error creating comment:", error);
-    }
-  };
-
   const handleShare = async (postId) => {
     console.log("Shared post:", postId);
   };
@@ -147,9 +124,14 @@ function Post({ post, viewer, onDelete }) {
     return items;
   };
 
+  const cardStyle =
+    "p-4 bg-white rounded-md shadow dark:border dark:border-gray-700 dark:bg-gray-800";
+
   return (
-    <div className="col-span-4 mb-3 rounded-md bg-white px-4 pb-1 pt-4 shadow dark:border dark:border-gray-700 dark:bg-gray-800">
-      <div className="flex items-center justify-between">
+    <div
+      className={`col-span-4 mb-3 ${cardStyle} text-gray-900 dark:text-gray-100`}
+    >
+      <div className="flex items-start justify-between">
         <div className="flex items-center space-x-4">
           <a href={`/profile/${author?._id}`} className="shrink-0">
             <img
@@ -167,26 +149,27 @@ function Post({ post, viewer, onDelete }) {
             </a>
             <p className="text-sm text-gray-500 dark:text-gray-400">
               Posted {getTimeAgo(post.created_at)}
+              {post.updated_at !== post.created_at &&
+                ` (edited ${getTimeAgo(post.updated_at)})`}
             </p>
           </div>
         </div>
         <DropdownMenu items={getPostOptions()} />
       </div>
+      <div className="p-2">
+        <Composer
+          target={post}
+          mode={mode}
+          onSubmit={() => {
+            setMode("view");
+          }}
+          onCancel={() => {
+            setMode("view");
+          }}
+        />
+      </div>
 
-      <Composer
-        target={post}
-        mode={mode}
-        onSubmit={() => {
-          setMode("view");
-        }}
-        onCancel={() => {
-          setMode("view");
-        }}
-        prevID={post._id}
-        className="mt-2"
-      />
-
-      <div className="mt-2 flex items-center justify-around space-x-4 text-sm text-gray-500 dark:text-gray-400">
+      <div className="flex items-center justify-around space-x-4 text-sm text-gray-500 dark:text-gray-400">
         <button
           className="m-0 flex flex-row items-center justify-items-center space-x-2 p-2"
           onClick={() => handleLike(post._id, !likes.includes(viewer._id))}
@@ -216,24 +199,21 @@ function Post({ post, viewer, onDelete }) {
       </div>
       <div>
         {commentsShown && (
-          <div className="mt-4 flex flex-col space-y-2 p-2">
-            <ul className="divide-y divide-gray-200 border border-0 border-t border-t-gray-200 dark:divide-gray-700 dark:border-t-gray-700">
-              {comments.map((comment) => (
-                <Comment comment={comment} />
-              ))}
-            </ul>
-            <Textarea
-              className="w-full resize-none rounded-md border border-gray-300 p-2 dark:border-gray-700 dark:bg-gray-800"
-              placeholder="Add a comment..."
-              value={commentContent}
-              onChange={(e) => setCommentContent(e.target.value)}
+          <div className="flex flex-col space-y-2 p-2">
+            {comments.map((comment) => (
+              <Comment
+                postId={post._id}
+                comment={comment}
+                onDelete={fetchComments}
+              />
+            ))}
+
+            <Composer
+              target={post}
+              mode={"createComment"}
+              onSubmit={fetchComments}
+              className="-p-2"
             />
-            <button
-              className="rounded-md bg-blue-500 px-4 py-1 text-sm font-medium text-white hover:bg-blue-600"
-              onClick={() => handleCreateComment()}
-            >
-              Comment
-            </button>
           </div>
         )}
       </div>

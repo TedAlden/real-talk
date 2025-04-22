@@ -1,6 +1,11 @@
 import { useCachedUser } from "../hooks/useUserCache";
 import getTimeAgo from "../util/getTimeAgo";
 import DropdownMenu from "./DropdownMenu";
+import useAuth from "../hooks/useAuth";
+import { useState, useEffect } from "react";
+import { deleteComment } from "../api/postService";
+import _ from "lodash";
+import Composer from "./Composer";
 
 const defaultUser = {
   _id: "",
@@ -9,45 +14,72 @@ const defaultUser = {
     "https://static.vecteezy.com/system/resources/thumbnails/003/337/584/small/default-avatar-photo-placeholder-profile-icon-vector.jpg",
 };
 
-export default function Comment({ comment }) {
+export default function Comment({ postId, comment, onDelete }) {
+  const auth = useAuth();
+  const [viewer, setViewer] = useState(null);
+  const [mode, setMode] = useState("view");
+
   const commentor = useCachedUser(comment.user_id) || defaultUser;
+  const commentWithPost = {
+    ...comment,
+    post_id: postId,
+  };
+
+  useEffect(() => {
+    auth.getUser().then((user) => {
+      setViewer(user);
+    });
+  }, [auth]);
 
   const handleReportComment = (comment) => {
     console.log("Report comment:", comment._id);
   };
 
-  const handleDeleteComment = (comment) => {
-    console.log("Delete comment:", comment._id);
+  const handleDeleteComment = async () => {
+    try {
+      const response = await deleteComment(postId, comment.comment_id);
+      if (response.success !== false) {
+        onDelete();
+      }
+    } catch (error) {
+      console.error("Failed to delete comment:", error);
+    }
   };
 
-  const handleEditComment = (comment) => {
-    console.log("Edit comment:", comment._id);
+  const handleEditComment = () => {
+    setMode("editComment");
   };
 
-  const getCommentOptions = (comment) => {
-    const options = [
-      {
-        label: "Edit Comment",
-        action: () => handleEditComment(comment),
-      },
-      {
-        label: "Delete Comment",
-        action: () => handleDeleteComment(comment),
-      },
-      {
-        label: "Report Comment",
-        action: () => handleReportComment(comment),
-      },
-    ];
+  const getCommentOptions = () => {
+    const items = [];
 
-    return options;
+    if (viewer?._id === commentor._id) {
+      items.push({
+        label: "Delete comment",
+        action: handleDeleteComment,
+      });
+      items.push({
+        label: "Edit comment",
+        action: handleEditComment,
+      });
+    }
+
+    items.push({
+      label: "Report comment",
+      action: () => handleReportComment,
+    });
+
+    return items;
   };
 
   return (
-    <li key={comment._id} className="flex items-center space-x-4 p-4">
+    <div
+      key={comment._id}
+      className="flex items-start space-x-4 rounded-lg bg-gray-500 bg-opacity-10 p-2 pb-0"
+    >
       <a href={`/profile/${comment.user_id}`} className="shrink-0">
         <img
-          className="h-auto w-10 rounded-full object-cover shadow-lg"
+          className="mt-1 h-auto w-10 rounded-full object-cover shadow-lg"
           src={commentor.profile_picture}
           alt="Profile"
         />
@@ -57,12 +89,14 @@ export default function Comment({ comment }) {
           <div className="flex items-center space-x-2">
             <a
               href={`/profile/${comment.user_id}`}
-              className="text-sm font-semibold hover:underline"
+              className="text-md font-semibold hover:underline"
             >
               @{commentor.username}
             </a>
-            <span className="text-xs text-gray-500 dark:text-gray-400">
+            <span className="text-sm text-gray-500 dark:text-gray-400">
               {getTimeAgo(comment.created_at)}
+              {comment.updated_at !== comment.created_at &&
+                ` (edited ${getTimeAgo(comment.updated_at)})`}
             </span>
           </div>
 
@@ -70,8 +104,19 @@ export default function Comment({ comment }) {
             <DropdownMenu items={getCommentOptions(comment)} />
           </div>
         </div>
-        <p className="text-sm">{comment.content}</p>
+        <div className="-mt-4">
+          <Composer
+            target={commentWithPost}
+            mode={mode}
+            onSubmit={() => {
+              setMode("view");
+            }}
+            onCancel={() => {
+              setMode("view");
+            }}
+          />
+        </div>
       </div>
-    </li>
+    </div>
   );
 }
