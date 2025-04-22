@@ -10,19 +10,19 @@ import { matchedData } from "express-validator";
  *
  * Request body:
  * {
- *  user_id: string,
+ *  userId: string,
  *  content: string,
  *  media: string
  * }
  */
 export const createPost = async (req, res) => {
   try {
-    const { user_id, content, media, tags } = req.body;
+    const { userId, content, media, tags } = req.body;
     const db = await connectDB();
 
     // Insert the new user into the collection
     const newPost = {
-      user_id: new ObjectId(user_id),
+      user_id: new ObjectId(userId),
       content,
       media,
       likes: [],
@@ -49,7 +49,7 @@ export const createPost = async (req, res) => {
  *
  * Query parameters:
  * {
- *  user_id: string,
+ *  userId: string,
  *  tag: string,
  * }
  */
@@ -57,10 +57,10 @@ export const getPostsByQuery = async (req, res) => {
   try {
     const db = await connectDB();
 
-    const { user_id, tag } = req.query;
+    const { userId, tag } = req.query;
     const filter = {};
     if (tag) filter.tags = { $in: [tag] };
-    if (user_id) filter.user_id = new ObjectId(user_id);
+    if (userId) filter.user_id = new ObjectId(userId);
 
     console.log(filter);
     const posts = await db
