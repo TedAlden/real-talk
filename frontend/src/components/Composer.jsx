@@ -71,8 +71,13 @@ function Composer({ onSubmit, onCancel, target, mode }) {
     if (isSubmitting) return;
 
     const user = await auth.getUser();
+    const postTags = [];
+    const taggedContent = postContent.replace(/#(\w+)/g, (match, tag) => {
+      postTags.push(tag.toLowerCase());
+      return `[${match}](/search?q=%23${tag})`;
+    });
 
-    const sanitizedContent = DOMPurify.sanitize(postContent);
+    const sanitizedContent = DOMPurify.sanitize(taggedContent);
     setIsSubmitting(true);
     let response;
 
@@ -83,6 +88,7 @@ function Composer({ onSubmit, onCancel, target, mode }) {
             const newPost = {
               userId: user._id,
               content: sanitizedContent,
+              tags: postTags,
             };
             response = await createPost(newPost);
           }
@@ -91,6 +97,7 @@ function Composer({ onSubmit, onCancel, target, mode }) {
           {
             const updatedPost = {
               content: sanitizedContent,
+              tags: postTags,
             };
             response = await updatePost(target._id, updatedPost);
           }

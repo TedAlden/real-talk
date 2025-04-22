@@ -160,7 +160,20 @@ function Post({ post, viewer, onDelete }) {
       </div>
       {mode === "view" ? (
         <div className="p-3">
-          <Markdown>{post.content}</Markdown>
+          <Markdown
+            components={{
+              a: ({ node, ...props }) => (
+                <a
+                  {...props}
+                  className="bg-blue-600 bg-opacity-20 px-1 font-semibold text-blue-500 hover:text-blue-700 hover:underline"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                />
+              ),
+            }}
+          >
+            {post.content}
+          </Markdown>
         </div>
       ) : (
         <Composer
