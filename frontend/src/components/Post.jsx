@@ -20,6 +20,7 @@ function Post({ post, viewer, onDelete }) {
   const [comments, setComments] = useState([]);
   const [commentsShown, setCommentsShown] = useState(false);
   const [mode, setMode] = useState("view");
+  const [postData, setPostData] = useState(post);
 
   const author = useCachedUser(post.user_id) || defaultUser;
   const updateCache = useCacheUpdater();
@@ -27,7 +28,8 @@ function Post({ post, viewer, onDelete }) {
   useEffect(() => {
     setLikes(post.likes);
     setComments(post.comments);
-  }, [post.user_id, post.likes, post.comments]);
+    setPostData(post);
+  }, [post]);
 
   useEffect(() => {
     if (comments && commentsShown) {
@@ -39,15 +41,13 @@ function Post({ post, viewer, onDelete }) {
   const handleLike = async (postId, isLiked) => {
     try {
       const response = await likePost(postId, viewer._id, isLiked);
-      const prevLikes = likes;
-      setLikes(
-        isLiked
-          ? [...prevLikes, viewer._id]
-          : prevLikes.filter((id) => id !== viewer._id),
-      );
 
-      if (response.success == false) {
-        setLikes(prevLikes);
+      if (response.success !== false) {
+        setLikes(
+          isLiked
+            ? [...likes, viewer._id]
+            : likes.filter((id) => id !== viewer._id),
+        );
       }
     } catch (error) {
       console.error("Error (un)liking post:", error);
@@ -93,6 +93,15 @@ function Post({ post, viewer, onDelete }) {
 
   const handleEditPost = () => {
     setMode("editPost");
+  };
+
+  const handleEditSubmit = (updatedContent) => {
+    setPostData((prev) => ({
+      ...prev,
+      content: updatedContent,
+      updated_at: new Date().toISOString(),
+    }));
+    setMode("view");
   };
 
   const handleReportPost = () => {
@@ -157,7 +166,7 @@ function Post({ post, viewer, onDelete }) {
         <div className="p-3">
           <Markdown
             components={{
-              a: ({ node, ...props }) => (
+              a: ({ ...props }) => (
                 <a
                   {...props}
                   className="bg-blue-400 bg-opacity-50 px-1 font-semibold text-blue-600 hover:text-blue-700 hover:underline dark:text-blue-100"
@@ -167,16 +176,14 @@ function Post({ post, viewer, onDelete }) {
               ),
             }}
           >
-            {post.content}
+            {postData.content}
           </Markdown>
         </div>
       ) : (
         <Composer
-          target={post}
+          target={postData}
           mode={mode}
-          onSubmit={() => {
-            setMode("view");
-          }}
+          onSubmit={handleEditSubmit}
           onCancel={() => {
             setMode("view");
           }}
@@ -214,8 +221,9 @@ function Post({ post, viewer, onDelete }) {
       <div>
         {commentsShown && (
           <div className="flex flex-col space-y-2 p-2">
-            {comments.map((comment) => (
+            {comments.map((comment, idx) => (
               <Comment
+                key={idx}
                 postId={post._id}
                 comment={comment}
                 onDelete={fetchComments}

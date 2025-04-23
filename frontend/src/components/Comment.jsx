@@ -18,12 +18,17 @@ export default function Comment({ postId, comment, onDelete }) {
   const auth = useAuth();
   const [viewer, setViewer] = useState(null);
   const [mode, setMode] = useState("view");
+  const [commentData, setCommentData] = useState(comment);
 
   const commentor = useCachedUser(comment.user_id) || defaultUser;
   const commentWithPost = {
-    ...comment,
+    ...commentData,
     post_id: postId,
   };
+
+  useEffect(() => {
+    setCommentData(comment);
+  }, [comment]);
 
   useEffect(() => {
     auth.getUser().then((user) => {
@@ -50,6 +55,15 @@ export default function Comment({ postId, comment, onDelete }) {
     setMode("editComment");
   };
 
+  const handleEditSubmit = (updatedContent) => {
+    setCommentData((prev) => ({
+      ...prev,
+      content: updatedContent,
+      updated_at: new Date().toISOString(),
+    }));
+    setMode("view");
+  };
+
   const getCommentOptions = () => {
     const items = [];
 
@@ -73,10 +87,7 @@ export default function Comment({ postId, comment, onDelete }) {
   };
 
   return (
-    <div
-      key={comment._id}
-      className="flex items-start space-x-4 rounded-lg bg-gray-500 bg-opacity-10 p-2 pb-0"
-    >
+    <div className="flex items-start space-x-4 rounded-lg bg-gray-500 bg-opacity-10 p-2 pb-0">
       <a href={`/profile/${comment.user_id}`} className="shrink-0">
         <img
           className="mt-1 h-auto w-10 rounded-full object-cover shadow-lg"
@@ -109,7 +120,7 @@ export default function Comment({ postId, comment, onDelete }) {
             <div className="py-3">
               <Markdown
                 components={{
-                  a: ({ node, ...props }) => (
+                  a: ({ ...props }) => (
                     <a
                       {...props}
                       className="bg-blue-400 bg-opacity-50 px-1 font-semibold text-blue-600 hover:text-blue-700 hover:underline dark:text-blue-100"
@@ -119,16 +130,14 @@ export default function Comment({ postId, comment, onDelete }) {
                   ),
                 }}
               >
-                {comment.content}
+                {commentData.content}
               </Markdown>
             </div>
           ) : (
             <Composer
               target={commentWithPost}
               mode={mode}
-              onSubmit={() => {
-                setMode("view");
-              }}
+              onSubmit={handleEditSubmit}
               onCancel={() => {
                 setMode("view");
               }}

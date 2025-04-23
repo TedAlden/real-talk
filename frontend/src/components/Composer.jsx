@@ -15,7 +15,6 @@ import {
   linkDialogPlugin,
 } from "@mdxeditor/editor";
 import "@mdxeditor/editor/style.css";
-import { Textarea } from "flowbite-react";
 
 const stripMarkdown = (md) => {
   return (
@@ -34,10 +33,31 @@ const stripMarkdown = (md) => {
   );
 };
 
+const hashtagsToLinks = (content) => {
+  const tags = [];
+  const fixedLeadingHashtag = content.replace(/\\#/g, "#");
+  const processedContent = fixedLeadingHashtag.replace(
+    /#(\w+)/g,
+    (match, tag) => {
+      tags.push(tag.toLowerCase());
+      return `[${match}](/search?q=%23${tag})`;
+    },
+  );
+
+  return { processedContent, tags };
+};
+
+const linksToHashtags = (content) => {
+  return content.replace(/\[#(\w+)\]\(\/[^)]+\)/g, "#$1");
+};
+
 function Composer({ onSubmit, onCancel, target, mode }) {
-  const [postContent, setPostContent] = useState(() => {
-    if (mode === "createComment") return "";
-    return target?.content || "";
+  const [content, setContent] = useState(() => {
+    const initialContent = target?.content || "";
+    if (mode === "editPost" || mode === "editComment") {
+      return linksToHashtags(initialContent);
+    }
+    return initialContent;
   });
   const [prevContent, setPrevContent] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -50,20 +70,20 @@ function Composer({ onSubmit, onCancel, target, mode }) {
   const handleContentChange = (content) => {
     const visibleLength = stripMarkdown(content).length;
     if (visibleLength <= MAX_POST_LENGTH) {
-      setPostContent(content);
+      setContent(content);
     }
   };
 
   const handleCancel = () => {
-    setPostContent(prevContent);
-
+    setContent(prevContent);
     onCancel();
     setResetKey((prevKey) => prevKey + 1);
   };
 
   useEffect(() => {
     if (mode === "editPost" || mode === "editComment") {
-      setPrevContent(target?.content || "");
+      const plainContent = linksToHashtags(target?.content || "");
+      setPrevContent(plainContent);
     }
   }, [mode, target?.content]);
 
@@ -71,15 +91,9 @@ function Composer({ onSubmit, onCancel, target, mode }) {
     if (isSubmitting) return;
 
     const user = await auth.getUser();
-    const postTags = [];
 
-    const fixedContent = postContent.replace(/\\#/g, "#");
-    const taggedContent = fixedContent.replace(/#(\w+)/g, (match, tag) => {
-      postTags.push(tag.toLowerCase());
-      return `[${match}](/search?q=%23${tag})`;
-    });
-
-    const sanitizedContent = DOMPurify.sanitize(taggedContent);
+    const { processedContent, tags } = hashtagsToLinks(content);
+    const sanitizedContent = DOMPurify.sanitize(processedContent);
     setIsSubmitting(true);
     let response;
 
@@ -90,7 +104,7 @@ function Composer({ onSubmit, onCancel, target, mode }) {
             const newPost = {
               userId: user._id,
               content: sanitizedContent,
-              tags: postTags,
+              tags: tags,
             };
             response = await createPost(newPost);
           }
@@ -99,7 +113,7 @@ function Composer({ onSubmit, onCancel, target, mode }) {
           {
             const updatedPost = {
               content: sanitizedContent,
-              tags: postTags,
+              tags: tags,
             };
             response = await updatePost(target._id, updatedPost);
           }
@@ -130,11 +144,15 @@ function Composer({ onSubmit, onCancel, target, mode }) {
           break;
       }
       if (response.success !== false) {
-        onSubmit();
+        onSubmit(sanitizedContent);
+
         if (mode === "createPost" || mode === "createComment") {
-          setPostContent("");
+          setContent("");
         }
+        console.log("Post submitted successfully:", content);
         setResetKey((prevKey) => prevKey + 1);
+      } else {
+        console.error("Error submitting:", response.error);
       }
     } catch (error) {
       console.error("Error submitting:", error);
@@ -176,7 +194,7 @@ function Composer({ onSubmit, onCancel, target, mode }) {
       <div className={`my-3`}>
         <MDXEditor
           key={resetKey}
-          markdown={postContent}
+          markdown={content}
           onChange={handleContentChange}
           autoFocus={true}
           placeholder="Write something..."
@@ -200,7 +218,7 @@ function Composer({ onSubmit, onCancel, target, mode }) {
 
         <div className="flex w-full items-start justify-between p-1">
           <div className="ml-1 text-right text-xs text-gray-500">
-            {stripMarkdown(postContent).length}/{MAX_POST_LENGTH}
+            {stripMarkdown(content).length}/{MAX_POST_LENGTH}
           </div>
           <div className="w-50 mt-1 flex items-center justify-end gap-2">
             <button
