@@ -12,7 +12,6 @@ function UserInteractionButtons({
 
   useEffect(() => {
     setFollowState(isFollowing);
-    console.log("Follow state updated:", isFollowing);
   }, [targetId, isFollowing]);
 
   if (viewerId === targetId) return null;

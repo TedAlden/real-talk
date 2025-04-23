@@ -24,7 +24,6 @@ function Following() {
         const response = await getFollowedById(targetId, viewer._id);
         if (response.success !== false) {
           setFolloweds(response.data);
-          console.log("Followeds data:", response.data);
         }
       } catch (error) {
         console.error("Error fetching follower data:", error);

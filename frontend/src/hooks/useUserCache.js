@@ -23,7 +23,6 @@ export function useCacheUpdater() {
           profile_picture: user.profile_picture,
         };
         queryClient.setQueryData(["user", user._id], userData);
-        console.log("User added to cache:", userData);
       });
 
       return { fetchedCount: response.data.length };

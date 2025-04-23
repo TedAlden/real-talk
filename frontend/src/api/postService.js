@@ -62,7 +62,6 @@ export async function likePost(_id, userId, isLiked) {
 
 export async function createPostComment(_id, comment) {
   try {
-    console.log("Creating comment:", comment);
     const response = await axiosInstance.post(
       `/api/posts/${_id}/comments`,
       comment,

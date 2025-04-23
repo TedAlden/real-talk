@@ -24,15 +24,10 @@ function Post({ post, viewer, onDelete }) {
   const author = useCachedUser(post.user_id) || defaultUser;
   const updateCache = useCacheUpdater();
 
-  console.log("content", post.content);
   useEffect(() => {
     setLikes(post.likes);
     setComments(post.comments);
   }, [post.user_id, post.likes, post.comments]);
-
-  useEffect(() => {
-    console.log("Post mode:", mode);
-  }, [mode]);
 
   useEffect(() => {
     if (comments && commentsShown) {
