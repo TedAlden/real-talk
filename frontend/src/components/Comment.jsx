@@ -107,7 +107,20 @@ export default function Comment({ postId, comment, onDelete }) {
         <div className="-mt-4">
           {mode === "view" ? (
             <div className="py-3">
-              <Markdown>{comment.content}</Markdown>
+              <Markdown
+                components={{
+                  a: ({ node, ...props }) => (
+                    <a
+                      {...props}
+                      className="bg-blue-400 bg-opacity-50 px-1 font-semibold text-blue-600 hover:text-blue-700 hover:underline dark:text-blue-100"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    />
+                  ),
+                }}
+              >
+                {comment.content}
+              </Markdown>
             </div>
           ) : (
             <Composer
