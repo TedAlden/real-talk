@@ -72,7 +72,9 @@ function Composer({ onSubmit, onCancel, target, mode }) {
 
     const user = await auth.getUser();
     const postTags = [];
-    const taggedContent = postContent.replace(/#(\w+)/g, (match, tag) => {
+
+    const fixedContent = postContent.replace(/\\#/g, "#");
+    const taggedContent = fixedContent.replace(/#(\w+)/g, (match, tag) => {
       postTags.push(tag.toLowerCase());
       return `[${match}](/search?q=%23${tag})`;
     });
