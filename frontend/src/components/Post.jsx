@@ -160,7 +160,7 @@ function Post({ post, viewer, onDelete }) {
               a: ({ node, ...props }) => (
                 <a
                   {...props}
-                  className="bg-blue-600 bg-opacity-20 px-1 font-semibold text-blue-500 hover:text-blue-700 hover:underline"
+                  className="bg-blue-400 bg-opacity-50 px-1 font-semibold text-blue-600 hover:text-blue-700 hover:underline dark:text-blue-100"
                   target="_blank"
                   rel="noopener noreferrer"
                 />
