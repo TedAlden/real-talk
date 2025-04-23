@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react";
 import getTimeAgo from "../util/getTimeAgo";
-import { FaCommentDots, FaHeart, FaShare } from "react-icons/fa6";
+import { FaCommentDots, FaHeart, FaShare, FaLink } from "react-icons/fa6";
 import { likePost, getPostComments, deletePostById } from "../api/postService";
 import DropdownMenu from "./DropdownMenu";
 import Composer from "./Composer";
 import { useCacheUpdater, useCachedUser } from "../hooks/useUserCache";
 import Comment from "./Comment";
 import Markdown from "react-markdown";
+import { Popover } from "flowbite-react";
 
 const defaultUser = {
   _id: "",
@@ -211,12 +212,43 @@ function Post({ post, viewer, onDelete }) {
           </p>
         </button>
 
-        <button
-          className="m-0 flex flex-row items-center justify-items-center space-x-2 p-2"
-          onClick={() => handleShare(post._id)}
+        <Popover
+          aria-labelledby="default-popover"
+          content={
+            <div className="flex flex-col p-4 text-lg text-gray-800 dark:text-gray-100">
+              <div className="mb-2 flex justify-center text-lg font-semibold">
+                Share Post
+              </div>
+              <div className="-p-1 mb-2 flex items-center justify-center overflow-hidden rounded-lg bg-gray-100 dark:bg-gray-700">
+                <p className="bg-gray-700 p-1 px-3 text-gray-300">
+                  {`${window.location.origin}/post/${post._id}`}
+                </p>
+                <button
+                  onClick={() => {
+                    const url = `${window.location.origin}/post/${post._id}`;
+                    navigator.clipboard.writeText(url).then(() => {
+                      const button = document.activeElement;
+                      button.innerText = "Copied!";
+                      setTimeout(() => {
+                        button.innerText = "Copy";
+                      }, 1500);
+                    });
+                  }}
+                  className="bg-gray-500 p-2 px-4 font-semibold hover:bg-gray-100 dark:hover:bg-gray-400"
+                >
+                  Copy
+                </button>
+              </div>
+            </div>
+          }
         >
-          <FaShare className="h-5 w-5 text-gray-500 hover:text-green-500" />
-        </button>
+          <button
+            className="m-0 flex flex-row items-center justify-center space-x-2 p-2"
+            onClick={() => handleShare(post._id)}
+          >
+            <FaShare className="h-5 w-5 text-gray-500 hover:text-green-500" />
+          </button>
+        </Popover>
       </div>
       <div>
         {commentsShown && (

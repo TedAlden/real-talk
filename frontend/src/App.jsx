@@ -16,6 +16,7 @@ import EnterOTP from "./pages/EnterOTP";
 import UserProfile from "./pages/UserProfile";
 import Followers from "./pages/Followers";
 import Following from "./pages/Following";
+import SinglePost from "./pages/SinglePost";
 
 function App() {
   return (
@@ -37,6 +38,7 @@ function App() {
                 <Route path="/profile/:id" element={<UserProfile />} />
                 <Route path="/user/:id/followers" element={<Followers />} />
                 <Route path="/user/:id/following" element={<Following />} />
+                <Route path="/post/:id" element={<SinglePost />} />
               </Routes>
             </div>
           </QueryClientProvider>
