@@ -17,7 +17,7 @@ export default function MyNavbar() {
           </span>
         </Navbar.Brand>
         <Navbar.Toggle />
-        <div className="flex items-center space-x-8">
+        <div className="flex items-center space-x-6">
           <Navbar.Collapse>
             <NavbarLink to="/" text="Home" />
             {auth.loggedIn ? (
