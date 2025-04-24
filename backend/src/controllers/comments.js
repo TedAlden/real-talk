@@ -7,8 +7,8 @@ export const createComment = async (req, res) => {
   try {
     const db = await connectDB();
     const { id } = req.params;
+    //postId
     const { userId, content } = req.body;
-
     // TODO: userId should be passed from auth middleware when implemented
 
     // Check if post exists
@@ -35,7 +35,7 @@ export const createComment = async (req, res) => {
       .updateOne({ _id: new ObjectId(id) }, { $push: { comments: comment } });
 
     if (result.acknowledged) {
-      await createNotification(post.user_id, id, "comment");
+      createNotification(post.user_id, userId, "comment");
       return res.status(201).json({ message: SuccessMsg.COMMENT_CREATE_OK });
     } else {
       return res.sendStatus(500);
