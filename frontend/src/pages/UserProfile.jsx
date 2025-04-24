@@ -46,7 +46,7 @@ function UserProfile() {
     setLoading(true);
     try {
       const profileUserId = paramId === "me" ? viewer._id : paramId;
-
+      if (!profileUserId) return;
       if (profileUserId === viewer._id) {
         setUserData(viewer);
         setIsFollowing(false);
