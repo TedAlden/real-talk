@@ -15,6 +15,7 @@ import {
   linkDialogPlugin,
 } from "@mdxeditor/editor";
 import "@mdxeditor/editor/style.css";
+import { decode } from "html-entities";
 
 const stripMarkdown = (md) => {
   return (
@@ -35,7 +36,8 @@ const stripMarkdown = (md) => {
 
 const hashtagsToLinks = (content) => {
   const tags = [];
-  const fixedLeadingHashtag = content.replace(/\\#/g, "#");
+  const decodedContent = decode(content);
+  const fixedLeadingHashtag = decodedContent.replace(/\\#/g, "#");
   const processedContent = fixedLeadingHashtag.replace(
     /#(\w+)/g,
     (match, tag) => {
@@ -54,10 +56,15 @@ const linksToHashtags = (content) => {
 function Composer({ onSubmit, onCancel, target, mode }) {
   const [content, setContent] = useState(() => {
     const initialContent = target?.content || "";
-    if (mode === "editPost" || mode === "editComment") {
-      return linksToHashtags(initialContent);
+    switch (mode) {
+      case "createComment":
+        return "";
+      case "editPost":
+      case "editComment":
+        return linksToHashtags(initialContent);
+      default:
+        return initialContent;
     }
-    return initialContent;
   });
   const [prevContent, setPrevContent] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
