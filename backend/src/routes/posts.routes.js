@@ -12,7 +12,7 @@ import {
   getComments,
   getCommentById,
   updateComment,
-  deleteComment
+  deleteComment,
 } from "../controllers/comments.js";
 import { setLike } from "../controllers/likes.js";
 
@@ -26,7 +26,7 @@ postsRouter.post(
 );
 postsRouter.get("/", getPostsByQuery);
 postsRouter.get("/:id", getPostById);
-postsRouter.patch("/:id", updatePostById);
+postsRouter.patch("/:id", useValidators("post_content"), updatePostById);
 postsRouter.delete("/:id", deletePostById);
 
 // Posts :: likes

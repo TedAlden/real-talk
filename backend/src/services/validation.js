@@ -23,7 +23,11 @@ const validatorMap = {
 
   user_update: () => checkSchema(userUpdateSchema),
   follows: () => checkSchema(followIdSchema),
-
+  post_content: () =>
+    body("content")
+      .trim()
+      .notEmpty()
+      .withMessage("Post content cannot be empty"),
   // Add additional fields as needed
 };
 

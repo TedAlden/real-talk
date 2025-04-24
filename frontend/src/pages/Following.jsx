@@ -1,13 +1,9 @@
 import { useState, useEffect } from "react";
-import {
-  getFollowedById,
-  unfollowUser,
-  followUser,
-} from "../api/followersService.js";
+import { getFollowedById } from "../api/followersService.js";
 import { useNavigate, useParams } from "react-router-dom";
 import _ from "lodash";
 import useAuth from "../hooks/useAuth.js";
-
+import UserInteractionButtons from "../components/UserInteractionButtons.jsx";
 import { Spinner, Card } from "flowbite-react";
 
 function Following() {
@@ -15,7 +11,7 @@ function Following() {
   const auth = useAuth();
   const [loading, setLoading] = useState(true);
   const [followeds, setFolloweds] = useState(false);
-  const [currentUserId, setCurrentUserId] = useState();
+  const [viewerId, setViewerId] = useState();
   const paramId = useParams().id;
 
   useEffect(() => {
@@ -23,12 +19,11 @@ function Following() {
       try {
         setLoading(true);
         const viewer = await auth.getUser();
-        const userId = paramId === "me" ? viewer._id : paramId;
-        setCurrentUserId(viewer._id);
-        const response = await getFollowedById(userId, viewer._id);
+        const targetId = paramId === "me" ? viewer._id : paramId;
+        setViewerId(viewer._id);
+        const response = await getFollowedById(targetId, viewer._id);
         if (response.success !== false) {
           setFolloweds(response.data);
-          console.log("Followeds data:", response.data);
         }
       } catch (error) {
         console.error("Error fetching follower data:", error);
@@ -40,26 +35,15 @@ function Following() {
     fetchFollowedsData();
   }, [auth, paramId, navigate]);
 
-  const handleFollow = async (followed) => {
-    const user = await auth.getUser();
-    const userId = user._id;
-    const followAction = followed.isFollowing ? unfollowUser : followUser;
-
-    const response = await followAction(userId, followed._id);
-    if (response.success !== false) {
-      setFolloweds(
-        followeds.map((f) => {
-          if (f._id === followed._id) {
-            return { ...f, isFollowing: !f.isFollowing };
-          }
-          return f;
-        }),
-      );
-    }
-  };
-
-  const handleReport = () => {
-    // Not implemented yet
+  const onFollowChange = (targetId, isFollow) => {
+    setFolloweds((prev) => {
+      return prev.map((user) => {
+        if (user._id === targetId) {
+          return { ...user, isFollowing: isFollow };
+        }
+        return user;
+      });
+    });
   };
 
   return loading ? (
@@ -96,29 +80,12 @@ function Following() {
                         0 mutual friends
                       </p>
                     </div>
-                    {followed._id != currentUserId && (
-                      <div className="inline-flex items-center gap-2 text-base font-semibold">
-                        <button
-                          onClick={() => handleFollow(followed)}
-                          className={`w-full rounded-md px-4 py-1 text-sm font-medium transition sm:w-min ${
-                            followed.isFollowing
-                              ? "bg-red-500 hover:bg-red-600"
-                              : "bg-blue-500 hover:bg-blue-600"
-                          }`}
-                        >
-                          {followed.isFollowing ? "Unfollow" : "Follow"}
-                        </button>
-
-                        <button
-                          onClick={handleReport}
-                          className={
-                            "w-full rounded-md bg-red-500 px-4 py-1 text-sm font-medium transition hover:bg-red-600 sm:w-min"
-                          }
-                        >
-                          Report
-                        </button>
-                      </div>
-                    )}
+                    <UserInteractionButtons
+                      viewerId={viewerId}
+                      targetId={followed._id}
+                      onFollowChange={onFollowChange}
+                      isFollowing={followed.isFollowing}
+                    />
                   </div>
                 </li>
               ))}
