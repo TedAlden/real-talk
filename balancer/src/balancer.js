@@ -39,8 +39,7 @@ function forwardRequest(req, res, server) {
     };
     axios(options)
       .then((response) => {
-        res.status(response.status).send(response.data);
-        resolve();
+        resolve(response);
       })
       .catch((error) => {
         reject(error);
@@ -61,12 +60,11 @@ export async function loadBalance(req, res) {
     return;
   }
   // Forward request
-  try {
-    await forwardRequest(req, res, server).then(() => {
-      console.log(`[${time}] [FWD] Forwarded ${req.ip} ${req.method} ${req.url} to ${server}`);
-    });
-  } catch (err) {
+  await forwardRequest(req, res, server).then((response) => {
+    console.log(`[${time}] [FWD] Forwarded ${req.ip} ${req.method} ${req.url} to ${server}`);
+    res.status(response.status).send(response.data);
+  }).catch((err) => {
     console.log(`[${time}] [ERR] Failed to forward ${req.method} ${req.url} to ${server}: ${err.message}`);
     res.status(500).send("Failed to connect to backend");
-  }
+  });
 }
