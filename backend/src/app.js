@@ -17,6 +17,13 @@ process.env.SECRET_KEY = process.env.SECRET_KEY
 const app = express();
 app.use(cors()); // Allows the frontend to communicate with the backend
 app.use(express.json({ limit: "1mb" })); // Allows the backend to parse JSON objects
+
+// Log requests
+app.use((req, res, next) => {
+  console.log(`Received ${req.ip} ${req.method} ${req.url}`);
+  next();
+});
+
 // Add API endpoints/routes
 app.use("/auth", authRouter);
 app.use("/api/users", usersRouter);
@@ -24,6 +31,7 @@ app.use("/api/users", followersRouter);
 app.use("/api/posts", postsRouter);
 app.use("/api/feeds", feedsRouter);
 
+// Health check endpoint
 app.get("/health", (req, res) => {
   res.sendStatus(200);
 });
