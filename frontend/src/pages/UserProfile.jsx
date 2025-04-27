@@ -14,6 +14,7 @@ import Composer from "../components/Composer.jsx";
 import { Spinner } from "flowbite-react";
 import UserInteractionButtons from "../components/UserInteractionButtons.jsx";
 import { useCacheUpdater } from "../hooks/useUserCache";
+import { getSafeObject } from "../util/defaultObjects.js";
 
 function UserProfile() {
   const auth = useAuth();
@@ -31,7 +32,12 @@ function UserProfile() {
   const updateCache = useCacheUpdater();
 
   useEffect(() => {
-    auth.getUser().then(setViewer);
+    const fetchUser = async () => {
+      const user = await auth.getUser();
+
+      setViewer(getSafeObject(user, "user"));
+    };
+    fetchUser();
   }, [auth]);
 
   useEffect(() => {
