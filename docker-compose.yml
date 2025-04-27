@@ -1,0 +1,64 @@
+services:
+  react-server:
+    container_name: react-server
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - 5002:5002
+    environment:
+      - NODE_ENV=development
+    networks:
+      - default
+
+  api-server-1:
+    container_name: api-server-1
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - 5001:5001
+    environment:
+      - NODE_ENV=development
+    networks:
+      - default
+
+  # api-server-2:
+  #   container_name: api-server-2
+  #   build:
+  #     context: ./backend
+  #     dockerfile: Dockerfile
+  #   ports:
+  #     - 5102:5001
+  #   environment:
+  #     - NODE_ENV=development
+  #   networks:
+  #     - default
+
+  # api-server-3:
+  #   container_name: api-server-3
+  #   build:
+  #     context: ./backend
+  #     dockerfile: Dockerfile
+  #   ports:
+  #     - 5103:5001
+  #   environment:
+  #     - NODE_ENV=development
+  #   networks:
+  #     - default
+
+  # load-balancer:
+  #   container_name: load-balancer
+  #   build:
+  #     context: ./balancer
+  #     dockerfile: Dockerfile
+  #   ports:
+  #     - 5001:5001
+  #   environment:
+  #     - NODE_ENV=development
+  #   networks:
+  #     - default
+
+networks:
+  default:
+    driver: bridge
