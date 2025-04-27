@@ -1,10 +1,22 @@
 import express from "express";
 import cors from "cors";
+import commandLineArgs from "command-line-args";
 
-import { port, healthCheckInterval } from "./config.js";
+import commandLineOptions from "./commandLineOptions.js";
+import { healthCheckInterval, servers } from "./config.js";
 import { healthCheck } from "./health.js";
 import { loadBalance } from "./balancer.js";
 import { rateLimit } from "./limiter.js";
+
+const args = commandLineArgs(commandLineOptions);
+const PORT = args.port || 5001;
+
+args.servers.forEach((server) => {
+  servers.push({
+    address: server,
+    enabled: true,
+  });
+});
 
 var app = express();
 
@@ -24,6 +36,6 @@ setInterval(() => {
 }, healthCheckInterval);
 
 // Start the server
-app.listen(port, () => {
-  console.log(`Load balancer running on port ${port}`);
+app.listen(PORT, () => {
+  console.log(`Load balancer running on port ${PORT}`);
 });
