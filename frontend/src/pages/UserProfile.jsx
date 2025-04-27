@@ -99,7 +99,7 @@ function UserProfile() {
   };
 
   const cardStyle =
-    "p-4 bg-gray-100 rounded-md shadow dark:border dark:border-gray-700 dark:bg-gray-800";
+    "p-4 bg-white rounded-md shadow dark:border dark:border-gray-700 dark:bg-gray-800";
 
   if (loading) return <Spinner className="p-16 text-center" size="xl" />;
 
@@ -167,7 +167,7 @@ function UserProfile() {
       </div>
 
       <div className="">
-        <div className="my-3 rounded-md p-2 text-center shadow dark:border dark:border-gray-700 dark:bg-gray-800">
+        <div className="my-3 rounded-md bg-white p-2 text-center shadow dark:border dark:border-gray-700 dark:bg-gray-800">
           Posts Today: 0/1
         </div>
 
