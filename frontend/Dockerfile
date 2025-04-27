@@ -12,6 +12,6 @@ COPY . .
 
 RUN npm run build
 
-EXPOSE 5001
+EXPOSE 5002
 
-CMD ["serve", "-s", "build", "-l", "5001"]
+CMD ["serve", "-s", "build", "-l", "5002"]
