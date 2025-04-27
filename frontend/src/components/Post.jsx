@@ -8,6 +8,7 @@ import { useCacheUpdater, useCachedUser } from "../hooks/useUserCache";
 import Comment from "./Comment";
 import Markdown from "react-markdown";
 import { Popover } from "flowbite-react";
+import { getSafeObject } from "../util/defaultObjects";
 
 const defaultUser = {
   _id: "",
@@ -27,9 +28,10 @@ function Post({ post, viewer, onDelete }) {
   const updateCache = useCacheUpdater();
 
   useEffect(() => {
-    setLikes(post.likes);
-    setComments(post.comments);
-    setPostData(post);
+    const safePost = getSafeObject(post, "post");
+    setLikes(safePost.likes);
+    setComments(safePost.comments);
+    setPostData(safePost);
   }, [post]);
 
   useEffect(() => {
