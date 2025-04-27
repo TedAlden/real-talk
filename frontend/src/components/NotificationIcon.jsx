@@ -90,7 +90,7 @@ export default function Notifications() {
       }
     >
       <button
-        className="relative p-1 text-gray-500 hover:text-white"
+        className="relative p-1 dark:text-gray-500 dark:hover:text-white hover:text-gray-900 text-gray-500"
         onClick={getNotifications}
       >
         {!!notifications.length && (
