@@ -7,7 +7,9 @@ import Composer from "./Composer";
 import { useCacheUpdater, useCachedUser } from "../hooks/useUserCache";
 import Comment from "./Comment";
 import Markdown from "react-markdown";
-import { Popover } from "flowbite-react";
+import { Popover, Carousel, createTheme } from "flowbite-react";
+
+import "yet-another-react-lightbox/styles.css";
 
 const defaultUser = {
   _id: "",
@@ -133,7 +135,20 @@ function Post({ post, viewer, onDelete }) {
 
   const cardStyle =
     "p-4 bg-white rounded-md shadow dark:border dark:border-gray-700 dark:bg-gray-800";
-
+  const carouselTheme = createTheme({
+    indicators: {
+      active: {
+        off: "bg-white/50 hover:bg-white shadow-lg dark:bg-gray-200/50 dark:hover:bg-gray-200",
+        on: "bg-white dark:bg-gray-200 shadow-lg ",
+      },
+      base: "h-3 w-3 rounded-full",
+      wrapper: "absolute bottom-2 left-1/2 flex -translate-x-1/2 space-x-3",
+    },
+    control: {
+      base: "inline-flex h-8 w-8 items-center justify-center rounded-full bg-white/30 group-hover:bg-white/50 group-focus:outline-none group-focus:ring-4 group-focus:ring-white sm:h-10 sm:w-10 dark:bg-gray-300/30 dark:group-hover:bg-gray-300/60 dark:group-focus:ring-gray-300/70",
+      icon: "h-5 w-5 text-white sm:h-6 sm:w-6 dark:text-gray-100",
+    },
+  });
   return (
     <div
       className={`col-span-4 mb-3 ${cardStyle} text-gray-900 dark:text-gray-100`}
@@ -165,6 +180,21 @@ function Post({ post, viewer, onDelete }) {
       </div>
       {mode === "view" ? (
         <div className="p-3">
+          {postData.media && postData.media.length > 0 && (
+            <Carousel
+              theme={carouselTheme}
+              slide={false}
+              className="mt-2 h-96 items-start"
+            >
+              {postData.media.map((image, idx) => (
+                <img
+                  key={idx}
+                  src={image}
+                  className="h-4/5 w-3/4 bg-gray-900 object-contain p-2"
+                />
+              ))}
+            </Carousel>
+          )}
           <Markdown
             components={{
               a: ({ ...props }) => (
