@@ -3,6 +3,7 @@ import userEvent from "@testing-library/user-event";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { vi } from "vitest";
+import AuthProvider from "../context/AuthProvider";
 import "@testing-library/jest-dom";
 
 // Mock all API services
@@ -26,14 +27,24 @@ export default function renderWithProviders(
     },
   });
 
+  vi.mock("react-router-dom", async () => {
+    const actual = await vi.importActual("react-router-dom");
+    return {
+      ...actual,
+      useNavigate: () => mockNavigate,
+    };
+  });
+
   return {
     user: userEvent.setup(),
     ...render(
       <QueryClientProvider client={queryClient}>
         <MemoryRouter initialEntries={initialEntries}>
-          <Routes>
-            <Route path="/*" element={ui} />
-          </Routes>
+          <AuthProvider>
+            <Routes>
+              <Route path="/*" element={ui} />
+            </Routes>
+          </AuthProvider>
         </MemoryRouter>
       </QueryClientProvider>,
     ),
