@@ -5,7 +5,8 @@
   "scripts": {
     "start": "node src/server.js",
     "dev": "nodemon src/server.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start:prod": "node src/server.js -p 5001 -s http://api-server-1:5001 http://api-server-2:5001 http://api-server-3:5001 http://api-server-4:5001"
   },
   "author": "",
   "license": "ISC",
@@ -13,8 +14,8 @@
   "description": "",
   "dependencies": {
     "axios": "^1.8.4",
+    "command-line-args": "^6.0.1",
     "cors": "^2.8.5",
-    "dotenv": "^16.5.0",
     "express": "^4.21.2"
   },
   "devDependencies": {
