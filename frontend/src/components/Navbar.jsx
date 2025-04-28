@@ -22,6 +22,7 @@ export default function MyNavbar() {
             <NavbarLink to="/" text="Home" />
             {auth.loggedIn ? (
               <>
+                <NavbarLink to="/feed" text="Feed" />
                 <NavbarLink to="/profile/me" text="Profile" />
                 <NavbarLink to="/settings" text="Settings" />
                 <NavbarLink

@@ -17,6 +17,7 @@ import UserProfile from "./pages/UserProfile";
 import Followers from "./pages/Followers";
 import Following from "./pages/Following";
 import SinglePost from "./pages/SinglePost";
+import FeedPage from "./pages/FeedPage";
 
 function App() {
   return (
@@ -39,6 +40,7 @@ function App() {
                 <Route path="/user/:id/followers" element={<Followers />} />
                 <Route path="/user/:id/following" element={<Following />} />
                 <Route path="/post/:id" element={<SinglePost />} />
+                <Route path="/feed" element={<FeedPage />} />
               </Routes>
             </div>
           </QueryClientProvider>
