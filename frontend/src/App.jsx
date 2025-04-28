@@ -4,6 +4,8 @@ import AuthProvider from "./context/AuthProvider";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 const queryClient = new QueryClient();
 
+import PublicLayout from "./layouts/PublicLayout";
+
 import Navbar from "./components/Navbar";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
@@ -24,15 +26,17 @@ function App() {
       <Router>
         <AuthProvider>
           <QueryClientProvider client={queryClient}>
-            <Navbar />
             <div className="container mx-auto">
               <Routes>
+              <Route element={<PublicLayout />}>
                 <Route path="/" element={<Home />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
                 <Route path="/forgot-password" element={<ForgotPassword />} />
                 <Route path="/verify-email" element={<VerifyUser />} />
                 <Route path="/reset-password" element={<ResetPassword />} />
+              </Route>
+
                 <Route path="/settings" element={<UserSettings />} />
                 <Route path="/enter-otp" element={<EnterOTP />} />
                 <Route path="/profile/:id" element={<UserProfile />} />
