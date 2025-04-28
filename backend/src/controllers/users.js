@@ -181,3 +181,141 @@ export const deleteUserById = async (req, res) => {
     return res.status(500).json({ error: err.message });
   }
 };
+
+/**
+ * GET /users/:id/daily-post-count
+ *
+ * Get the user's daily post count and limit
+ *
+ * Request parameters:
+ * {
+ *  id: string
+ * }
+ */
+export const getUserDailyPostCount = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const db = await connectDB();
+    const userCollection = db.collection("users");
+
+    const user = await userCollection.findOne(
+      { _id: new ObjectId(id) },
+      { projection: { "usage_stats": 1 } }
+    );
+
+    if (!user) {
+      return res.status(404).json({ error: ErrorMsg.NO_SUCH_ID });
+    }
+
+    // Check if last post was today
+    let postCount = 0;
+    if (user.usage_stats?.last_post_date) {
+      const lastPostDate = new Date(user.usage_stats.last_post_date);
+      const today = new Date();
+      
+      if (
+        lastPostDate.getDate() === today.getDate() &&
+        lastPostDate.getMonth() === today.getMonth() &&
+        lastPostDate.getFullYear() === today.getFullYear()
+      ) {
+        postCount = user.usage_stats.posts_today || 0;
+      }
+    }
+
+    // Default limit is 1 post per day
+    const limit = 1;
+    const hasReachedLimit = postCount >= limit;
+
+    res.status(200).json({
+      data: {
+        count: postCount,
+        limit: limit,
+        has_reached_limit: hasReachedLimit
+      }
+    });
+  } catch (err) {
+    console.error("Get user daily post count error:", err);
+    return res.status(500).json({ error: err.message });
+  }
+};
+
+/**
+ * PATCH /users/:id/update-streak
+ *
+ * Update the user's healthy days streak.
+ * Called when the user stays under their daily usage limit.
+ *
+ * Request parameters:
+ * {
+ *  id: string
+ * }
+ * 
+ * Request body:
+ * {
+ *  maintained_limit: boolean - Whether the user stayed under their limit
+ * }
+ */
+export const updateHealthyStreak = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { maintained_limit } = req.body;
+    
+    const db = await connectDB();
+    const userCollection = db.collection("users");
+    
+    const user = await userCollection.findOne({ _id: new ObjectId(id) });
+    
+    if (!user) {
+      return res.status(404).json({ error: ErrorMsg.NO_SUCH_ID });
+    }
+    
+    // Get current streak
+    let currentStreak = user.usage_stats?.healthy_days_streak || 0;
+    
+    // Check if the last activity was yesterday
+    let shouldIncrementStreak = false;
+    if (user.usage_stats?.last_activity) {
+      const lastActivity = new Date(user.usage_stats.last_activity);
+      const yesterday = new Date();
+      yesterday.setDate(yesterday.getDate() - 1);
+      
+      // Check if last activity was yesterday (same day as yesterday)
+      const lastActivityDay = new Date(lastActivity);
+      lastActivityDay.setHours(0, 0, 0, 0);
+      
+      const yesterdayDay = new Date(yesterday);
+      yesterdayDay.setHours(0, 0, 0, 0);
+      
+      shouldIncrementStreak = lastActivityDay.getTime() === yesterdayDay.getTime();
+    }
+    
+    // Update streak
+    let newStreak = currentStreak;
+    if (maintained_limit) {
+      // If the user stayed under their limit, increment their streak
+      // but only if they logged in yesterday or the streak is 0
+      if (shouldIncrementStreak || currentStreak === 0) {
+        newStreak = currentStreak + 1;
+      }
+    } else {
+      // Reset streak if they exceeded their limit
+      newStreak = 0;
+    }
+    
+    // Update user in database
+    await userCollection.updateOne(
+      { _id: new ObjectId(id) },
+      { $set: { "usage_stats.healthy_days_streak": newStreak } }
+    );
+    
+    res.status(200).json({ 
+      message: SuccessMsg.USER_UPDATE_OK,
+      data: {
+        healthy_days_streak: newStreak
+      }
+    });
+  } catch (err) {
+    console.error("Update healthy streak error:", err);
+    return res.status(500).json({ error: err.message });
+  }
+};
