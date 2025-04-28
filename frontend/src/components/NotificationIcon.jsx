@@ -21,7 +21,6 @@ export default function Notifications() {
       const response = await getNotificationsById(user._id);
       if (response.success !== false) {
         setNotifications(Array.isArray(response.data) ? response.data : []);
-
       }
     } catch (error) {
       console.error("Error fetching notifications:", error);
