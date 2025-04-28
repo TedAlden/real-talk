@@ -19,12 +19,20 @@ import Following from "./pages/Following";
 import SinglePost from "./pages/SinglePost";
 import FeedPage from "./pages/FeedPage";
 
+// Anti-addiction components
+import GrayscaleFilter from "./components/GrayscaleFilter";
+import ScreenTimeReminder from "./components/ScreenTimeReminder";
+
 function App() {
   return (
     <div className="rt-app bg-gray-50 dark:bg-gray-900">
       <Router>
         <AuthProvider>
           <QueryClientProvider client={queryClient}>
+            {/* Anti-addiction components */}
+            <GrayscaleFilter />
+            <ScreenTimeReminder />
+            
             <Navbar />
             <div className="container mx-auto">
               <Routes>

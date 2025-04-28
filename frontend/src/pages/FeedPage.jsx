@@ -4,6 +4,7 @@ import FeedTabs from "../components/FeedTabs";
 import PostLimitIndicator from "../components/PostLimitIndicator";
 import InfiniteScrollLoader from "../components/InfiniteScrollLoader";
 import Composer from "../components/Composer";
+import HealthyUsageBadges from "../components/HealthyUsageBadges";
 import useFeed from "../hooks/useFeed";
 import usePostLimit from "../hooks/usePostLimit";
 import useAuth from "../hooks/useAuth";
@@ -86,6 +87,11 @@ function FeedPage() {
         limit={limit}
         isLoading={limitLoading}
       />
+      
+      {/* Healthy usage badges */}
+      <div className="mb-6">
+        <HealthyUsageBadges />
+      </div>
       
       {/* Post composer - hidden when user has reached daily post limit */}
       {!hasReachedLimit && (
