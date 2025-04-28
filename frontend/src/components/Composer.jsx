@@ -7,6 +7,15 @@ import {
 } from "../api/postService.js";
 import useAuth from "../hooks/useAuth.js";
 import DOMPurify from "dompurify";
+import { convertImageBase64 } from "../util/image.js";
+import {
+  FileInput,
+  Modal,
+  Carousel,
+  ModalBody,
+  ModalHeader,
+  createTheme,
+} from "flowbite-react";
 import {
   MDXEditor,
   BoldItalicUnderlineToggles,
@@ -16,7 +25,7 @@ import {
 } from "@mdxeditor/editor";
 import "@mdxeditor/editor/style.css";
 import { decode } from "html-entities";
-
+import { FaImages } from "react-icons/fa6";
 const stripMarkdown = (md) => {
   return (
     md
@@ -68,7 +77,9 @@ function Composer({ onSubmit, onCancel, target, mode }) {
   });
   const [prevContent, setPrevContent] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [media, setMedia] = useState([]);
   const [resetKey, setResetKey] = useState(0);
+  const [openModal, setOpenModal] = useState(false);
   const auth = useAuth();
   const isPost = mode === "createPost" || mode === "editPost";
 
@@ -85,6 +96,33 @@ function Composer({ onSubmit, onCancel, target, mode }) {
     setContent(prevContent);
     onCancel();
     setResetKey((prevKey) => prevKey + 1);
+  };
+
+  const handleMediaChange = async (e) => {
+    const files = Array.from(e.target.files);
+    if (files.length === 0) {
+      console.error("No files selected");
+      return;
+    }
+    const totalSize = files.reduce((acc, file) => acc + file.size, 0);
+    if (totalSize > 10 * 1024 * 1024) {
+      return console.error("Total file size exceeds 10MB");
+    }
+    if (files.some((file) => file.size > 2 * 1024 * 1024)) {
+      return console.error("File size exceeds 2MB");
+    }
+    if (
+      files.some(
+        (file) => !["image/jpeg", "image/png", "image/gif"].includes(file.type),
+      )
+    ) {
+      return console.error("Invalid file type");
+    }
+    const base64Images = await Promise.all(
+      files.map((file) => convertImageBase64(file)),
+    );
+
+    setMedia(base64Images);
   };
 
   useEffect(() => {
@@ -111,6 +149,7 @@ function Composer({ onSubmit, onCancel, target, mode }) {
             const newPost = {
               userId: user._id,
               content: sanitizedContent,
+              media: media,
               tags: tags,
             };
             response = await createPost(newPost);
@@ -168,6 +207,21 @@ function Composer({ onSubmit, onCancel, target, mode }) {
     }
   };
 
+  const carouselTheme = createTheme({
+    indicators: {
+      active: {
+        off: "bg-white/50 hover:bg-white shadow-lg dark:bg-gray-200/50 dark:hover:bg-gray-200",
+        on: "bg-white dark:bg-gray-200 shadow-lg ",
+      },
+      base: "h-3 w-3 rounded-full",
+      wrapper: "absolute bottom-5 left-1/2 flex -translate-x-1/2 space-x-3",
+    },
+    control: {
+      base: "inline-flex h-8 w-8 items-center justify-center rounded-full bg-white/30 group-hover:bg-white/50 group-focus:outline-none group-focus:ring-4 group-focus:ring-white sm:h-10 sm:w-10 dark:bg-gray-300/30 dark:group-hover:bg-gray-300/60 dark:group-focus:ring-gray-300/70",
+      icon: "h-5 w-5 text-white sm:h-6 sm:w-6 dark:text-gray-100",
+    },
+  });
+
   return (
     <>
       <style>
@@ -187,6 +241,9 @@ function Composer({ onSubmit, onCancel, target, mode }) {
           .mdxeditor-toolbar {
             padding: 0.2rem 0rem 0rem 0rem; 
           }
+
+          .indicators: {
+        }
      
 
     .mdxeditor [data-lexical-editor="true"] [contenteditable="false"],
@@ -214,6 +271,15 @@ function Composer({ onSubmit, onCancel, target, mode }) {
                       <>
                         <BoldItalicUnderlineToggles />
                         <CreateLink />
+                        <button
+                          className="rounded-sm p-1.5 text-gray-500 hover:bg-gray-700"
+                          onClick={() => setOpenModal(true)}
+                        >
+                          <FaImages />
+                        </button>
+                        <p className="text-gray-400">
+                          {media.length > 0 ? `${media.length} images` : ""}
+                        </p>
                       </>
                     ),
                   }),
@@ -251,6 +317,37 @@ function Composer({ onSubmit, onCancel, target, mode }) {
           </div>
         </div>
       </div>
+
+      <Modal show={openModal} onClose={() => setOpenModal(false)}>
+        <ModalHeader>Upload Images</ModalHeader>
+        <ModalBody>
+          <div className="flex w-full flex-col items-start justify-between p-1">
+            <FileInput
+              multiple
+              id="file-upload"
+              accept="image/*"
+              className="mb-2 w-full"
+              onChange={handleMediaChange}
+            />
+
+            {media.length > 0 && (
+              <Carousel
+                theme={carouselTheme}
+                slide={false}
+                className="mt-2 h-96 items-start"
+              >
+                {media.map((image, idx) => (
+                  <img
+                    key={idx}
+                    src={image}
+                    className="h-4/5 w-3/4 bg-gray-900 object-contain p-2"
+                  />
+                ))}
+              </Carousel>
+            )}
+          </div>
+        </ModalBody>
+      </Modal>
     </>
   );
 }
