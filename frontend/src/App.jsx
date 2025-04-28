@@ -5,6 +5,8 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 const queryClient = new QueryClient();
 
 import PublicLayout from "./layouts/PublicLayout";
+import PrivateLayout from "./layouts/PrivateLayout";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 import Navbar from "./components/Navbar";
 import Home from "./pages/Home";
@@ -26,25 +28,30 @@ function App() {
       <Router>
         <AuthProvider>
           <QueryClientProvider client={queryClient}>
-            <div className="container mx-auto">
-              <Routes>
+            <Routes>
               <Route element={<PublicLayout />}>
-                <Route path="/" element={<Home />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
                 <Route path="/forgot-password" element={<ForgotPassword />} />
                 <Route path="/verify-email" element={<VerifyUser />} />
                 <Route path="/reset-password" element={<ResetPassword />} />
               </Route>
-
+              <Route
+                element={
+                  <ProtectedRoute>
+                    <PrivateLayout />
+                  </ProtectedRoute>
+                }
+              >
+                <Route path="/" element={<Home />} />
                 <Route path="/settings" element={<UserSettings />} />
                 <Route path="/enter-otp" element={<EnterOTP />} />
                 <Route path="/profile/:id" element={<UserProfile />} />
                 <Route path="/user/:id/followers" element={<Followers />} />
                 <Route path="/user/:id/following" element={<Following />} />
                 <Route path="/post/:id" element={<SinglePost />} />
-              </Routes>
-            </div>
+              </Route>
+            </Routes>
           </QueryClientProvider>
         </AuthProvider>
       </Router>
