@@ -477,11 +477,204 @@ function UserSettings() {
                   className="flex max-w-2xl flex-col gap-4"
                   onSubmit={handleFormSubmit}
                 >
-                  <div>
-                    <p className="text-gray-900 dark:text-white">
-                      Not implemented yet...
-                    </p>
+                  <div className="mb-4">
+                    <h3 className="mb-3 text-lg font-medium text-gray-900 dark:text-white">
+                      Screen Time Limits
+                    </h3>
+                    <div className="mb-3">
+                      <div className="mb-2 block">
+                        <Label 
+                          htmlFor="daily-limit" 
+                          value="Daily time limit (minutes)" 
+                        />
+                      </div>
+                      <TextInput
+                        id="daily-limit"
+                        name="anti_addiction.daily_limit_mins"
+                        type="number"
+                        min="1"
+                        max="1440"
+                        value={formData?.anti_addiction?.daily_limit_mins || 60}
+                        onChange={handleFormChange}
+                        helperText="Set your daily app usage limit (1-1440 minutes)"
+                      />
+                    </div>
+                    
+                    <div className="mb-3">
+                      <div className="flex items-center gap-2">
+                        <ToggleSwitch
+                          checked={formData?.anti_addiction?.show_reminders || false}
+                          onChange={(checked) => 
+                            setFormData({
+                              ...formData,
+                              anti_addiction: {
+                                ...formData.anti_addiction,
+                                show_reminders: checked
+                              }
+                            })
+                          }
+                          id="show-reminders"
+                          name="anti_addiction.show_reminders"
+                        />
+                        <Label htmlFor="show-reminders">
+                          Show usage reminders and timer
+                        </Label>
+                      </div>
+                    </div>
                   </div>
+                  
+                  <div className="mb-4">
+                    <h3 className="mb-3 text-lg font-medium text-gray-900 dark:text-white">
+                      Grayscale Settings
+                    </h3>
+                    
+                    <div className="mb-3">
+                      <div className="flex items-center gap-2">
+                        <ToggleSwitch
+                          checked={formData?.anti_addiction?.grayscale_enabled || false}
+                          onChange={(checked) => 
+                            setFormData({
+                              ...formData,
+                              anti_addiction: {
+                                ...formData.anti_addiction,
+                                grayscale_enabled: checked
+                              }
+                            })
+                          }
+                          id="grayscale-enabled"
+                          name="anti_addiction.grayscale_enabled"
+                        />
+                        <Label htmlFor="grayscale-enabled">
+                          Enable progressive grayscale
+                        </Label>
+                      </div>
+                      <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                        App will gradually desaturate colors as you approach your daily limit
+                      </p>
+                    </div>
+                    
+                    <div className="mb-3">
+                      <div className="mb-2 block">
+                        <Label 
+                          htmlFor="grayscale-threshold" 
+                          value="Start grayscale at (%)" 
+                        />
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <input
+                          id="grayscale-threshold"
+                          name="anti_addiction.grayscale_threshold"
+                          type="range"
+                          min="0"
+                          max="1"
+                          step="0.05"
+                          value={formData?.anti_addiction?.grayscale_threshold || 0.8}
+                          onChange={handleFormChange}
+                          className="h-2 w-full cursor-pointer appearance-none rounded-lg bg-gray-200 dark:bg-gray-700"
+                          disabled={!formData?.anti_addiction?.grayscale_enabled}
+                        />
+                        <span className="w-12 text-center text-sm font-medium text-gray-900 dark:text-white">
+                          {Math.round((formData?.anti_addiction?.grayscale_threshold || 0.8) * 100)}%
+                        </span>
+                      </div>
+                    </div>
+                    
+                    <div className="mt-5 mb-3">
+                      <div className="flex items-center gap-2">
+                        <ToggleSwitch
+                          checked={formData?.anti_addiction?.bedtime_grayscale?.enabled || false}
+                          onChange={(checked) => 
+                            setFormData({
+                              ...formData,
+                              anti_addiction: {
+                                ...formData.anti_addiction,
+                                bedtime_grayscale: {
+                                  ...formData.anti_addiction?.bedtime_grayscale,
+                                  enabled: checked
+                                }
+                              }
+                            })
+                          }
+                          id="bedtime-grayscale"
+                          name="anti_addiction.bedtime_grayscale.enabled"
+                        />
+                        <Label htmlFor="bedtime-grayscale">
+                          Enable bedtime grayscale
+                        </Label>
+                      </div>
+                      <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                        App will automatically switch to grayscale during bedtime hours
+                      </p>
+                    </div>
+                    
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <div className="mb-2 block">
+                          <Label 
+                            htmlFor="bedtime-start" 
+                            value="Bedtime start" 
+                          />
+                        </div>
+                        <TextInput
+                          id="bedtime-start"
+                          name="anti_addiction.bedtime_grayscale.start_time"
+                          type="time"
+                          value={formData?.anti_addiction?.bedtime_grayscale?.start_time || "22:00"}
+                          onChange={handleFormChange}
+                          disabled={!formData?.anti_addiction?.bedtime_grayscale?.enabled}
+                        />
+                      </div>
+                      <div>
+                        <div className="mb-2 block">
+                          <Label 
+                            htmlFor="bedtime-end" 
+                            value="Bedtime end" 
+                          />
+                        </div>
+                        <TextInput
+                          id="bedtime-end"
+                          name="anti_addiction.bedtime_grayscale.end_time"
+                          type="time"
+                          value={formData?.anti_addiction?.bedtime_grayscale?.end_time || "06:00"}
+                          onChange={handleFormChange}
+                          disabled={!formData?.anti_addiction?.bedtime_grayscale?.enabled}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="mb-4">
+                    <h3 className="mb-3 text-lg font-medium text-gray-900 dark:text-white">
+                      Healthy Usage Rewards
+                    </h3>
+                    
+                    <div className="mb-3">
+                      <div className="flex items-center gap-2">
+                        <ToggleSwitch
+                          checked={formData?.anti_addiction?.gamification_enabled || false}
+                          onChange={(checked) => 
+                            setFormData({
+                              ...formData,
+                              anti_addiction: {
+                                ...formData.anti_addiction,
+                                gamification_enabled: checked
+                              }
+                            })
+                          }
+                          id="gamification-enabled"
+                          name="anti_addiction.gamification_enabled"
+                        />
+                        <Label htmlFor="gamification-enabled">
+                          Enable healthy usage rewards
+                        </Label>
+                      </div>
+                      <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                        Earn badges and achievements for maintaining balanced app usage
+                      </p>
+                    </div>
+                  </div>
+                  
+                  <Button type="submit">Update Settings</Button>
                 </form>
               </div>
             </div>
