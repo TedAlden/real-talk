@@ -136,6 +136,74 @@ export const userUpdateSchema = {
   "mfa.enabled": {
     in: ["body"],
   },
+  "anti_addiction.daily_limit_mins": {
+    in: ["body"],
+    optional: { options: { checkFalsy: true } },
+    isInt: {
+      options: { min: 1, max: 1440 },
+      errorMessage: "Daily limit must be between 1 and 1440 minutes",
+    },
+    toInt: true,
+  },
+  "anti_addiction.grayscale_threshold": {
+    in: ["body"],
+    optional: { options: { checkFalsy: true } },
+    isFloat: {
+      options: { min: 0, max: 1 },
+      errorMessage: "Grayscale threshold must be between 0 and 1",
+    },
+    toFloat: true,
+  },
+  "anti_addiction.grayscale_enabled": {
+    in: ["body"],
+    optional: { options: { checkFalsy: true } },
+    isBoolean: {
+      errorMessage: "Grayscale enabled must be a boolean",
+    },
+    toBoolean: true,
+  },
+  "anti_addiction.bedtime_grayscale.enabled": {
+    in: ["body"],
+    optional: { options: { checkFalsy: true } },
+    isBoolean: {
+      errorMessage: "Bedtime grayscale enabled must be a boolean",
+    },
+    toBoolean: true,
+  },
+  "anti_addiction.bedtime_grayscale.start_time": {
+    in: ["body"],
+    optional: { options: { checkFalsy: true } },
+    matches: {
+      options: /^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/,
+      errorMessage: "Start time must be in format HH:MM",
+    },
+    trim: true,
+  },
+  "anti_addiction.bedtime_grayscale.end_time": {
+    in: ["body"],
+    optional: { options: { checkFalsy: true } },
+    matches: {
+      options: /^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/,
+      errorMessage: "End time must be in format HH:MM",
+    },
+    trim: true,
+  },
+  "anti_addiction.show_reminders": {
+    in: ["body"],
+    optional: { options: { checkFalsy: true } },
+    isBoolean: {
+      errorMessage: "Show reminders must be a boolean",
+    },
+    toBoolean: true,
+  },
+  "anti_addiction.gamification_enabled": {
+    in: ["body"],
+    optional: { options: { checkFalsy: true } },
+    isBoolean: {
+      errorMessage: "Gamification enabled must be a boolean",
+    },
+    toBoolean: true,
+  },
 };
 
 export const followIdSchema = {

@@ -88,6 +88,25 @@ export const register = async (req, res) => {
         enabled: false,
         secret: mfaSecret,
       },
+      anti_addiction: {
+        daily_limit_mins: 60, // Default 1 hour limit
+        grayscale_threshold: 0.8, // At 80% of daily limit
+        grayscale_enabled: true,
+        bedtime_grayscale: {
+          enabled: false,
+          start_time: "22:00", // 10 PM
+          end_time: "06:00", // 6 AM
+        },
+        show_reminders: true,
+        gamification_enabled: true
+      },
+      usage_stats: {
+        daily_usage: 0, // In seconds
+        last_activity: new Date(),
+        posts_today: 0,
+        last_post_date: null,
+        healthy_days_streak: 0
+      },
       is_verified: false,
       is_admin: false,
     };
