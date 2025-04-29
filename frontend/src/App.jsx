@@ -7,10 +7,7 @@ const queryClient = new QueryClient();
 import PublicLayout from "./layouts/PublicLayout";
 import PrivateLayout from "./layouts/PrivateLayout";
 
-import Navbar from "./components/public/PublicNavbar";
 import Home from "./pages/Home";
-import Login from "./pages/Login";
-import Register from "./pages/Register";
 import Landing from "./pages/Landing";
 import ForgotPassword from "./pages/ForgotPassword";
 import VerifyUser from "./pages/VerifyUser";
@@ -32,8 +29,6 @@ function App() {
               <Routes>
               <Route element={<PublicLayout />}>
                 <Route path="/" element={<Home />} />
-                <Route path="/login" element={<Landing />} />
-                <Route path="/register" element={<Landing />} />
                 <Route path="/landing" element={<Landing />} />
                 <Route path="/forgot-password" element={<ForgotPassword />} />
                 <Route path="/verify-email" element={<VerifyUser />} />
