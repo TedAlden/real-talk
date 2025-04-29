@@ -112,19 +112,27 @@ function UserProfile() {
           <img
             className="h-auto w-28 rounded-full object-cover"
             src={userData?.profile_picture}
+            data-testid="main-profile-picture"
             alt="Profile"
           />
         </div>
         <div className="col-span-4 ml-2 flex flex-col justify-start gap-2 sm:col-span-3">
           <div>
-            {" "}
-            <p className="text-xl font-semibold">
+            <p
+              data-testid="profile-full-name"
+              className="text-xl font-semibold"
+            >
               {userData.first_name} {userData.last_name}
             </p>
-            <p className="text-base">@{userData.username}</p>
+            <p data-testid="profile-username" className="text-base">
+              @{userData.username}
+            </p>
           </div>
 
-          <p className="text-base text-gray-700 dark:text-gray-300">
+          <p
+            data-testid="profile-bio"
+            className="text-base text-gray-700 dark:text-gray-300"
+          >
             {decode(userData.biography) || "No bio available"}
           </p>
           <ul className="flex text-sm">
@@ -133,7 +141,10 @@ function UserProfile() {
                 to={`/user/${userData._id}/following`}
                 className="hover:underline"
               >
-                <span className="font-semibold text-gray-900 dark:text-white">
+                <span
+                  data-testid="profile-followed-count"
+                  className="font-semibold text-gray-900 dark:text-white"
+                >
                   {followStats.followedByUser.toLocaleString()}
                 </span>
                 <span className="text-gray-600 dark:text-gray-400">
@@ -147,7 +158,10 @@ function UserProfile() {
                 to={`/user/${userData._id}/followers`}
                 className="hover:underline"
               >
-                <span className="font-semibold text-gray-900 dark:text-white">
+                <span
+                  data-testid="profile-following-count"
+                  className="font-semibold text-gray-900 dark:text-white"
+                >
                   {followStats.followingUser.toLocaleString()}
                 </span>
                 <span className="text-gray-600 dark:text-gray-400">
@@ -173,7 +187,11 @@ function UserProfile() {
 
         {viewer._id == userData._id && (
           <div className={`mb-3 p-2 ${cardStyle}`}>
-            <Composer onSubmit={fetchUserData} mode="createPost" />
+            <Composer
+              data-testid="profile-post-composer"
+              onSubmit={fetchUserData}
+              mode="createPost"
+            />
           </div>
         )}
 

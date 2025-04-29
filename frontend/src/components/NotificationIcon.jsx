@@ -49,6 +49,7 @@ export default function Notifications() {
   return (
     <Popover
       aria-labelledby="default-popover"
+      data-testid="notification-icon"
       arrow={false}
       placement="bottom-end"
       content={

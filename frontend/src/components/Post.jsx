@@ -151,12 +151,14 @@ function Post({ post, viewer, onDelete }) {
   });
   return (
     <div
+      data-testid="post"
       className={`col-span-4 mb-3 ${cardStyle} text-gray-900 dark:text-gray-100`}
     >
       <div className="flex items-start justify-between">
         <div className="flex items-center space-x-4">
           <a href={`/profile/${author?._id}`} className="shrink-0">
             <img
+              data-testid="post-profile-picture"
               className="h-auto w-12 rounded-full object-cover shadow-lg"
               src={author?.profile_picture}
               alt="Profile"
@@ -166,10 +168,14 @@ function Post({ post, viewer, onDelete }) {
             <a
               href={`/profile/${author?._id}`}
               className="text-lg font-semibold hover:underline"
+              data-testid="post-username"
             >
               @{author?.username}
             </a>
-            <p className="text-sm text-gray-500 dark:text-gray-400">
+            <p
+              data-testid="post-timestamp"
+              className="text-sm text-gray-500 dark:text-gray-400"
+            >
               Posted {getTimeAgo(post.created_at)}
               {post.updated_at !== post.created_at &&
                 ` (edited ${getTimeAgo(post.updated_at)})`}
@@ -179,7 +185,7 @@ function Post({ post, viewer, onDelete }) {
         <DropdownMenu items={getPostOptions()} />
       </div>
       {mode === "view" ? (
-        <div>
+        <div data-testid="post-content">
           {postData.media && postData.media.length > 0 && (
             <Carousel
               theme={carouselTheme}
@@ -188,6 +194,7 @@ function Post({ post, viewer, onDelete }) {
             >
               {postData.media.map((image, idx) => (
                 <img
+                  data-testid="post-image"
                   key={idx}
                   src={image}
                   className="h-full bg-gray-900 object-contain"
@@ -212,6 +219,7 @@ function Post({ post, viewer, onDelete }) {
         </div>
       ) : (
         <Composer
+          data-testid="post-editor"
           target={postData}
           mode={mode}
           onSubmit={handleEditSubmit}
@@ -223,6 +231,7 @@ function Post({ post, viewer, onDelete }) {
 
       <div className="flex items-center justify-around space-x-4 text-sm text-gray-500 dark:text-gray-400">
         <button
+          data-testid="post-like-button"
           className="m-0 flex flex-row items-center justify-items-center space-x-2 p-2"
           onClick={() => handleLike(post._id, !likes.includes(viewer._id))}
         >
@@ -235,6 +244,7 @@ function Post({ post, viewer, onDelete }) {
         <button
           className="m-0 flex flex-row items-center justify-items-center space-x-2 p-2"
           onClick={() => handleShowComments()}
+          data-testid="post-comment-button"
         >
           <FaCommentDots className="h-5 w-5 text-gray-500 hover:text-blue-500" />
           <p className="text-sm text-gray-500 dark:text-gray-400">
@@ -250,10 +260,14 @@ function Post({ post, viewer, onDelete }) {
                 Share Post
               </div>
               <div className="-p-1 mb-2 flex items-center justify-center overflow-hidden rounded-lg bg-gray-100 dark:bg-gray-700">
-                <p className="bg-gray-700 p-1 px-3 text-gray-300">
+                <p
+                  data-testid="post-share-url"
+                  className="bg-gray-700 p-1 px-3 text-gray-300"
+                >
                   {`${window.location.origin}/post/${post._id}`}
                 </p>
                 <button
+                  data-testid="post-share-copy-url-btn"
                   onClick={() => {
                     const url = `${window.location.origin}/post/${post._id}`;
                     navigator.clipboard.writeText(url).then(() => {
@@ -273,6 +287,7 @@ function Post({ post, viewer, onDelete }) {
           }
         >
           <button
+            data-testid="post-share-btn"
             className="m-0 flex flex-row items-center justify-center space-x-2 p-2"
             onClick={() => handleShare(post._id)}
           >
@@ -293,6 +308,7 @@ function Post({ post, viewer, onDelete }) {
             ))}
 
             <Composer
+              data-testid="post-comment-composer"
               target={post}
               mode={"createComment"}
               onSubmit={fetchComments}

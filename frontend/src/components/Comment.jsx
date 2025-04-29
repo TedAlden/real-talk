@@ -87,7 +87,10 @@ export default function Comment({ postId, comment, onDelete }) {
   };
 
   return (
-    <div className="flex items-start space-x-4 rounded-lg bg-gray-500 bg-opacity-10 p-2 pb-0">
+    <div
+      data-testid="comment"
+      className="flex items-start space-x-4 rounded-lg bg-gray-500 bg-opacity-10 p-2 pb-0"
+    >
       <a href={`/profile/${comment.user_id}`} className="shrink-0">
         <img
           className="mt-1 h-auto w-10 rounded-full object-cover shadow-lg"

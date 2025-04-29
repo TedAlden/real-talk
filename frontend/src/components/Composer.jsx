@@ -255,7 +255,7 @@ function Composer({ onSubmit, onCancel, target, mode }) {
         `}
       </style>
 
-      <div className={`my-3`}>
+      <div data-testid="composer" className={`my-3`}>
         <MDXEditor
           key={resetKey}
           markdown={content}
