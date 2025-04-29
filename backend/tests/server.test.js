@@ -43,6 +43,7 @@ describe("Server", () => {
 
   test("should start on default port 5001 when PORT env var is not set", async () => {
     delete process.env.PORT;
+    process.env.PORT = undefined;
     await import("../src/server.js");
 
     expect(mockListen).toHaveBeenCalledWith(5001, expect.any(Function));
