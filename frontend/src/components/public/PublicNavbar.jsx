@@ -18,7 +18,7 @@ export default function PublicNavbar() {
         <div className="flex items-center space-x-6">
           <Navbar.Collapse>
             <NavbarLink to="/" text="Home" />
-            <NavbarLink to="/landing" text="Login/ Register" />
+            <NavbarLink to="/landing" text="Login/Register" />
           </Navbar.Collapse>
 
           <DarkThemeToggle />
