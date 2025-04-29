@@ -81,21 +81,6 @@ function Login() {
               </Link>
             </div>
             <Button type="submit">Sign in</Button>
-            <div>
-              <p
-                id="helper-text-explanation"
-                className="text-sm text-gray-500 dark:text-gray-400"
-              >
-                Not registered?{" "}
-                <Link
-                  to="/register"
-                  className="font-medium text-blue-600 hover:underline dark:text-blue-500"
-                >
-                  Create an account
-                </Link>
-                .
-              </p>
-            </div>
             {Object.keys(alertMessage).length > 0 && (
               <div className="">
                 <Alert
