@@ -1,27 +1,23 @@
-import { Outlet } from "react-router-dom";
+import React from 'react';
+import { Outlet } from 'react-router-dom';
+import Sidebar from '../components/private/Sidebar';
+import TopBar from '../components/private/Topbar';
 
 export default function PrivateLayout() {
   return (
-    <div className="flex flex-col min-h-screen bg-gray-50 dark:bg-gray-900">
-      {/* Topbar */}
-      <header className="w-full bg-gray-100 dark:bg-gray-700 p-4">
-        <h1 className="text-lg font-semibold text-gray-800 dark:text-white">
-          Topbar (Logo + Timer will go here)
-        </h1>
-      </header>
+    <div className="flex min-h-screen bg-gray-50 dark:bg-gray-900">
+      {/* Sidebar */}
+      <Sidebar>
+        {/* Sidebar links will be passed as children */}
+      </Sidebar>
 
-      {/* Body area: Sidebar + Page */}
-      <div className="flex flex-1">
-        {/* Sidebar */}
-        <aside className="w-64 bg-white dark:bg-gray-800 p-4">
-          <h2 className="text-xl font-bold mb-4 text-gray-800 dark:text-white">
-            Sidebar
-          </h2>
-          {/* Sidebar links will go here */}
-        </aside>
+      {/* Main content area */}
+      <div className="flex-1 flex flex-col">
+        {/* Topbar */}
+        <TopBar />
 
-        {/* Main content area */}
-        <main className="flex-1 p-6">
+        {/* Page content */}
+        <main className="p-6 flex-1 overflow-auto">
           <Outlet />
         </main>
       </div>
