@@ -1,9 +1,9 @@
 import { Link } from "react-router-dom";
 import { Navbar, DarkThemeToggle } from "flowbite-react";
 
-import useAuth from "../hooks/useAuth";
+import useAuth from "../../hooks/useAuth";
 import NavbarLink from "./NavbarLink";
-import Notifications from "./NotificationIcon";
+import Notifications from "./../private/NotificationIcon";
 export default function MyNavbar() {
   const auth = useAuth();
 

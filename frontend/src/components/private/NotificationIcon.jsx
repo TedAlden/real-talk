@@ -4,8 +4,8 @@ import { useState, useCallback, useEffect } from "react";
 import {
   getNotificationsById,
   deleteNotification,
-} from "../api/notificationService";
-import useAuth from "../hooks/useAuth.js";
+} from "../../api/notificationService.js";
+import useAuth from "../../hooks/useAuth.js";
 import { useNavigate } from "react-router-dom";
 
 export default function Notifications() {

@@ -7,7 +7,7 @@ const queryClient = new QueryClient();
 import PublicLayout from "./layouts/PublicLayout";
 import PrivateLayout from "./layouts/PrivateLayout";
 
-import Navbar from "./components/Navbar";
+import Navbar from "./components/public/Navbar";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
