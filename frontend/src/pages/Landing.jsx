@@ -4,7 +4,7 @@ import Register from "./Register";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import useAuth from "../hooks/useAuth";
-import { motion, usePresence, AnimatePresence } from "motion/react";
+import { motion, usePresence, AnimatePresence } from "framer-motion";
 import { HiInformationCircle } from "react-icons/hi";
 import { Alert, Button, Checkbox, Label, TextInput } from "flowbite-react";
 

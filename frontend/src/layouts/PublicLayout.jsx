@@ -1,10 +1,10 @@
 import { Outlet } from "react-router-dom";
-import Navbar from "../components/public/Navbar";
+import PublicNavbar from "../components/public/PublicNavbar";
 
 export default function PublicLayout() {
   return (
     <>
-      <Navbar />
+      <PublicNavbar />
       <div className="bg-yellow-200 text-center p-2 text-sm text-black">
         Public Layout active  {/* just for testing purposes, div to be deleted */}
       </div>
