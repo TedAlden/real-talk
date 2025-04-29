@@ -2,7 +2,7 @@ import request from "supertest";
 import app from "../src/app.js";
 import { connectDB, closeDB } from "../src/database/connection.js";
 import { createTestUsers } from "./testUtils.js";
-import { jest } from "@jest/globals";
+import { jest, test } from "@jest/globals";
 import * as followersController from "../src/controllers/followers.js";
 import { ErrorMsg } from "../src/services/responseMessages.js";
 describe("Follower functionality", () => {
@@ -479,6 +479,60 @@ describe("Follower functionality", () => {
       };
 
       await followersController.isUserFollowing(mockRequest, mockRes);
+
+      expect(mockRes.status).toHaveBeenCalledWith(500);
+      expect(mockRes.json).toHaveBeenCalledWith({
+        error: "Unexpected database error",
+      });
+    });
+  });
+
+  describe("getSuggestedFollows", () => {
+    test("should return error when there is no user", async () => {
+      const mockRequest = {
+        params: {
+          id: "invalid_id",
+          method: "mutuals",
+        },
+      };
+
+      await followersController.getSuggestedFollows(mockRequest, mockRes);
+
+      expect(mockRes.status).toHaveBeenCalledWith(400);
+      expect(mockRes.json).toHaveBeenCalledWith({
+        error: ErrorMsg.NO_SUCH_ID,
+      });
+    });
+
+    test("should return error when method is invalid", async () => {
+      const mockRequest = {
+        params: {
+          id: testIds[0],
+          method: "invalid-method",
+        },
+      };
+
+      await followersController.getSuggestedFollows(mockRequest, mockRes);
+
+      expect(mockRes.status).toHaveBeenCalledWith(400);
+      expect(mockRes.json).toHaveBeenCalledWith({ error: "Invalid method" });
+    });
+
+    test("should return error response when database error occurs", async () => {
+      const collectionSpy = jest
+        .spyOn(db, "collection")
+        .mockImplementationOnce(() => {
+          throw new Error("Unexpected database error");
+        });
+
+      const mockRequest = {
+        params: {
+          id: testIds[0],
+          method: "mutuals",
+        },
+      };
+
+      await followersController.getSuggestedFollows(mockRequest, mockRes);
 
       expect(mockRes.status).toHaveBeenCalledWith(500);
       expect(mockRes.json).toHaveBeenCalledWith({
