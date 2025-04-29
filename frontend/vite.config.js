@@ -6,6 +6,6 @@ const PORT = process.env.VITE_PORT || 5002;
 
 //vite.dev/config
 export default defineConfig({
-  server: { port: PORT },
+  server: { port: PORT, allowedHosts: true },
   plugins: [react()],
 });

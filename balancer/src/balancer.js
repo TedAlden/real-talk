@@ -1,7 +1,7 @@
-import axios from 'axios';
+import axios from "axios";
 
 import { servers } from "./config.js";
-import { getTimestamp } from './utils.js';
+import { getTimestamp } from "./utils.js";
 
 let currentIndex = 0;
 
@@ -36,6 +36,9 @@ function forwardRequest(req, res, server) {
       url: new URL(req.url, server).href,
       headers: req.headers,
       data: req.body,
+      validateStatus: function (status) {
+        return status < 400;
+      },
     };
     axios(options)
       .then((response) => {
@@ -60,11 +63,17 @@ export async function loadBalance(req, res) {
     return;
   }
   // Forward request
-  await forwardRequest(req, res, server).then((response) => {
-    console.log(`[${time}] [FWD] Forwarded ${req.ip} ${req.method} ${req.url} to ${server}`);
-    res.status(response.status).send(response.data);
-  }).catch((err) => {
-    console.log(`[${time}] [ERR] Failed to forward ${req.method} ${req.url} to ${server}: ${err.message}`);
-    res.status(500).send("Failed to connect to backend");
-  });
+  await forwardRequest(req, res, server)
+    .then((response) => {
+      console.log(
+        `[${time}] [FWD] Forwarded ${req.ip} ${req.method} ${req.url} to ${server}`
+      );
+      res.status(response.status).send(response.data);
+    })
+    .catch((err) => {
+      console.log(
+        `[${time}] [ERR] Failed to forward ${req.method} ${req.url} to ${server}: ${err.message}`
+      );
+      res.status(500).send("Failed to connect to backend");
+    });
 }

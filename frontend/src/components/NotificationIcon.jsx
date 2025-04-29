@@ -62,7 +62,7 @@ export default function Notifications() {
             </h3>
           </div>
           <List className="">
-            {notifications.map((notification) => (
+            {notifications?.map((notification) => (
               <div
                 className="flex items-center space-x-2 divide-gray-200 px-3 py-2 dark:divide-gray-700"
                 key={notification._id}
