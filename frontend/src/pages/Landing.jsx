@@ -68,6 +68,7 @@ function Landing() {
 
   return auth.loggedIn ? (
     <form onSubmit={auth.logout}>
+      {/*  className="flex min-h-screen flex-col items-center justify-center bg-gray-100 p-4 dark:border-gray-700 dark:bg-gray-800" */}
       <h1 className="my-5 text-2xl font-bold text-gray-900 dark:text-white">
         Welcome
       </h1>
@@ -79,7 +80,7 @@ function Landing() {
       </Button>
     </form>
   ) : (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-gray-100 dark:border-gray-700 dark:bg-gray-800 p-4">
+    <div className="flex justify-center items-center flex-col">
       <AnimatePresence mode="wait">
         <motion.div
           key={isLogin ? "Login" : "Register"}
