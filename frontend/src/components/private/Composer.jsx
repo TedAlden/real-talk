@@ -7,7 +7,7 @@ import {
 } from "../../api/postService.js";
 import useAuth from "../../hooks/useAuth.js";
 import DOMPurify from "dompurify";
-import { convertImageBase64 } from "../util/image.js";
+import { convertImageBase64 } from "../../util/image.js";
 import {
   FileInput,
   Modal,

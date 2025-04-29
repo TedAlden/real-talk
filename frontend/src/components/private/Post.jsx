@@ -8,7 +8,7 @@ import { useCacheUpdater, useCachedUser } from "../../hooks/useUserCache";
 import Comment from "./Comment";
 import Markdown from "react-markdown";
 import { Popover, Carousel, createTheme } from "flowbite-react";
-import { getSafeObject } from "../util/defaultObjects";
+import { getSafeObject } from "../../util/defaultObjects";
 
 const defaultUser = {
   _id: "",
