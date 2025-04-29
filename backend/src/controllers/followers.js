@@ -2,6 +2,8 @@ import { connectDB } from "../database/connection.js";
 import { ObjectId } from "mongodb";
 import { ErrorMsg } from "../services/responseMessages.js";
 import { createNotification } from "./notifications.js";
+import { sampleWithoutReplacement, getTopN } from "../services/algorithms.js";
+
 /**
  * GET /users/:id/followers
  *
@@ -209,6 +211,95 @@ export const unfollowUser = async (req, res) => {
 
     const result = await db.collection("followers").deleteOne(followToDelete);
     res.status(200).json(result);
+  } catch (err) {
+    console.error("Unfollow user error:", err);
+    return res.status(500).json({ error: err.message });
+  }
+};
+
+export const getSuggestedFollows = async (req, res) => {
+  try {
+    const db = await connectDB();
+    const { id, method } = req.params;
+    const user = await db
+      .collection("users")
+      .findOne({ _id: new ObjectId(id) });
+
+    if (!user) {
+      return res.status(400).json({ error: ErrorMsg.NO_SUCH_ID });
+    }
+
+    if (method === "mutuals") {
+      const graph = await db
+        .collection("followers")
+        .aggregate([
+          {
+            $graphLookup: {
+              from: "followers",
+              startWith: "$followed_id",
+              connectFromField: "followed_id",
+              connectToField: "follower_id",
+              as: "connections",
+              maxDepth: 2,
+            },
+          },
+          { $match: { follower_id: new ObjectId(id) } },
+        ])
+        .toArray();
+
+      const mutuals = graph.flatMap((g) => g.connections);
+      const mutualsIds = mutuals.map((m) => m.follower_id);
+      const uniqueMutuals = [...new Set(mutualsIds)];
+      const suggestedMutuals = await db
+        .collection("users")
+        .find({ _id: { $in: uniqueMutuals } })
+        .toArray();
+      res.status(200).json(suggestedMutuals);
+    }
+
+    if (method === "area") {
+      const nearbyUsers = await db
+        .collection("users")
+        .find({
+          "address.city": user.address.city,
+          _id: { $ne: user._id },
+        })
+        .toArray();
+      const suggestedNearbyUsers = sampleWithoutReplacement(nearbyUsers, 10);
+      res.status(200).json(suggestedNearbyUsers);
+    }
+
+    if (method === "interests") {
+      const likedPosts = await db
+        .collection("posts")
+        .find({ likes: new ObjectId(id) })
+        .toArray();
+
+      const likedTags = likedPosts.flatMap((post) => post.tags);
+      //score by how many times user liked a post with that tag
+      const tagScores = likedTags.reduce((acc, tag) => {
+        acc[tag] = (acc[tag] || 0) + 1;
+        return acc;
+      }, {});
+
+      const likingUsers = likedPosts.flatMap((post) => post.likes);
+      //users get the tag's score every time they liked a post with that tag
+      const userScores = likingUsers.reduce((acc, user) => {
+        acc[user] = (acc[user] || 0) + tagScores[post.tags];
+        return acc;
+      }, {});
+
+      const topScorers = getTopN(userScores, 10);
+
+      const similarInterestUsers = await db
+        .collection("users")
+        .find({ _id: { $in: topScorers } })
+        .toArray();
+
+      res.status(200).json(similarInterestUsers);
+    }
+
+    return res.status(400).json({ error: "Invalid method" });
   } catch (err) {
     console.error("Unfollow user error:", err);
     return res.status(500).json({ error: err.message });
