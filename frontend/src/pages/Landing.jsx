@@ -70,7 +70,7 @@ function Landing() {
     <form onSubmit={auth.logout}>
       {/*  className="flex min-h-screen flex-col items-center justify-center bg-gray-100 p-4 dark:border-gray-700 dark:bg-gray-800" */}
       <h1 className="my-5 text-2xl font-bold text-gray-900 dark:text-white">
-        Welcome
+        Welcome!
       </h1>
       <p className="my-5 text-gray-900 dark:text-white">
         You are already logged in! Please log out to view this page.

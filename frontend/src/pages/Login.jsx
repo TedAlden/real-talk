@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import useAuth from "../hooks/useAuth";
+import { useNavigate } from "react-router-dom";
 
 import { HiInformationCircle } from "react-icons/hi";
 import { Alert, Button, Checkbox, Label, TextInput } from "flowbite-react";
@@ -10,12 +11,14 @@ function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [alertMessage, setAlertMessage] = useState({});
+  const navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
     if (username !== "" && password !== "") {
       try {
         await auth.login(username, password);
+        navigate("/profile/me")
       } catch (err) {
         setAlertMessage({
           color: "failure",

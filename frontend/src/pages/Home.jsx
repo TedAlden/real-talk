@@ -1,15 +1,24 @@
 import useAuth from "../hooks/useAuth";
+import HomeBG from "../assets/home.webp";
 
 function Home() {
   const auth = useAuth();
 
   return (
     <div>
+      {auth?.user?.username == "" ? (
       <h1 className="my-5 text-2xl font-bold text-gray-900 dark:text-white">
-        Welcome {auth?.user?.username}
+        Welcome!
       </h1>
-      <p className="text-gray-900 dark:text-white">
-        Welcome to the RealTalk homepage. Work in progress!
+      ) : (
+      <h1 className="my-5 text-2xl font-bold text-gray-900 dark:text-white">
+        Welcome back, {auth?.user?.username}
+      </h1>
+      )}
+        <img src={HomeBG} alt="home" className="h-auto w-full" />
+        <div className="inset-0 flex items-center justify-center text-4xl text-white">
+      </div>
+      <p className="text-4xl text-gray-900 dark:text-white">
       </p>
     </div>
   );
