@@ -20,19 +20,6 @@ function Landing() {
     setIsLogin((prev) => !prev);
   };
 
-  <AnimatePresence mode="wait">
-    <motion.div
-      key={isLogin ? "login" : "register"}
-      initial={{ x: 300, opacity: 0 }}
-      animate={{ x: 0, opacity: 1 }}
-      exit={{ x: 3000, y: 3000, opacity: 0 }}
-      transition={{ duration: 0.4 }}
-      className="w-full max-w-md"
-    >
-      {isLogin ? <Login /> : <Register />}
-    </motion.div>
-  </AnimatePresence>;
-
   const handleRegister = async (e) => {
     e.preventDefault();
     const response = await registerUser(username, email, password);
@@ -80,7 +67,8 @@ function Landing() {
       </Button>
     </form>
   ) : (
-    <div className="flex justify-center items-center flex-col">
+    <div className="flex flex-col items-center justify-center">
+      {/*  Handle animation between login and registration forms */}
       <AnimatePresence mode="wait">
         <motion.div
           key={isLogin ? "Login" : "Register"}
