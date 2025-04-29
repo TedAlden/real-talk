@@ -19,7 +19,11 @@ export default function MyNavbar() {
         <Navbar.Toggle />
         <div className="flex items-center space-x-6">
           <Navbar.Collapse>
-            <NavbarLink to="/" text="Home" />
+            <NavbarLink
+              to="/"
+              text = "Home">
+              <img src="/realtalk.svg" alt="Home" />
+            </NavbarLink>
             {auth.loggedIn ? (
               <>
                 <NavbarLink to="/profile/me" text="Profile" />
@@ -32,8 +36,7 @@ export default function MyNavbar() {
               </>
             ) : (
               <>
-                <NavbarLink to="/login" text="Login" />
-                <NavbarLink to="/register" text="Register" />
+                <NavbarLink to="/landing" text="Login/ Register" />
               </>
             )}
           </Navbar.Collapse>
