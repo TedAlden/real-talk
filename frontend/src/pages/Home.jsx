@@ -15,7 +15,7 @@ function Home() {
         Welcome back, {auth?.user?.username}
       </h1>
       )}
-        <img src={HomeBG} alt="home" className="h-auto w-full" />
+        <img src={HomeBG} alt="home" className="h-auto w-full border-2 border-gray-900 rounded-lg" />
         <div className="inset-0 flex items-center justify-center text-4xl text-white">
       </div>
       <p className="text-4xl text-gray-900 dark:text-white">
