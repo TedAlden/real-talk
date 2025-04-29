@@ -28,7 +28,7 @@ function App() {
       <Router>
         <AuthProvider>
           <QueryClientProvider client={queryClient}>
-            <div className="container mx-auto">
+            <div className="container min-w-full">
               <Routes>
               <Route element={<PublicLayout />}>
                 <Route path="/" element={<Home />} />
