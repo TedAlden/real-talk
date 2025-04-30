@@ -229,20 +229,21 @@ export const getSuggestedFollows = async (req, res) => {
       return res.status(400).json({ error: ErrorMsg.NO_SUCH_ID });
     }
 
-    if (method === "mutuals") {
-      const followeds = await db
-        .collection("followers")
-        .find({ follower_id: new ObjectId(id) })
-        .toArray();
-      const followeds_ids = followeds.map((f) => f.followed_id);
+    const followeds = await db
+      .collection("followers")
+      .find({ follower_id: new ObjectId(id) })
+      .toArray();
+    const followeds_ids = followeds.map((f) => f.followed_id);
+    const excludeIds = [user._id, ...followeds_ids];
 
+    if (method === "mutuals") {
       const topMutualFollowers = await db
         .collection("followers")
         .aggregate([
           {
             $match: {
               followed_id: { $in: followeds_ids },
-              follower_id: { $ne: new ObjectId(id) },
+              follower_id: { $nin: excludeIds },
             },
           },
           {
@@ -282,7 +283,7 @@ export const getSuggestedFollows = async (req, res) => {
         .collection("users")
         .find({
           "address.city": user.address.city,
-          _id: { $ne: user._id },
+          _id: { $nin: excludeIds },
         })
         .toArray();
       const suggestedNearbyUsers = _.sampleSize(nearbyUsers, maxSuggestions);
@@ -319,17 +320,19 @@ export const getSuggestedFollows = async (req, res) => {
           acc[tag] = likeCount;
           return acc;
         }, {});
+      const excludeIDsStr = excludeIds.map((oid) => oid.toString());
+      const filteredPosts = likedPosts.filter(
+        (post) => !excludeIDsStr.includes(post.userId.toString())
+      );
 
-      const userScores = likedPosts
-        .filter((post) => post.userId.toString() !== id.toString())
-        .reduce((acc, post) => {
-          if (!tagScores[post.tag]) {
-            return acc;
-          }
-          acc[post.userId] =
-            (acc[post.userId] || 0) + tagScores[post.tag] * post.likeCount;
+      const userScores = filteredPosts.reduce((acc, post) => {
+        if (!tagScores[post.tag]) {
           return acc;
-        }, {});
+        }
+        acc[post.userId] =
+          (acc[post.userId] || 0) + tagScores[post.tag] * post.likeCount;
+        return acc;
+      }, {});
 
       const topScorers = _.chain(userScores)
         .toPairs()

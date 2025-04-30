@@ -11,17 +11,24 @@ describe("Follower functionality", () => {
   let testUsers;
   let mockRes;
 
+  const testCities = [
+    { address: { city: "London" } },
+    { address: { city: "New York" } },
+    { address: { city: "London" } },
+    { address: { city: "London" } },
+    { address: { city: "Tokyo" } },
+    { address: { city: "London" } },
+  ];
+
   beforeAll(async () => {
     db = await connectDB();
     // Insert test users
-    const testCities = [
-      { address: { city: "London" } },
-      { address: { city: "New York" } },
-      { address: { city: "London" } },
-      { address: { city: "London" } },
-      { address: { city: "Tokyo" } },
-      { address: { city: "Paris" } },
-    ];
+  });
+
+  beforeEach(async () => {
+    await db.collection("followers").deleteMany({});
+    await db.collection("users").deleteMany({});
+    await db.collection("posts").deleteMany({});
     const createdUsers = await createTestUsers(db, 6, testCities);
     testUsers = createdUsers.users;
     testIds = createdUsers.insertedIds;
@@ -576,10 +583,15 @@ describe("Follower functionality", () => {
           follower_id: testIds[0],
           followed_id: testIds[5],
         },
-        // 1 only likes 3, 0 mutuals
+        // 1 follows both 4 and 5, 2 mutuals
         {
           follower_id: testIds[1],
-          followed_id: testIds[3],
+          followed_id: testIds[4],
+        },
+        // 1 follows both 4 and 5, 2 mutuals
+        {
+          follower_id: testIds[1],
+          followed_id: testIds[5],
         },
         // 2 follows 4 only, 1 mutual
         {
@@ -595,11 +607,16 @@ describe("Follower functionality", () => {
           follower_id: testIds[3],
           followed_id: testIds[5],
         },
+        // 0 alraedy follow 3
+        {
+          follower_id: testIds[0],
+          followed_id: testIds[3],
+        },
       ]);
 
       const expectedResponse = [
         {
-          ...testUsers[3],
+          ...testUsers[1],
           mutualCount: 2,
         },
         {
@@ -629,11 +646,19 @@ describe("Follower functionality", () => {
         },
       };
 
+      await db.collection("followers").insertOne(
+        // 0 already follows 3
+        {
+          follower_id: testIds[0],
+          followed_id: testIds[3],
+        }
+      );
+
       await followersController.getSuggestedFollows(mockRequest, mockRes);
 
       expect(mockRes.status).toHaveBeenCalledWith(200);
       expect(mockRes.json).toHaveBeenCalledWith(
-        expect.arrayContaining([testUsers[2], testUsers[3]])
+        expect.arrayContaining([testUsers[2], testUsers[5]])
       );
       expect(mockRes.json.mock.calls[0][0].length).toBe(2);
     });
@@ -641,15 +666,22 @@ describe("Follower functionality", () => {
     test("should return suggested follows based on interests", async () => {
       //0 likes sports 2x, art 1x
       await db.collection("posts").insertMany([
-        { likes: [testIds[0], testIds[1]], tags: ["art"] },
+        { likes: [testIds[0], testIds[1], testIds[4]], tags: ["art"] },
         { likes: [testIds[0], testIds[1]], tags: ["art"] },
         { likes: [testIds[0]], tags: ["art", "gaming"] },
-        { likes: [testIds[1]], tags: ["art"] },
+        { likes: [testIds[1], testIds[4]], tags: ["art"] },
         { likes: [testIds[2]], tags: ["gaming", "sports"] },
         { likes: [testIds[2]], tags: ["gaming", "travel"] },
         { likes: [testIds[1], testIds[2], testIds[3]], tags: ["travel"] },
         { likes: [testIds[2], testIds[3]], tags: ["sports"] },
       ]);
+      await db.collection("followers").insertOne(
+        // 0 already follows 4
+        {
+          follower_id: testIds[0],
+          followed_id: testIds[4],
+        }
+      );
 
       const expectedResponse = [
         {
@@ -670,18 +702,9 @@ describe("Follower functionality", () => {
       };
 
       await followersController.getSuggestedFollows(mockRequest, mockRes);
-      const actualResponse = mockRes.json.mock.calls[0][0];
 
       expect(mockRes.status).toHaveBeenCalledWith(200);
-      expect(actualResponse.length).toBe(expectedResponse.length);
-      expectedResponse.forEach((expected) => {
-        expect(actualResponse).toContainEqual(
-          expect.objectContaining({
-            _id: expected._id,
-            interestScore: expected.interestScore,
-          })
-        );
-      });
+      expect(mockRes.json).toHaveBeenCalledWith(expectedResponse);
     });
   });
 });
