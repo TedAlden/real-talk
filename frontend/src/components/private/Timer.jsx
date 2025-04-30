@@ -25,12 +25,12 @@ function Timer() {
   const handleLogout = () => setIsLogin(false);
 
   return (
-    <div>
+    <>
       <Progress progress={progressLabel} size="xl" />
-      <p>{timerMinutes}:{String(timerSeconds).padStart(2, "0")}</p>
+      <div className="absolute flex inset-y-5 inset-x-80 justify-center inset">{timerMinutes}:{String(timerSeconds).padStart(2, "0")}</div>
       {/* <Button onClick={resetCountdownTimer}></Button> */}
       {/* <Button onClick={handleLogin}>Start Timer</Button> */}
-    </div>
+      </>
   );
 }
 
