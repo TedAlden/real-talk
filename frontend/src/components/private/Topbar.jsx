@@ -9,7 +9,7 @@ export default function TopBar() {
         <span className="text-xl font-bold text-gray-900 transition-colors duration-300 dark:text-white">
           RealTalk
         </span>
-        <span className="w-full bg-white px-6 shadow-md dark:bg-gray-800">
+        <span className="w-full bg-white px-6 dark:bg-gray-800">
           <Timer />
         </span>
       </header>
