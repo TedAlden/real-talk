@@ -1,32 +1,56 @@
-  import "./App.css";
-  import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-  import AuthProvider from "./context/AuthProvider";
-  import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-  const queryClient = new QueryClient();
+import "./App.css";
+import { useState } from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import AuthProvider from "./context/AuthProvider";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
-  import PublicLayout from "./layouts/PublicLayout";
-  import PrivateLayout from "./layouts/PrivateLayout";
+const queryClient = new QueryClient();
 
-  import Home from "./pages/Home";
-  import Landing from "./pages/Landing";
-  import ForgotPassword from "./pages/ForgotPassword";
-  import VerifyUser from "./pages/VerifyUser";
-  import ResetPassword from "./pages/ResetPassword";
-  import UserSettings from "./pages/UserSettings";
-  import EnterOTP from "./pages/EnterOTP";
-  import UserProfile from "./pages/UserProfile";
-  import Followers from "./pages/Followers";
-  import Following from "./pages/Following";
-  import SinglePost from "./pages/SinglePost";
+import PublicLayout from "./layouts/PublicLayout";
+import PrivateLayout from "./layouts/PrivateLayout";
 
-  function App() {
-    return (
-      <div className="rt-app bg-gray-50 dark:bg-gray-900">
-        <Router>
-          <AuthProvider>
-            <QueryClientProvider client={queryClient}>
-              <div className="container min-w-full">
-                <Routes>
+import Home from "./pages/Home";
+import Landing from "./pages/Landing";
+import ForgotPassword from "./pages/ForgotPassword";
+import VerifyUser from "./pages/VerifyUser";
+import ResetPassword from "./pages/ResetPassword";
+import UserSettings from "./pages/UserSettings";
+import EnterOTP from "./pages/EnterOTP";
+import UserProfile from "./pages/UserProfile";
+import Followers from "./pages/Followers";
+import Following from "./pages/Following";
+import SinglePost from "./pages/SinglePost";
+
+function App() {
+  const [grayscale, setGrayscale] = useState(0); // 0 = full color, 1 = full grayscale
+
+  return (
+    <div
+      className="rt-app bg-gray-50 dark:bg-gray-900"
+      style={{ filter: `grayscale(${grayscale})` }}
+    >
+      <Router>
+        <AuthProvider>
+          <QueryClientProvider client={queryClient}>
+            <div className="container min-w-full">
+
+              {/* Grayscale dev slider — remove in production */}
+              <div className="p-4">
+                <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                  Grayscale Level: {grayscale}
+                </label>
+                <input
+                  type="range"
+                  min="0"
+                  max="1"
+                  step="0.01"
+                  value={grayscale}
+                  onChange={(e) => setGrayscale(e.target.value)}
+                  className="w-full"
+                />
+              </div>
+
+              <Routes>
                 <Route element={<PublicLayout />}>
                   <Route path="/" element={<Home />} />
                   <Route path="/landing" element={<Landing />} />
@@ -43,13 +67,13 @@
                   <Route path="/user/:id/following" element={<Following />} />
                   <Route path="/post/:id" element={<SinglePost />} />
                 </Route>
-                </Routes>
-              </div>
-            </QueryClientProvider>
-          </AuthProvider>
-        </Router>
-      </div>
-    );
-  }
+              </Routes>
+            </div>
+          </QueryClientProvider>
+        </AuthProvider>
+      </Router>
+    </div>
+  );
+}
 
-  export default App;
+export default App;
