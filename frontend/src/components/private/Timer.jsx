@@ -5,6 +5,8 @@ import usePersistentTimer from "../../hooks/usePersistentTimer";
 function Timer() {
   const [isLogin, setIsLogin] = useState(false);
 
+  const totalTimeInSeconds = 1200;
+
   const {
     timeRemaining,
     loginDate,
@@ -17,15 +19,17 @@ function Timer() {
     // onTimeRunout: () => setIsLogin(false),
   });
 
-  const progressLabel = timeRemaining / timerSeconds;
+  const progressLabel = ((totalTimeInSeconds - timeRemaining) / totalTimeInSeconds) * 100;
 
   const handleLogin = () => setIsLogin(true);
   const handleLogout = () => setIsLogin(false);
 
   return (
     <div>
-      <Progress progress={progressLabel} size="xl" labelProgress="45%" />
-      <Button onClick={resetCountdownTimer}></Button>
+      <Progress progress={progressLabel} size="xl" />
+      <p>{timerMinutes}:{String(timerSeconds).padStart(2, "0")}</p>
+      {/* <Button onClick={resetCountdownTimer}></Button> */}
+      {/* <Button onClick={handleLogin}>Start Timer</Button> */}
     </div>
   );
 }
