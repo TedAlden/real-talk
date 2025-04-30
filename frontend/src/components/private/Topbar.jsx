@@ -1,12 +1,18 @@
-import React from 'react';
+import React from "react";
+import Timer from "./Timer";
 
 export default function TopBar() {
   return (
-    <header className="w-full h-16 bg-white dark:bg-gray-800 shadow-md flex items-center px-6">
-      {/* Logo */}
-      <span className="transition-colors duration-300 text-gray-900 dark:text-white font-bold text-xl">
-        RealTalk
-      </span>
-    </header>
+    <>
+      <header className="flex h-16 w-full items-center justify-between bg-white px-6 shadow-md dark:bg-gray-800">
+        {/* Logo */}
+        <span className="text-xl font-bold text-gray-900 transition-colors duration-300 dark:text-white">
+          RealTalk
+        </span>
+        <span className="w-full bg-white px-6 shadow-md dark:bg-gray-800">
+          <Timer />
+        </span>
+      </header>
+    </>
   );
 }
