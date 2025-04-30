@@ -19,18 +19,31 @@ function Timer() {
     // onTimeRunout: () => setIsLogin(false),
   });
 
-  const progressLabel = ((totalTimeInSeconds - timeRemaining) / totalTimeInSeconds) * 100;
+  const progressLabel =
+    100 - ((totalTimeInSeconds - timeRemaining) / totalTimeInSeconds) * 100;
 
   const handleLogin = () => setIsLogin(true);
   const handleLogout = () => setIsLogin(false);
 
   return (
-    <>
-      <Progress progress={progressLabel} size="xl" />
-      <div className="absolute flex inset-y-5 inset-x-80 justify-center dark:text-white pointer-events-none">{timerMinutes}:{String(timerSeconds).padStart(2, "0")}</div>
-      {/* <Button onClick={resetCountdownTimer}></Button> */}
-      {/* <Button onClick={handleLogin}>Start Timer</Button> */}
-      </>
+    <div>
+      <div className="flex justify-center">
+        <div className="pointer-events-none absolute dark:text-white">
+          {timerMinutes}:{String(timerSeconds).padStart(2, "0")}
+        </div>
+      </div>
+      <div class="">
+        <div>
+          <Progress progress={progressLabel} size="xl" />
+        </div>
+        <div class="inline-block">
+          <Button onClick={resetCountdownTimer}></Button>
+        </div>
+        <div class="inline-block">
+          <Button onClick={handleLogin}>Start</Button>
+        </div>
+      </div>
+    </div>
   );
 }
 
