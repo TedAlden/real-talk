@@ -2,7 +2,7 @@ import React from "react";
 import { Outlet } from "react-router-dom";
 import Sidebar, { SidebarItem } from "../components/private/Sidebar";
 import TopBar from "../components/private/Topbar";
-import { User, House, Users, TrendingUp, Bell, Power } from "lucide-react";
+import { User, House, Users, TrendingUp, Bell, Settings } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 export default function PrivateLayout() {
@@ -18,7 +18,9 @@ export default function PrivateLayout() {
           <SidebarItem icon={<House className="h-6 w-6" />} text="Home" />
         </div>
         <div>
-          <SidebarItem icon={<TrendingUp className="h-6 w-6" />} text="Trending"
+          <SidebarItem
+            icon={<TrendingUp className="h-6 w-6" />}
+            text="Trending"
           />
         </div>
         <div onClick={() => navigate("/followers")}>
@@ -31,6 +33,12 @@ export default function PrivateLayout() {
           <SidebarItem
             icon={<Bell className="h-6 w-6" />}
             text="Notifications"
+          />
+        </div>
+        <div onClick={() => navigate("/settings")}>
+          <SidebarItem
+            icon={<Settings className="h-6 w-6" />}
+            text="Settings"
           />
         </div>
       </Sidebar>
