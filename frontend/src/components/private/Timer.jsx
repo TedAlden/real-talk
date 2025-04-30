@@ -13,6 +13,7 @@ function Timer() {
     usePersistentTimer({
       totalTimeInSeconds,
       isTimerActive: auth.loggedIn,
+      // Auto logout line VVVVVVVVVVVVVVVVVV
       onTimeRunout: logout,
     });
 
