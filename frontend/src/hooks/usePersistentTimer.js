@@ -8,7 +8,7 @@ const usePersistentTimer = ({
   isTimerActive,
   onTimeRunout,
 }) => {
-  const getLoginDate = () => new Date();
+  const getLoginDate = () => new Date().toISOString().split("T")[0];
 
   const getStoredValues = () => {
     const storedTime = localStorage.getItem(timerKey);
