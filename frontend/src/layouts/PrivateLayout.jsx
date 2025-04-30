@@ -2,7 +2,7 @@ import React from 'react';
 import { Outlet } from 'react-router-dom';
 import Sidebar, { SidebarItem } from '../components/private/Sidebar';
 import TopBar from '../components/private/Topbar';
-import { User, House, Users, TrendingUp, Bell, Power } from 'lucide-react';
+import { User, House, Users, TrendingUp, Bell, Settings } from 'lucide-react';
 
 export default function PrivateLayout() {
   return (
@@ -17,6 +17,7 @@ export default function PrivateLayout() {
         <SidebarItem icon={<Users className="w-6 h-6" />} text="Network" />
         <SidebarItem icon={<User className="w-6 h-6" />} text="Profile" />
         <SidebarItem icon={<Bell className="w-6 h-6" />} text="Notifications" />
+        <SidebarItem icon={<Settings className="w-6 h-6" />} text="Settings" />
       </Sidebar>
 
       {/* Main content area */}
