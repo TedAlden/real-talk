@@ -27,7 +27,7 @@ function Timer() {
   return (
     <>
       <Progress progress={progressLabel} size="xl" />
-      <div className="absolute flex inset-y-5 inset-x-80 justify-center inset">{timerMinutes}:{String(timerSeconds).padStart(2, "0")}</div>
+      <div className="absolute flex inset-y-5 inset-x-80 justify-center pointer-events-none">{timerMinutes}:{String(timerSeconds).padStart(2, "0")}</div>
       {/* <Button onClick={resetCountdownTimer}></Button> */}
       {/* <Button onClick={handleLogin}>Start Timer</Button> */}
       </>
