@@ -242,6 +242,14 @@ function Composer({ onSubmit, onCancel, target, mode }) {
             padding: 0.2rem 0rem 0rem 0rem; 
           }
 
+          .mdxeditor .mdxeditor-toolbar button:hover {
+          background-color: #e5e7eb;
+        }
+
+          .dark .mdxeditor .mdxeditor-toolbar button:hover {
+          background-color: #374151; /* dark mode hover (gray-700) */
+      }
+
           .indicators: {
         }
      
