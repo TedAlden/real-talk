@@ -1,7 +1,8 @@
 import React from 'react';
 import { Outlet } from 'react-router-dom';
-import Sidebar from '../components/private/Sidebar';
+import Sidebar, { SidebarItem } from '../components/private/Sidebar';
 import TopBar from '../components/private/Topbar';
+import { User, House, Users, TrendingUp, Power } from 'lucide-react';
 
 export default function PrivateLayout() {
   return (
@@ -9,6 +10,12 @@ export default function PrivateLayout() {
       {/* Sidebar */}
       <Sidebar>
         {/* Sidebar links will be passed as children */}
+
+        {/* Profile navigation item */}
+        <SidebarItem icon={<House className="w-6 h-6" />} text="Home" />
+        <SidebarItem icon={<TrendingUp className="w-6 h-6" />} text="Trending" />
+        <SidebarItem icon={<Users className="w-6 h-6" />} text="Network" />
+        <SidebarItem icon={<User className="w-6 h-6" />} text="Profile" />
       </Sidebar>
 
       {/* Main content area */}
