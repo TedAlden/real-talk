@@ -3,9 +3,11 @@ import HomeBG from "../assets/home.webp";
 
 function Home() {
   const auth = useAuth();
-
+  console.log(auth)
   return (
+    // Print
     // Print welcome message
+    
     <div>
       {auth?.user?.username ? (
         <h1 className="my-5 text-2xl font-bold text-gray-900 dark:text-white">
