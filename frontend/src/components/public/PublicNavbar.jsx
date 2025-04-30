@@ -19,6 +19,7 @@ export default function PublicNavbar() {
           <Navbar.Collapse>
             <NavbarLink to="/" text="Home" />
             <NavbarLink to="/landing" text="Login/Register" />
+            <NavbarLink to="/profile/me" text="Profile" />
           </Navbar.Collapse>
 
           <DarkThemeToggle />
