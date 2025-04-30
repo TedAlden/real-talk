@@ -7,15 +7,14 @@ function Timer() {
   const auth = useAuth();
   const totalTimeInSeconds = 1200;
 
-  const {
-    timeRemaining,
-    timerMinutes,
-    timerSeconds,
-    resetCountdownTimer,
-  } = usePersistentTimer({
-    totalTimeInSeconds,
-    isTimerActive: auth.loggedIn,
-  });
+  const { logout } = useAuth();
+
+  const { timeRemaining, timerMinutes, timerSeconds, resetCountdownTimer } =
+    usePersistentTimer({
+      totalTimeInSeconds,
+      isTimerActive: auth.loggedIn,
+      onTimeRunout: logout,
+    });
 
   const progressLabel =
     100 - ((totalTimeInSeconds - timeRemaining) / totalTimeInSeconds) * 100;
