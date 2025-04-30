@@ -49,15 +49,17 @@ export default function Sidebar({ children }) {
           <ul className="flex-1 px-3">{children}</ul>
         </SidebarContext.Provider>
 
-        <div className="border-t p-3">
+        <div className="border-t flex items-center justify-center p-3">
           <button
             onClick={handleLogout}
-            className="flex items-center w-full text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-gray-700 p-2 rounded transition-colors"
-          >
+            className={`flex items-center w-full h-12 px-3 rounded transition-colors text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-gray-700 ${
+              expanded ? "justify-start" : "justify-center"
+            }`}
+            >
             <LuPower className="w-6 h-6 flex-shrink-0" />
             <span
-              className={`ml-3 overflow-hidden transition-all ${
-                expanded ? "w-auto" : "w-0"
+              className={`overflow-hidden transition-all ${
+                expanded ? "ml-3 w-auto" : "w-0"
               }`}
             >
               Sign out
