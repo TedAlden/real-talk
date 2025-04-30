@@ -2,6 +2,8 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import useAuth from "../hooks/useAuth";
 import { useNavigate } from "react-router-dom";
+import Timer from "../components/private/Timer";
+import usePersistentTimer from "../hooks/usePersistentTimer";
 
 import { HiInformationCircle } from "react-icons/hi";
 import { Alert, Button, Checkbox, Label, TextInput } from "flowbite-react";
@@ -18,7 +20,9 @@ function Login() {
     if (username !== "" && password !== "") {
       try {
         await auth.login(username, password);
-        navigate("/profile/me")
+        navigate("/profile/me");
+        setIsLogin(true);
+        localStorage.setItem("isLoggedIn", "true");
       } catch (err) {
         setAlertMessage({
           color: "failure",

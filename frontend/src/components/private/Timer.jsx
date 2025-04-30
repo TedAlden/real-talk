@@ -32,9 +32,17 @@ function Timer() {
           {timerMinutes}:{String(timerSeconds).padStart(2, "0")}
         </div>
       </div>
-      <Progress progress={progressLabel} size="xl" />
-      {/* <Button onClick={resetCountdownTimer}></Button>
-      <Button onClick={handleLogin}>Start Timer</Button> */}
+      <div class="">
+        <div>
+          <Progress progress={progressLabel} size="xl" />
+        </div>
+        <div class="inline-block">
+          <Button onClick={resetCountdownTimer}></Button>
+        </div>
+        <div class="inline-block">
+          <Button onClick={handleLogin}>Start</Button>
+        </div>
+      </div>
     </div>
   );
 }
