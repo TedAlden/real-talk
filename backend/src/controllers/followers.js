@@ -220,7 +220,8 @@ export const getSuggestedFollows = async (req, res) => {
   const maxSuggestions = 10;
   try {
     const db = await connectDB();
-    const { id, method } = req.params;
+    const { id } = req.params;
+    const { method } = req.query;
     const user = await db
       .collection("users")
       .findOne({ _id: new ObjectId(id) });
