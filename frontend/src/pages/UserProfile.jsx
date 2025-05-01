@@ -101,7 +101,7 @@ function UserProfile() {
   if (loading) return <Spinner className="p-16 text-center" size="xl" />;
 
   return isUserFound ? (
-    <div className="m-4 grid w-full grid-cols-7 gap-6">
+    <div className="mx-4 mt-4 grid w-full grid-cols-7 gap-6">
       <div className="col-span-2" />
       <div className="col-span-3 text-lg text-gray-900 dark:text-white">
         <div className="mb-4 grid grid-cols-4 items-center justify-center rounded-md bg-white p-4 shadow dark:border dark:border-gray-700 dark:bg-gray-800">

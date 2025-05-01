@@ -45,7 +45,7 @@ function Feed() {
 
   return (
     <div className="container mx-auto">
-      <div className="m-4 grid w-full grid-cols-7 gap-6">
+      <div className="mx-4 mt-4 grid w-full grid-cols-7 gap-6">
         <div className="col-span-2"></div>
         <div className="col-span-3">
           <div
