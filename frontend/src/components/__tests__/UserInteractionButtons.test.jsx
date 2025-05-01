@@ -1,6 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import { describe, it, expect } from "vitest";
-import UserInteractionButtons from "../private/UserInteractionButtons";
+import UserInteractionButtons from "../UserInteractionButtons";
 import * as followerAPI from "../../api/followersService";
 
 describe("UserInteractionButtons", () => {

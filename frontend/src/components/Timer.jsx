@@ -1,10 +1,10 @@
 import React from "react";
 import { Progress } from "flowbite-react";
-import usePersistentTimer from "../../hooks/usePersistentTimer";
-import useAuth from "../../hooks/useAuth";
+import usePersistentTimer from "../hooks/usePersistentTimer";
+import useAuth from "../hooks/useAuth";
 
 import { useContext, useEffect } from "react";
-import { GrayscaleContext } from "../../App";
+import { GrayscaleContext } from "../App";
 
 function Timer() {
   const auth = useAuth();

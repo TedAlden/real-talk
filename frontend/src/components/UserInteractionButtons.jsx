@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { followUser, unfollowUser } from "../../api/followersService.js";
+import { followUser, unfollowUser } from "../api/followersService.js";
 
 function UserInteractionButtons({
   viewerId,

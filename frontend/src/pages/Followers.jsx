@@ -3,7 +3,7 @@ import { getFollowersById } from "../api/followersService.js";
 import { useNavigate, useParams } from "react-router-dom";
 import _ from "lodash";
 import useAuth from "../hooks/useAuth.js";
-import UserInteractionButtons from "../components/private/UserInteractionButtons.jsx";
+import UserInteractionButtons from "../components/UserInteractionButtons.jsx";
 
 import { Spinner, Card } from "flowbite-react";
 

@@ -1,9 +1,9 @@
-import { useCachedUser } from "../../hooks/useUserCache";
-import getTimeAgo from "../../util/getTimeAgo";
-import DropdownMenu from "../shared/DropdownMenu";
-import useAuth from "../../hooks/useAuth";
+import { useCachedUser } from "../hooks/useUserCache";
+import getTimeAgo from "../util/getTimeAgo";
+import DropdownMenu from "./DropdownMenu";
+import useAuth from "../hooks/useAuth";
 import { useState, useEffect } from "react";
-import { deleteComment } from "../../api/postService";
+import { deleteComment } from "../api/postService";
 import _ from "lodash";
 import Composer from "./Composer";
 import Markdown from "react-markdown";

@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import useAuth from "../hooks/useAuth";
 import { useNavigate } from "react-router-dom";
-import Timer from "../components/private/Timer";
+import Timer from "../components/Timer";
 import usePersistentTimer from "../hooks/usePersistentTimer";
 
 import { HiInformationCircle } from "react-icons/hi";

@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { Link, useParams } from "react-router-dom";
-import Post from "../components/private/Post";
+import Post from "../components/Post";
 import useAuth from "../hooks/useAuth";
 import { getPostById } from "../api/postService";
 import { useCacheUpdater } from "../hooks/useUserCache";

@@ -1,7 +1,7 @@
 import React from "react";
 import { Outlet } from "react-router-dom";
-import Sidebar, { SidebarItem } from "../components/private/Sidebar";
-import TopBar from "../components/private/Topbar";
+import Sidebar, { SidebarItem } from "../components/Sidebar";
+import TopBar from "../components/Topbar";
 import { User, House, Users, TrendingUp, Bell, Settings } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 

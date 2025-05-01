@@ -1,14 +1,14 @@
 import { useEffect, useState } from "react";
-import getTimeAgo from "../../util/getTimeAgo";
+import getTimeAgo from "../util/getTimeAgo";
 import { FaCommentDots, FaHeart, FaShare, FaLink } from "react-icons/fa6";
-import { likePost, getPostComments, deletePostById } from "../../api/postService";
-import DropdownMenu from "../shared/DropdownMenu";
+import { likePost, getPostComments, deletePostById } from "../api/postService";
+import DropdownMenu from "./DropdownMenu";
 import Composer from "./Composer";
-import { useCacheUpdater, useCachedUser } from "../../hooks/useUserCache";
+import { useCacheUpdater, useCachedUser } from "../hooks/useUserCache";
 import Comment from "./Comment";
 import Markdown from "react-markdown";
 import { Popover, Carousel, createTheme } from "flowbite-react";
-import { getSafeObject } from "../../util/defaultObjects";
+import { getSafeObject } from "../util/defaultObjects";
 
 const defaultUser = {
   _id: "",

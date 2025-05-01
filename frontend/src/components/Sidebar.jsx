@@ -3,7 +3,7 @@ import { MoreVertical, ChevronLast, ChevronFirst } from "lucide-react";
 import { DarkThemeToggle } from "flowbite-react";
 import { LuPower } from "react-icons/lu";
 import { useNavigate } from "react-router-dom";
-import useAuth from "../../hooks/useAuth";
+import useAuth from "../hooks/useAuth";
 
 const SidebarContext = createContext()
 

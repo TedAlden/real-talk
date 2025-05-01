@@ -9,13 +9,13 @@ import _ from "lodash";
 import { getPostByQuery } from "../api/postService.js";
 import { getUserById } from "../api/userService.js";
 import useAuth from "../hooks/useAuth.js";
-import Post from "../components/private/Post.jsx";
-import Composer from "../components/private/Composer.jsx";
+import Post from "../components/Post.jsx";
+import Composer from "../components/Composer.jsx";
 import { Spinner } from "flowbite-react";
-import UserInteractionButtons from "../components/private/UserInteractionButtons.jsx";
+import UserInteractionButtons from "../components/UserInteractionButtons.jsx";
 import { useCacheUpdater } from "../hooks/useUserCache";
 import { getSafeObject } from "../util/defaultObjects.js";
-import DailyPostCounter from '../components/private/DailyPostCounter';
+import DailyPostCounter from '../components/DailyPostCounter';
 
 function UserProfile() {
   const auth = useAuth();
