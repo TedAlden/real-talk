@@ -146,14 +146,6 @@ function Post({ post, viewer, onDelete }) {
       : [
           // If the viewer is not the author of the post
           {
-            label: "Edit post",
-            action: handleEditPost,
-          },
-          {
-            label: "Delete post",
-            action: handleDeletePost,
-          },
-          {
             label: "Report post",
             action: handleReportPost,
           },
