@@ -8,4 +8,9 @@ const PORT = process.env.VITE_PORT || 5002;
 export default defineConfig({
   server: { port: PORT, allowedHosts: true },
   plugins: [react()],
+  test: {
+    globals: true,
+    environment: "jsdom",
+    setupFiles: ".src/setupTests.js"
+  }
 });
