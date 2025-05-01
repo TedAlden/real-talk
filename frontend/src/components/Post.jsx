@@ -1,71 +1,80 @@
 import { useEffect, useState } from "react";
-import getTimeAgo from "../util/getTimeAgo";
 import { FaCommentDots, FaHeart, FaShare, FaLink } from "react-icons/fa6";
+import Markdown from "react-markdown";
+
+import { Popover } from "flowbite-react";
+
 import { likePost, getPostComments, deletePostById } from "../api/postService";
+import { getUserById } from "../api/userService";
+
+import { getSafeObject } from "../util/defaultObjects";
+import { useCacheUpdater, useCachedUser } from "../hooks/useUserCache";
+import getTimeAgo from "../util/getTimeAgo";
+
 import DropdownMenu from "./DropdownMenu";
 import Composer from "./Composer";
-import { useCacheUpdater, useCachedUser } from "../hooks/useUserCache";
 import Comment from "./Comment";
-import Markdown from "react-markdown";
-import { Popover, Carousel, createTheme } from "flowbite-react";
-import { getSafeObject } from "../util/defaultObjects";
-
-const defaultUser = {
-  _id: "",
-  username: "Loading...",
-  profile_picture:
-    "https://static.vecteezy.com/system/resources/thumbnails/003/337/584/small/default-avatar-photo-placeholder-profile-icon-vector.jpg",
-};
+import PostCarousel from "./PostCarousel";
 
 function Post({ post, viewer, onDelete }) {
-  const [likes, setLikes] = useState([]);
-  const [comments, setComments] = useState([]);
+  const [postData, setPostData] = useState(getSafeObject(post, "post"));
+  const [author, setAuthor] = useState(useCachedUser(postData.user_id));
+
   const [commentsShown, setCommentsShown] = useState(false);
   const [mode, setMode] = useState("view");
-  const [postData, setPostData] = useState(post);
 
-  const author = useCachedUser(post.user_id) || defaultUser;
   const updateCache = useCacheUpdater();
 
   useEffect(() => {
-    const safePost = getSafeObject(post, "post");
-    setLikes(safePost.likes);
-    setComments(safePost.comments);
-    setPostData(safePost);
-  }, [post]);
+    // Check if the author is already in the cache, otherwise fetch it
+    if (!author) {
+      getUserById(postData.user_id)
+        .then((user) => {
+          setAuthor(user.data);
+        })
+        .catch((error) => {
+          console.error("Error fetching user data:", error);
+        });
+    }
+  }, [postData, author]);
 
   useEffect(() => {
-    if (comments && commentsShown) {
-      const commentorIds = comments.map((c) => c.user_id);
+    if (postData.comments && commentsShown) {
+      const commentorIds = postData.comments.map((comment) => comment.user_id);
       updateCache(commentorIds);
     }
-  }, [comments, commentsShown, updateCache]);
+  }, [postData, commentsShown, updateCache]);
 
   const handleLike = async (postId, isLiked) => {
-    try {
-      const response = await likePost(postId, viewer._id, isLiked);
-
-      if (response.success !== false) {
-        setLikes(
-          isLiked
-            ? [...likes, viewer._id]
-            : likes.filter((id) => id !== viewer._id),
-        );
-      }
-    } catch (error) {
-      console.error("Error (un)liking post:", error);
-    }
+    likePost(postId, viewer._id, isLiked)
+      .then((response) => {
+        if (response.success !== false) {
+          setPostData((prev) => ({
+            ...prev,
+            likes: isLiked
+              ? [...prev.likes, viewer._id]
+              : prev.likes.filter((id) => id !== viewer._id),
+          }));
+        }
+      })
+      .catch((error) => {
+        console.error("Error liking post:", error);
+      });
   };
 
   const fetchComments = async () => {
-    try {
-      const response = await getPostComments(post._id);
-      if (response.success !== false) {
-        setComments(response.data);
-      }
-    } catch (error) {
-      console.error("Error fetching comments:", error);
-    }
+    getPostComments(postData._id)
+      .then((response) => {
+        if (response.success !== false) {
+          setPostData((prev) => ({
+            ...prev,
+            comments: response.data,
+          }));
+        }
+      })
+      .catch((error) => {
+        console.error("Error fetching comments:", error);
+      });
   };
 
   const handleShowComments = () => {
@@ -76,22 +85,19 @@ function Post({ post, viewer, onDelete }) {
     }
   };
 
-  const handleShare = async (postId) => {
-    console.log("Shared post:", postId);
-  };
-
   const handleDeletePost = async () => {
-    try {
-      const response = await deletePostById(post._id);
-      if (response.success !== false) {
-        // Call the parent component's callback to handle UI updates
-        if (onDelete) {
-          onDelete(post._id);
+    deletePostById(postData._id)
+      .then((response) => {
+        if (response.success !== false) {
+          // Call the parent component's callback to handle UI updates
+          if (onDelete) {
+            onDelete(postData._id);
+          }
         }
-      }
-    } catch (error) {
-      console.error("Error deleting post:", error);
-    }
+      })
+      .catch((error) => {
+        console.error("Error deleting post:", error);
+      });
   };
 
   const handleEditPost = () => {
@@ -108,51 +114,55 @@ function Post({ post, viewer, onDelete }) {
   };
 
   const handleReportPost = () => {
-    console.log("Report post:", post._id);
+    // TODO: Implement this when admin pages exist
+
+    console.log("Report post:", postData._id);
   };
 
-  const getPostOptions = () => {
-    const items = [];
-
-    if (viewer._id === post.user_id) {
-      items.push({
-        label: "Delete post",
-        action: handleDeletePost,
-      });
-      items.push({
-        label: "Edit post",
-        action: handleEditPost,
-      });
-    }
-
-    items.push({
-      label: "Report post",
-      action: () => handleReportPost,
+  const handleCopyPostUrl = () => {
+    const url = `${window.location.origin}/post/${postData._id}`;
+    navigator.clipboard.writeText(url).then(() => {
+      const button = document.activeElement;
+      button.innerText = "Copied!";
+      setTimeout(() => {
+        button.innerText = "Copy";
+      }, 1500);
     });
-
-    return items;
   };
 
-  const cardStyle =
-    "p-4 bg-white rounded-md shadow dark:border dark:border-gray-700 dark:bg-gray-800";
-  const carouselTheme = createTheme({
-    indicators: {
-      active: {
-        off: "bg-white/50 hover:bg-white shadow-lg dark:bg-gray-200/50 dark:hover:bg-gray-200",
-        on: "bg-white dark:bg-gray-200 shadow-lg ",
-      },
-      base: "h-2 w-2 rounded-full",
-      wrapper: "absolute bottom-4 left-1/2 flex -translate-x-1/2 space-x-3",
-    },
-    control: {
-      base: "inline-flex h-8 w-8 items-center justify-center rounded-full bg-white/30 group-hover:bg-white/50 group-focus:outline-none group-focus:ring-4 group-focus:ring-white sm:h-10 sm:w-10 dark:bg-gray-100/30 dark:group-hover:bg-gray-100/60 dark:group-focus:ring-gray-100/70",
-      icon: "h-5 w-5 text-white sm:h-6 sm:w-6 dark:text-gray-900",
-    },
-  });
+  const postOptions =
+    viewer._id === postData.user_id
+      ? [
+          // If the viewer is the author of the post
+          {
+            label: "Edit post",
+            action: handleEditPost,
+          },
+          {
+            label: "Delete post",
+            action: handleDeletePost,
+          },
+        ]
+      : [
+          // If the viewer is not the author of the post
+          {
+            label: "Edit post",
+            action: handleEditPost,
+          },
+          {
+            label: "Delete post",
+            action: handleDeletePost,
+          },
+          {
+            label: "Report post",
+            action: handleReportPost,
+          },
+        ];
+
   return (
     <div
       data-testid="post"
-      className={`col-span-4 mb-4 ${cardStyle} text-gray-900 dark:text-gray-100`}
+      className="col-span-4 mb-4 rounded-md bg-white p-4 text-gray-900 shadow dark:border dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
     >
       <div className="flex items-start justify-between">
         <div className="flex items-center space-x-4">
@@ -161,7 +171,7 @@ function Post({ post, viewer, onDelete }) {
               data-testid="post-profile-picture"
               className="h-auto w-16 rounded-full object-cover shadow-lg"
               src={author?.profile_picture}
-              alt="Profile"
+              alt="Profile Picture"
             />
           </a>
           <div className="min-w-0 flex-1">
@@ -176,43 +186,19 @@ function Post({ post, viewer, onDelete }) {
               data-testid="post-timestamp"
               className="text-sm text-gray-500 dark:text-gray-400"
             >
-              Posted {getTimeAgo(post.created_at)}
-              {post.updated_at !== post.created_at &&
-                ` (edited ${getTimeAgo(post.updated_at)})`}
+              Posted {getTimeAgo(postData.created_at)}
+              {postData.updated_at !== postData.created_at &&
+                ` (edited ${getTimeAgo(postData.updated_at)})`}
             </p>
           </div>
         </div>
-        <DropdownMenu items={getPostOptions()} />
+        <DropdownMenu items={postOptions} />
       </div>
       {mode === "view" ? (
         <div data-testid="post-content">
-          {postData.media &&
-            postData.media.length > 0 &&
-            (postData.media.length > 1 ? (
-              <Carousel
-                data-testid="post-media"
-                theme={carouselTheme}
-                slide={false}
-                className="mt-4 h-96 items-start"
-              >
-                {postData.media.map((image, idx) => (
-                  <img
-                    data-testid="post-image"
-                    key={idx}
-                    src={image}
-                    className="h-full bg-gray-900 object-contain"
-                  />
-                ))}
-              </Carousel>
-            ) : (
-              <div className="mt-4 flex h-96 w-full items-center justify-center rounded-md bg-gray-900">
-                <img
-                  data-testid="post-image"
-                  src={postData.media[0]}
-                  className="h-full object-contain"
-                />
-              </div>
-            ))}
+          {postData.media && postData.media.length > 0 && (
+            <PostCarousel images={postData.media} />
+          )}
           <div data-testid="post-text" className="p-4">
             <Markdown
               components={{
@@ -246,22 +232,24 @@ function Post({ post, viewer, onDelete }) {
         <button
           data-testid="post-like-button"
           className="m-0 flex flex-row items-center justify-items-center space-x-2 p-2"
-          onClick={() => handleLike(post._id, !likes.includes(viewer._id))}
+          onClick={() =>
+            handleLike(postData._id, !postData.likes.includes(viewer._id))
+          }
         >
           <FaHeart
-            className={`h-5 w-5 ${likes.includes(viewer._id) ? "text-red-500 hover:text-red-800" : "text-gray-500 hover:text-red-500"}`}
+            className={`h-5 w-5 ${postData.likes.includes(viewer._id) ? "text-red-500 hover:text-red-800" : "text-gray-500 hover:text-red-500"}`}
           />
-          <span>{likes.length}</span>
+          <span>{postData.likes.length}</span>
         </button>
 
         <button
           className="m-0 flex flex-row items-center justify-items-center space-x-2 p-2"
-          onClick={() => handleShowComments()}
+          onClick={handleShowComments}
           data-testid="post-comment-button"
         >
           <FaCommentDots className="h-5 w-5 text-gray-500 hover:text-blue-500" />
           <p className="text-sm text-gray-500 dark:text-gray-400">
-            {comments.length}
+            {postData.comments.length}
           </p>
         </button>
 
@@ -277,20 +265,11 @@ function Post({ post, viewer, onDelete }) {
                   data-testid="post-share-url"
                   className="bg-gray-700 p-1 px-3 text-gray-300"
                 >
-                  {`${window.location.origin}/post/${post._id}`}
+                  {`${window.location.origin}/post/${postData._id}`}
                 </p>
                 <button
                   data-testid="post-share-copy-url-btn"
-                  onClick={() => {
-                    const url = `${window.location.origin}/post/${post._id}`;
-                    navigator.clipboard.writeText(url).then(() => {
-                      const button = document.activeElement;
-                      button.innerText = "Copied!";
-                      setTimeout(() => {
-                        button.innerText = "Copy";
-                      }, 1500);
-                    });
-                  }}
+                  onClick={handleCopyPostUrl}
                   className="bg-gray-500 p-2 px-4 font-semibold hover:bg-gray-100 dark:hover:bg-gray-400"
                 >
                   Copy
@@ -302,7 +281,6 @@ function Post({ post, viewer, onDelete }) {
           <button
             data-testid="post-share-btn"
             className="m-0 flex flex-row items-center justify-center space-x-2 p-2"
-            onClick={() => handleShare(post._id)}
           >
             <FaShare className="h-5 w-5 text-gray-500 hover:text-green-500" />
           </button>
@@ -311,10 +289,10 @@ function Post({ post, viewer, onDelete }) {
       <div>
         {commentsShown && (
           <div className="flex flex-col space-y-2 p-2">
-            {comments.map((comment, idx) => (
+            {postData.comments.map((comment, idx) => (
               <Comment
                 key={idx}
-                postId={post._id}
+                postId={postData._id}
                 comment={comment}
                 onDelete={fetchComments}
               />
