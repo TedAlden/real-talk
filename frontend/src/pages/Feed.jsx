@@ -6,6 +6,7 @@ import Post from "../components/Post";
 
 import useAuth from "../hooks/useAuth";
 import Composer from "../components/Composer";
+import SuggestedUsers from "../components/SuggestedUsers";
 import { getPostByQuery } from "../api/postService.js";
 
 function Feed() {
@@ -69,7 +70,9 @@ function Feed() {
             ))
           )}
         </div>
-        <div className="col-span-2"></div>
+        <div className="col-span-2">
+          <SuggestedUsers />
+        </div>
       </div>
     </div>
   );
