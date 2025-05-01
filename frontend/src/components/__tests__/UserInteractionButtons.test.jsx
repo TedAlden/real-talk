@@ -1,4 +1,4 @@
-import { render } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import { describe, it, expect } from "vitest";
 import UserInteractionButtons from "../private/UserInteractionButtons";
 import * as followerAPI from "../../api/followersService";
@@ -23,5 +23,15 @@ describe("UserInteractionButtons", () => {
       />
     );
     expect(container.firstChild).not.toBeNull();
+  });
+  it('should display "Follow" button initially', () => {
+    render(
+      <UserInteractionButtons
+        viewerId="user-1"
+        targetId="user-2"
+        isFollowing={false}
+      />
+    );
+    expect(screen.getByText('Follow')).toBeInTheDocument();
   });
 });
