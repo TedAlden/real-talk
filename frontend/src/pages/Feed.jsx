@@ -37,6 +37,13 @@ function Feed() {
     setPosts((prevPosts) => prevPosts.filter((post) => post._id !== postId));
   };
 
+  const onPostCreated = () => {
+    // Refresh posts after creating a new one
+    getPostByQuery("userId", viewer._id).then((postsResponse) => {
+      setPosts(postsResponse.data);
+    });
+  };
+
   return (
     <div className="container mx-auto">
       <div className="m-4 grid w-full grid-cols-7 gap-6">
@@ -46,7 +53,7 @@ function Feed() {
             data-testid="profile-post-composer"
             className="mb-3 rounded-md bg-white p-4 shadow dark:border dark:border-gray-700 dark:bg-gray-800"
           >
-            <Composer mode="createPost" />
+            <Composer onSubmit={onPostCreated} mode="createPost" />
           </div>
 
           {loading ? (
