@@ -52,7 +52,7 @@ function Feed() {
         <div className="col-span-3">
           <div
             data-testid="profile-post-composer"
-            className="mb-3 rounded-md bg-white p-4 shadow dark:border dark:border-gray-700 dark:bg-gray-800"
+            className="mb-4 rounded-md bg-white p-4 shadow dark:border dark:border-gray-700 dark:bg-gray-800"
           >
             <Composer onSubmit={onPostCreated} mode="createPost" />
           </div>
