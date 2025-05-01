@@ -8,6 +8,22 @@ export const getFollowingFeed = async (req, res) => {
   throw new Error("Not implemented");
 };
 
+export const getLatestFeed = async (req, res) => {
+  try {
+    const db = await connectDB();
+    const posts = await db
+      .collection("posts")
+      .find()
+      .sort({ created_at: -1 })
+      .toArray();
+
+    return res.status(200).json(posts);
+  } catch (err) {
+    console.error("Get latest feed error:", err);
+    return res.status(500).json({ error: err.message });
+  }
+};
+
 export const getTrendingFeed = async (req, res) => {
   try {
     const db = await connectDB();
