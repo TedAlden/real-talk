@@ -29,8 +29,6 @@ function Feed() {
         .catch(() => {
           setLoading(false);
         });
-    } else {
-      setLoading(false);
     }
   }, [auth]);
 
@@ -58,7 +56,9 @@ function Feed() {
           </div>
 
           {loading ? (
-            <Spinner aria-label="Extra large spinner example" size="xl" />
+            <div className="p-16 text-center">
+              <Spinner aria-label="Feed loading spinner" size="xl" />
+            </div>
           ) : (
             posts?.map((post) => (
               <Post
