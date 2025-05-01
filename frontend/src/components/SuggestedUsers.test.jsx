@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, waitFor } from "@testing-library/react";
+import { render, screen, waitFor, act } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import SuggestedUsers from "./SuggestedUsers";
 import { getSuggestedFollows } from "../api/followersService";
@@ -38,13 +38,22 @@ describe("SuggestedUsers", () => {
     });
   });
 
-  it("returns null when method is invalid", () => {
-    const { container } = render(<SuggestedUsers method="invalid" />);
+  it("returns null when method is invalid", async () => {
+    const originalConsoleError = console.error;
+    console.error = vi.fn();
+    let container;
+    await act(async () => {
+      const result = render(<SuggestedUsers method="invalid" />);
+      container = result.container;
+    });
     expect(container).toBeEmptyDOMElement();
+    console.error = originalConsoleError;
   });
 
   it("fetches suggestions on render", async () => {
-    render(<SuggestedUsers />);
+    await act(async () => {
+      render(<SuggestedUsers method="mutuals" />);
+    });
 
     await waitFor(() => {
       expect(useAuth().getUser).toHaveBeenCalled();
@@ -56,7 +65,9 @@ describe("SuggestedUsers", () => {
   });
 
   it("displays the correct mutual follows", async () => {
-    render(<SuggestedUsers />);
+    await act(async () => {
+      render(<SuggestedUsers method="mutuals" />);
+    });
 
     expect(await screen.findByText("2 mutual follows")).toBeInTheDocument();
     expect(await screen.findByText("1 mutual follow")).toBeInTheDocument();
