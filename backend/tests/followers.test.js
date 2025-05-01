@@ -509,6 +509,8 @@ describe("Follower functionality", () => {
       const mockRequest = {
         params: {
           id: "invalid_id",
+        },
+        query: {
           method: "mutuals",
         },
       };
@@ -525,6 +527,8 @@ describe("Follower functionality", () => {
       const mockRequest = {
         params: {
           id: "67db47aaaaaaaa4e3b02d37f",
+        },
+        query: {
           method: "mutuals",
         },
       };
@@ -540,7 +544,9 @@ describe("Follower functionality", () => {
       const mockRequest = {
         params: {
           id: testIds[0],
-          method: "invalid-method",
+        },
+        query: {
+          method: "invalid",
         },
       };
 
@@ -560,6 +566,8 @@ describe("Follower functionality", () => {
       const mockRequest = {
         params: {
           id: testIds[0],
+        },
+        query: {
           method: "mutuals",
         },
       };
@@ -628,6 +636,8 @@ describe("Follower functionality", () => {
       const mockRequest = {
         params: {
           id: testIds[0],
+        },
+        query: {
           method: "mutuals",
         },
       };
@@ -642,6 +652,8 @@ describe("Follower functionality", () => {
       const mockRequest = {
         params: {
           id: testIds[0],
+        },
+        query: {
           method: "area",
         },
       };
@@ -697,6 +709,8 @@ describe("Follower functionality", () => {
       const mockRequest = {
         params: {
           id: testIds[0],
+        },
+        query: {
           method: "interests",
         },
       };
