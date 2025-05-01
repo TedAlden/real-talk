@@ -1,8 +1,13 @@
 import "./App.css";
-import { useState } from "react";
+import React, { useState, createContext } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import AuthProvider from "./context/AuthProvider";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+
+// 1) Create the context so Timer can flip it
+export const GrayscaleContext = createContext({
+  setGrayscale: (/* value */) => {},
+});
 
 const queryClient = new QueryClient();
 
@@ -22,19 +27,21 @@ import Following from "./pages/Following";
 import SinglePost from "./pages/SinglePost";
 
 function App() {
-  const [grayscale, setGrayscale] = useState(0); // 0 = full color, 1 = full grayscale
+  const [grayscale, setGrayscale] = useState(0);
 
   return (
-    <div
-      className="rt-app bg-gray-50 dark:bg-gray-900"
-      style={{ filter: `grayscale(${grayscale})` }}
-    >
+    <GrayscaleContext.Provider value={{ setGrayscale }}>
+      <div
+        className="rt-app bg-gray-50 dark:bg-gray-900"
+        style={{ filter: `grayscale(${grayscale})` }}
+      >
       <Router>
         <AuthProvider>
           <QueryClientProvider client={queryClient}>
             <div className="container min-w-full">
 
               {/* Grayscale dev slider — remove in production */}
+              {/*
               <div className="p-4">
                 <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
                   Grayscale Level: {grayscale}
@@ -49,7 +56,7 @@ function App() {
                   className="w-full"
                 />
               </div>
-
+              */}
               <Routes>
                 <Route element={<PublicLayout />}>
                   <Route path="/" element={<Home />} />
@@ -72,7 +79,8 @@ function App() {
           </QueryClientProvider>
         </AuthProvider>
       </Router>
-    </div>
+      </div>
+    </GrayscaleContext.Provider>
   );
 }
 
