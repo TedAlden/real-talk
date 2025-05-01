@@ -25,7 +25,7 @@ export default function PrivateLayout() {
         <div onClick={() => navigate("/profile/me")}>
           <SidebarItem icon={<User className="h-6 w-6" />} text="Profile" />
         </div>
-        <div onClick={() => navigate("/following")}>
+        <div onClick={() => navigate("/notifications")}>
           <SidebarItem
             icon={<Bell className="h-6 w-6" />} text="Notifications"
           />
