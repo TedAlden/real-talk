@@ -20,6 +20,7 @@ export default function MyNavbar() {
         <div className="flex items-center space-x-6">
           <Navbar.Collapse>
             <NavbarLink to="/" text="Home" />
+            <NavbarLink to="/feed" text="Feed" />
             {auth.loggedIn ? (
               <>
                 <NavbarLink to="/profile/me" text="Profile" />
