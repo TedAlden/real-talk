@@ -1,46 +1,47 @@
-import UserInteractionButtons from "./UserInteractionButtons";
+import UserInteractionButtons from "../private/UserInteractionButtons";
 import * as followerAPI from "../../api/followersService";
 import { screen, render } from "@testing-library/react";
+import { describe, it, expect, vi, beforeEach } from "vitest";
 
-jest.mock("../../api/followersService");
+vi.mock("../../api/followersService");
 
 describe("UserInteractionButtons", () => {
   const viewerId = "user-1";
   const targetId = "user-2";
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
-  test("Does not display if IDs are identical", () => {
+  it("Does not display if IDs are identical", () => {
     const { container } = render(
       <UserInteractionButtons
         viewerId="test-id"
         targetId="test-id"
         isFollowing={false}
-      />,
+      />
     );
     expect(container.firstChild).toBeNull();
   });
 
-  test("displays follow button if not following user", () => {
+  it("displays follow button if not following user", () => {
     render(
       <UserInteractionButtons
         viewerId={viewerId}
         targetId={targetId}
         isFollowing={false}
-      />,
+      />
     );
     expect(screen.getByText("Follow")).toBeInTheDocument();
   });
 
-  test("display unfollow button when user is followed", () => {
+  it("display unfollow button when user is followed", () => {
     render(
       <UserInteractionButtons
         viewerId={viewerId}
         targetId={targetId}
         isFollowing={true}
-      />,
+      />
     );
     expect(screen.getByText("Unfollow")).toBeInTheDocument();
   });
