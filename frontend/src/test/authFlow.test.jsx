@@ -12,6 +12,11 @@ describe("Authentication Flow", () => {
     email: "test@example.com",
   };
 
+  // mock nofitications icon
+  vi.mock("../components/NotificationIcon", () => ({
+    default: () => null,
+  }));
+
   beforeEach(() => {
     // Reset things before each test
     vi.resetAllMocks();
@@ -43,7 +48,6 @@ describe("Authentication Flow", () => {
       data: mockUser,
       status: 200,
     });
-
     // mock the register page
     const { user: regUser, unmount: unmountRegister } = renderWithProviders(
       <Register />,
@@ -110,7 +114,7 @@ describe("Authentication Flow", () => {
       expect(logoutLinks).toHaveLength(2);
     });
     // click logout link
-    await loginUser.click(screen.getAllByText("Logout"))[0];
+    await loginUser.click(screen.getAllByText("Logout")[0]);
 
     // Check it navigates to home afte rlogout
     await waitFor(() => {

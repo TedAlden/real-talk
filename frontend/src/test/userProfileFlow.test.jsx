@@ -110,6 +110,11 @@ describe("User Profile Flow", () => {
       data: false,
     });
 
+    followersService.getSuggestedFollows.mockResolvedValueOnce({
+      success: true,
+      data: [mockSuggestedUser],
+    });
+
     const useAuth = await import("../hooks/useAuth");
     useAuth.default.mockReturnValue({
       loggedIn: true,
