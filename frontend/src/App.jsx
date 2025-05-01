@@ -25,6 +25,7 @@ import UserProfile from "./pages/UserProfile";
 import Followers from "./pages/Followers";
 import Following from "./pages/Following";
 import SinglePost from "./pages/SinglePost";
+import NotificationsPage from "./pages/Notifications";
 
 function App() {
   const [grayscale, setGrayscale] = useState(0);
@@ -73,6 +74,7 @@ function App() {
                   <Route path="/user/:id/followers" element={<Followers />} />
                   <Route path="/user/:id/following" element={<Following />} />
                   <Route path="/post/:id" element={<SinglePost />} />
+                  <Route path="/notifications" element={<NotificationsPage />} />
                 </Route>
               </Routes>
             </div>
