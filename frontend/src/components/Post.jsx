@@ -152,14 +152,14 @@ function Post({ post, viewer, onDelete }) {
   return (
     <div
       data-testid="post"
-      className={`col-span-4 mb-3 ${cardStyle} text-gray-900 dark:text-gray-100`}
+      className={`col-span-4 mb-4 ${cardStyle} text-gray-900 dark:text-gray-100`}
     >
       <div className="flex items-start justify-between">
         <div className="flex items-center space-x-4">
           <a href={`/profile/${author?._id}`} className="shrink-0">
             <img
               data-testid="post-profile-picture"
-              className="h-auto w-12 rounded-full object-cover shadow-lg"
+              className="h-auto w-16 rounded-full object-cover shadow-lg"
               src={author?.profile_picture}
               alt="Profile"
             />
@@ -186,36 +186,49 @@ function Post({ post, viewer, onDelete }) {
       </div>
       {mode === "view" ? (
         <div data-testid="post-content">
-          {postData.media && postData.media.length > 0 && (
-            <Carousel
-              theme={carouselTheme}
-              slide={false}
-              className="my-2 h-96 items-start"
-            >
-              {postData.media.map((image, idx) => (
+          {postData.media &&
+            postData.media.length > 0 &&
+            (postData.media.length > 1 ? (
+              <Carousel
+                data-testid="post-media"
+                theme={carouselTheme}
+                slide={false}
+                className="mt-4 h-96 items-start"
+              >
+                {postData.media.map((image, idx) => (
+                  <img
+                    data-testid="post-image"
+                    key={idx}
+                    src={image}
+                    className="h-full bg-gray-900 object-contain"
+                  />
+                ))}
+              </Carousel>
+            ) : (
+              <div className="mt-4 flex h-96 w-full items-center justify-center rounded-md bg-gray-900">
                 <img
                   data-testid="post-image"
-                  key={idx}
-                  src={image}
-                  className="h-full bg-gray-900 object-contain"
+                  src={postData.media[0]}
+                  className="h-full object-contain"
                 />
-              ))}
-            </Carousel>
-          )}
-          <Markdown
-            components={{
-              a: ({ ...props }) => (
-                <a
-                  {...props}
-                  className="bg-blue-400 bg-opacity-50 px-1 font-semibold text-blue-600 hover:text-blue-700 hover:underline dark:text-blue-100"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                />
-              ),
-            }}
-          >
-            {postData.content}
-          </Markdown>
+              </div>
+            ))}
+          <div data-testid="post-text" className="p-4">
+            <Markdown
+              components={{
+                a: ({ ...props }) => (
+                  <a
+                    {...props}
+                    className="bg-blue-400 bg-opacity-50 px-1 font-semibold text-blue-600 hover:text-blue-700 hover:underline dark:text-blue-100"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  />
+                ),
+              }}
+            >
+              {postData.content}
+            </Markdown>
+          </div>
         </div>
       ) : (
         <Composer
