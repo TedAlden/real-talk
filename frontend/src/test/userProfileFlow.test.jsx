@@ -19,6 +19,15 @@ describe("User Profile Flow", () => {
     profile_picture: "/profile-avatar.jpg",
   };
 
+  const mockSuggestedUser = {
+    _id: "abcd1234",
+    username: "suggesteduser",
+    first_name: "Jane",
+    last_name: "Doe",
+    biography: "This is my test bio 2",
+    profile_picture: "/profile-avatar2.jpg",
+  };
+
   const mockPosts = [
     {
       _id: "1",
@@ -155,7 +164,7 @@ describe("User Profile Flow", () => {
     expect(renderedPosts).toHaveLength(2);
 
     expect(
-      within(renderedPosts[0]).getByTestId("post-content").textContent,
+      within(renderedPosts[0]).getByTestId("post-text").textContent,
     ).toContain(mockPosts[0].content);
 
     expect(
@@ -163,7 +172,7 @@ describe("User Profile Flow", () => {
     ).toContain(mockProfileUser.username);
 
     expect(
-      within(renderedPosts[1]).getByTestId("post-content").textContent,
+      within(renderedPosts[1]).getByTestId("post-text").textContent,
     ).toContain(mockPosts[1].content);
     expect(
       within(renderedPosts[1]).getByTestId("post-username").textContent,
@@ -200,6 +209,11 @@ describe("User Profile Flow", () => {
       data: false,
     });
 
+    followersService.getSuggestedFollows.mockResolvedValueOnce({
+      success: true,
+      data: [mockSuggestedUser],
+    });
+
     const useAuth = await import("../hooks/useAuth");
     useAuth.default.mockReturnValue({
       loggedIn: true,
@@ -208,9 +222,9 @@ describe("User Profile Flow", () => {
     });
 
     //This is called by useCacheUpdater
-    userService.getUsersByQuery.mockResolvedValueOnce({
+    userService.getUsersByQuery.mockResolvedValue({
       success: true,
-      data: [mockViewer], // Same user = own profile
+      data: [mockViewer, mockSuggestedUser], // Same user = own profile
     });
 
     const reactRouter = await import("react-router-dom");

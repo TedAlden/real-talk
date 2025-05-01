@@ -168,7 +168,6 @@ function UserProfile() {
                     {followStats.followingUser.toLocaleString()}
                   </span>
                   <span className="text-gray-600 dark:text-gray-400">
-                    {" "}
                     Followers
                   </span>
                 </Link>
@@ -189,12 +188,11 @@ function UserProfile() {
           </div>
 
           {viewer._id == userData._id && (
-            <div className={`mb-3 p-2 ${cardStyle}`}>
-              <Composer
-                data-testid="profile-post-composer"
-                onSubmit={fetchUserData}
-                mode="createPost"
-              />
+            <div
+              data-testid="profile-post-composer"
+              className={`mb-3 p-2 ${cardStyle}`}
+            >
+              <Composer onSubmit={fetchUserData} mode="createPost" />
             </div>
           )}
 
