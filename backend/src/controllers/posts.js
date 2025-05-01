@@ -35,7 +35,7 @@ export const createPost = async (req, res) => {
     await db.collection("posts").insertOne(newPost);
 
     // 201 status means the user was created successfully
-    res.status(201).json({ message: SuccessMsg.POST_CREATION_OK });
+    res.status(201).json(newPost);
   } catch (error) {
     console.error("Post creation error:", error);
     return res.status(500).json({ error: ErrorMsg.SERVER_ERROR });

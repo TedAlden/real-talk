@@ -7,7 +7,7 @@ import Post from "../components/Post";
 import useAuth from "../hooks/useAuth";
 import Composer from "../components/Composer";
 import SuggestedUsers from "../components/SuggestedUsers";
-import { getPostByQuery } from "../api/postService.js";
+import { getLatestFeed } from "../api/feeds.js";
 
 function Feed() {
   const auth = useAuth();
@@ -17,30 +17,23 @@ function Feed() {
 
   useEffect(() => {
     if (auth.loggedIn) {
-      auth
-        .getUser()
-        .then(async (user) => {
-          setViewer(user);
-          getPostByQuery("userId", user._id).then((postsResponse) => {
-            setPosts(postsResponse.data);
-            setLoading(false);
-          });
-        })
-        .catch(() => {
-          setLoading(false);
-        });
+      auth.getUser().then(async (user) => {
+        setViewer(user);
+      });
     }
+    getLatestFeed().then((response) => {
+      console.log("Trending feed response:", response.data);
+      setPosts(response.data);
+      setLoading(false);
+    });
   }, [auth]);
 
   const onPostDeleted = (postId) => {
     setPosts((prevPosts) => prevPosts.filter((post) => post._id !== postId));
   };
 
-  const onPostCreated = () => {
-    // Refresh posts after creating a new one
-    getPostByQuery("userId", viewer._id).then((postsResponse) => {
-      setPosts(postsResponse.data);
-    });
+  const onPostCreated = (post) => {
+    setPosts((prevPosts) => [post, ...prevPosts]);
   };
 
   return (

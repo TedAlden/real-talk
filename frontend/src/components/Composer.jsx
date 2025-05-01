@@ -190,7 +190,11 @@ function Composer({ onSubmit, onCancel, target, mode }) {
           break;
       }
       if (response.success !== false) {
-        onSubmit(sanitizedContent);
+        if (mode === "createPost") {
+          onSubmit(response.data);
+        } else {
+          onSubmit(sanitizedContent);
+        }
 
         if (mode === "createPost" || mode === "createComment") {
           setContent("");
