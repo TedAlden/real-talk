@@ -98,18 +98,13 @@ function UserProfile() {
     setPosts((prevPosts) => prevPosts.filter((post) => post._id !== postId));
   };
 
-  const cardStyle =
-    "p-4 bg-white rounded-md shadow dark:border dark:border-gray-700 dark:bg-gray-800";
-
   if (loading) return <Spinner className="p-16 text-center" size="xl" />;
 
   return isUserFound ? (
     <div className="m-4 grid w-full grid-cols-7 gap-6">
       <div className="col-span-2" />
       <div className="col-span-3 text-lg text-gray-900 dark:text-white">
-        <div
-          className={`grid grid-cols-4 items-center justify-center ${cardStyle}`}
-        >
+        <div className="mb-4 grid grid-cols-4 items-center justify-center rounded-md bg-white p-4 shadow dark:border dark:border-gray-700 dark:bg-gray-800">
           <div className="col-span-4 flex items-start sm:col-span-1">
             <img
               className="h-auto w-28 rounded-full object-cover"
@@ -183,7 +178,7 @@ function UserProfile() {
 
         <div className="">
           {viewer._id == userData._id && (
-            <div className="my-3 rounded-md bg-white p-2 text-center shadow dark:border dark:border-gray-700 dark:bg-gray-800">
+            <div className="my-4 rounded-md bg-white p-2 text-center shadow dark:border dark:border-gray-700 dark:bg-gray-800">
               Posts Today: 0/1
             </div>
           )}
