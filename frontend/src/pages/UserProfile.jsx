@@ -182,9 +182,11 @@ function UserProfile() {
         </div>
 
         <div className="">
-          <div className="my-3 rounded-md bg-white p-2 text-center shadow dark:border dark:border-gray-700 dark:bg-gray-800">
-            Posts Today: 0/1
-          </div>
+          {viewer._id == userData._id && (
+            <div className="my-3 rounded-md bg-white p-2 text-center shadow dark:border dark:border-gray-700 dark:bg-gray-800">
+              Posts Today: 0/1
+            </div>
+          )}
           {posts?.map((post) => (
             <Post
               key={post._id}
