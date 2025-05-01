@@ -230,6 +230,7 @@ function Composer({ onSubmit, onCancel, target, mode }) {
             --baseTextContrast: #374151;
             --baseBg: none;
             --baseBgActive: #94a3b8;
+            border: 1px solid rgb(55 65 81);
           }
 
           .dark  .mdxeditor {
@@ -262,7 +263,7 @@ function Composer({ onSubmit, onCancel, target, mode }) {
           onChange={handleContentChange}
           autoFocus={true}
           placeholder="Write something..."
-          className="w-full rounded-md border border-gray-700"
+          className="w-full rounded-md"
           plugins={
             isPost
               ? [
