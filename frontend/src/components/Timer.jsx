@@ -8,12 +8,17 @@ import { GrayscaleContext } from "../App";
 
 function Timer() {
   const auth = useAuth();
-  const totalTimeInSeconds = 1200;
+  // pull the user’s choice (in seconds) from localStorage or fallback to 20m
+  const defaultTotal = 1200;
+  const stored = localStorage.getItem("usage_time_limit");
+  const totalTimeInSeconds = stored ?
+    parseInt(stored, 10)
+    : defaultTotal;
 
   const { logout } = useAuth();
   const { setGrayscale } = useContext(GrayscaleContext);
 
-  const { timeRemaining, timerMinutes, timerSeconds, resetCountdownTimer } =
+  const { timeRemaining, timerMinutes, timerSeconds } =
     usePersistentTimer({
       totalTimeInSeconds,
       isTimerActive: auth.loggedIn,

@@ -1,11 +1,10 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef ,useContext} from "react";
 import { Link } from "react-router-dom";
 import { decode } from "html-entities";
 import QRCode from "react-qr-code";
 import _ from "lodash";
 import deepDiff from "../util/deepDiff";
 import deepCopy from "../util/deepCopy";
-
 import { updateUser } from "../api/userService.js";
 import { convertImageBase64 } from "../util/image.js";
 import useAuth from "../hooks/useAuth.js";
@@ -33,6 +32,7 @@ import {
   Textarea,
   Label,
   ToggleSwitch,
+  Select,
 } from "flowbite-react";
 
 function UserSettings() {
@@ -43,7 +43,6 @@ function UserSettings() {
 
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-
   const originalData = useRef({}); // Initial user data fetched from the server
   // to populate the form fields.
 
@@ -89,6 +88,14 @@ function UserSettings() {
     const newUser = {
       ...formData,
     };
+  
+    // persist the chosen daily limit to localStorage
+    if (newUser.usage?.time_limit) {
+      localStorage.setItem(
+        "usage_time_limit",
+        String(newUser.usage.time_limit)
+      );
+    }
 
     // Update password, if confirm password is matching
     if (newPassword !== "" || confirmPassword !== "") {
@@ -119,6 +126,7 @@ function UserSettings() {
         message: response.message,
       });
     }
+
     // window.location.reload();
   };
 
@@ -468,7 +476,7 @@ function UserSettings() {
         <TabItem title="Usage limits" icon={HiClock}>
           {loading ? (
             <div className="p-16 text-center">
-              <Spinner aria-label="Extra large spinner example" size="xl" />
+              <Spinner aria-label="Loading spinner" size="xl" />
             </div>
           ) : (
             <div className="flex flex-col items-center justify-center p-8">
@@ -477,16 +485,83 @@ function UserSettings() {
                   className="flex max-w-2xl flex-col gap-4"
                   onSubmit={handleFormSubmit}
                 >
+                  {/* 1) Daily Time Limit Dropdown */}
                   <div>
-                    <p className="text-gray-900 dark:text-white">
-                      Not implemented yet...
-                    </p>
+                    <Label htmlFor="usage.time_limit" value="Daily Time Limit" />
+                    <Select
+                      id="usage.time_limit"
+                      name="usage.time_limit"
+                      value={formData.usage?.time_limit || ""}
+                      onChange={handleFormChange}
+                    >
+                      <option value="">— Select one —</option>
+                      <option value="300">5 minutes</option>
+                      <option value="600">10 minutes</option>
+                      <option value="900">15 minutes</option>
+                      <option value="1200">20 minutes</option>
+                    </Select>
                   </div>
+
+                  {/* 2) Grayscale Threshold Slider */}
+                  <div>
+                    <Label
+                      htmlFor="usage.grayscale_level"
+                      value="Grayscale Threshold (%)"
+                    />
+                    <input
+                      type="range"
+                      id="usage.grayscale_level"
+                      name="usage.grayscale_level"
+                      min="0"
+                      max="100"
+                      step="1"
+                      value={formData.usage?.grayscale_level ?? 100}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          usage: {
+                            ...formData.usage,
+                            grayscale_level: Number(e.target.value),
+                          },
+                        })
+                      }
+                      className="w-full"
+                    />
+                    <div className="text-sm text-gray-600 dark:text-gray-400">
+                      {formData.usage?.grayscale_level ?? 100}%
+                    </div>
+                  </div>
+
+                  {/* 3) Screen Time Reminders Toggle */}
+                  <div className="flex items-center justify-between">
+                    <Label
+                      htmlFor="usage.reminders_enabled"
+                      value="Screen Time Reminders"
+                    />
+                    <ToggleSwitch
+                      id="usage.reminders_enabled"
+                      name="usage.reminders_enabled"
+                      checked={formData.usage?.reminders_enabled}
+                      onChange={(value) =>
+                        setFormData({
+                          ...formData,
+                          usage: {
+                            ...formData.usage,
+                            reminders_enabled: value,
+                          },
+                        })
+                      }
+                      label={formData.usage?.reminders_enabled ? "On" : "Off"}
+                    />
+                  </div>
+
+                  <Button type="submit">Update Usage Limits</Button>
                 </form>
               </div>
             </div>
           )}
         </TabItem>
+
       </Tabs>
       {Object.keys(alertMessage).length > 0 && (
         <div className="flex flex-col items-center justify-center">

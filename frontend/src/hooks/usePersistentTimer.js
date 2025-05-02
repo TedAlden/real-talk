@@ -43,6 +43,11 @@ const usePersistentTimer = ({
     return () => clearInterval(interval);
   }, [isTimerActive, timeRemaining, onTimeRunout]);
 
+  useEffect(() => {
+    if (totalTimeInSeconds < timeRemaining) {setTimeRemaining(totalTimeInSeconds)}
+    
+  }, [totalTimeInSeconds]);
+
   const resetCountdownTimer = () => {
     setTimeRemaining(totalTimeInSeconds);
     localStorage.setItem(timerKey, totalTimeInSeconds);
