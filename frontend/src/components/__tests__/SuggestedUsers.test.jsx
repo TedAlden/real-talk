@@ -6,7 +6,7 @@ import { getSuggestedFollows } from "../../api/followersService";
 import useAuth from "../../hooks/useAuth";
 
 vi.mock("../../api/followersService");
-vi.mock("../../hooks/useAuth");
+vi.mock("../..q/hooks/useAuth");
 
 describe("SuggestedUsers", () => {
   const mockUser = { _id: "user123", username: "testuser" };
