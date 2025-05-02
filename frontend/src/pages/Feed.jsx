@@ -21,11 +21,14 @@ function Feed() {
         setViewer(user);
       });
     }
+  }, [auth]);
+
+  useEffect(() => {
     getLatestFeed().then((response) => {
       setPosts(response.data);
       setLoading(false);
     });
-  }, [auth]);
+  }, []);
 
   const onPostDeleted = (postId) => {
     setPosts((prevPosts) => prevPosts.filter((post) => post._id !== postId));
