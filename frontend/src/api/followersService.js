@@ -65,3 +65,14 @@ export async function unfollowUser(follower_id, followed_id) {
     return apiErrorResponse(error);
   }
 }
+
+export async function getSuggestedFollows(target_id, method) {
+  try {
+    const response = await axiosInstance.get(
+      `/api/users/${target_id}/suggested_follows?method=${method}`,
+    );
+    return response;
+  } catch (error) {
+    return apiErrorResponse(error);
+  }
+}

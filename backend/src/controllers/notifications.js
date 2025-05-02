@@ -67,7 +67,7 @@ export const getNotifications = async (req, res) => {
       return res.status(404).json({ message: ErrorMsg.INVALID_ID });
     }
 
-    return res.status(200).json(user.notifications);
+    return res.status(200).json(user.notifications.reverse());
   } catch (err) {
     console.error("Get notifications error:", err);
     return res.status(500).json({ error: err.message });
@@ -78,7 +78,6 @@ export const deleteNotification = async (req, res) => {
   try {
     const db = await connectDB();
     const { user_id, notification_id } = req.params;
-    console.log("Delete notification:", user_id, notification_id);
     const result = await db
       .collection("users")
       .updateOne(
@@ -95,6 +94,35 @@ export const deleteNotification = async (req, res) => {
         return res.status(404).json({ message: ErrorMsg.INVALID_ID });
       }
       return res.status(404).json({ message: ErrorMsg.NO_SUCH_NOTIFICATION });
+    }
+
+    return res.status(200).json({ message: SuccessMsg.NOTIFICATION_DELETE_OK });
+  } catch (err) {
+    console.error("Delete notification error:", err);
+    return res.status(500).json({ error: err.message });
+  }
+};
+
+export const deleteAllNotifications = async (req, res) => {
+  try {
+    const db = await connectDB();
+    const { user_id } = req.params;
+    const result = await db
+      .collection("users")
+      .updateOne(
+        { _id: new ObjectId(user_id) },
+        { $set: { notifications: [] } }
+      );
+
+    if (result.modifiedCount === 0) {
+      const user = await db
+        .collection("users")
+        .findOne({ _id: new ObjectId(user_id) });
+
+      if (!user) {
+        return res.status(404).json({ message: ErrorMsg.INVALID_ID });
+      }
+      return res.status(404).json({ message: "No notifications found" });
     }
 
     return res.status(200).json({ message: SuccessMsg.NOTIFICATION_DELETE_OK });

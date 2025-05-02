@@ -2,6 +2,7 @@ import { connectDB } from "../database/connection.js";
 import { ObjectId } from "mongodb";
 import { ErrorMsg } from "../services/responseMessages.js";
 import { createNotification } from "./notifications.js";
+import _ from "lodash";
 /**
  * GET /users/:id/followers
  *
@@ -211,6 +212,156 @@ export const unfollowUser = async (req, res) => {
     res.status(200).json(result);
   } catch (err) {
     console.error("Unfollow user error:", err);
+    return res.status(500).json({ error: err.message });
+  }
+};
+
+export const getSuggestedFollows = async (req, res) => {
+  const maxSuggestions = 10;
+  try {
+    const db = await connectDB();
+    const { id } = req.params;
+    const { method } = req.query;
+    const user = await db
+      .collection("users")
+      .findOne({ _id: new ObjectId(id) });
+
+    if (!user) {
+      return res.status(400).json({ error: ErrorMsg.NO_SUCH_ID });
+    }
+
+    const followeds = await db
+      .collection("followers")
+      .find({ follower_id: new ObjectId(id) })
+      .toArray();
+    const followeds_ids = followeds.map((f) => f.followed_id);
+    const excludeIds = [user._id, ...followeds_ids];
+
+    if (method === "mutuals") {
+      const topMutualFollowers = await db
+        .collection("followers")
+        .aggregate([
+          {
+            $match: {
+              followed_id: { $in: followeds_ids },
+              follower_id: { $nin: excludeIds },
+            },
+          },
+          {
+            $group: {
+              _id: "$follower_id",
+              mutualCount: { $sum: 1 },
+            },
+          },
+          { $sort: { mutualCount: -1 } },
+          { $limit: maxSuggestions },
+        ])
+        .toArray();
+
+      const topIds = topMutualFollowers.map((user) => user._id);
+      const mutualCountMap = _.keyBy(topMutualFollowers, "_id");
+
+      const suggestedMutuals = await db
+        .collection("users")
+        .find({ _id: { $in: topIds } })
+        .toArray();
+
+      suggestedMutuals.forEach((user) => {
+        user.mutualCount = mutualCountMap[user._id].mutualCount;
+      });
+
+      const sortedMutuals = _.orderBy(
+        suggestedMutuals,
+        ["mutualCount"],
+        ["desc"]
+      );
+
+      return res.status(200).json(sortedMutuals);
+    }
+
+    if (method === "area") {
+      const nearbyUsers = await db
+        .collection("users")
+        .find({
+          "address.city": user.address.city,
+          _id: { $nin: excludeIds },
+        })
+        .toArray();
+      const suggestedNearbyUsers = _.sampleSize(nearbyUsers, maxSuggestions);
+      return res.status(200).json(suggestedNearbyUsers);
+    }
+
+    if (method === "interests") {
+      const likedPosts = await db
+        .collection("posts")
+        .aggregate([
+          { $unwind: "$tags" },
+          { $unwind: "$likes" },
+          {
+            $group: {
+              _id: { userId: "$likes", tag: "$tags" },
+              count: { $sum: 1 },
+            },
+          },
+          {
+            $project: {
+              _id: 0,
+              userId: "$_id.userId",
+              tag: "$_id.tag",
+              likeCount: "$count",
+            },
+          },
+        ])
+        .toArray();
+
+      //score by how many times user liked a post with that tag
+      const tagScores = likedPosts
+        .filter((post) => post.userId.toString() === id.toString())
+        .reduce((acc, { tag, likeCount }) => {
+          acc[tag] = likeCount;
+          return acc;
+        }, {});
+      const excludeIDsStr = excludeIds.map((oid) => oid.toString());
+      const filteredPosts = likedPosts.filter(
+        (post) => !excludeIDsStr.includes(post.userId.toString())
+      );
+
+      const userScores = filteredPosts.reduce((acc, post) => {
+        if (!tagScores[post.tag]) {
+          return acc;
+        }
+        acc[post.userId] =
+          (acc[post.userId] || 0) + tagScores[post.tag] * post.likeCount;
+        return acc;
+      }, {});
+
+      const topScorers = _.chain(userScores)
+        .toPairs()
+        .orderBy([1], ["desc"])
+        .take(maxSuggestions)
+        .map(0)
+        .value();
+
+      const topScorerOids = topScorers.map((id) => new ObjectId(id));
+
+      const topUsers = await db
+        .collection("users")
+        .find({ _id: { $in: topScorerOids } })
+        .toArray();
+
+      const similarInterestUsers = topUsers.map((user) => {
+        return {
+          ...user,
+          interestScore: userScores[user._id],
+        };
+      });
+
+      return res.status(200).json(similarInterestUsers);
+    }
+
+    return res.status(400).json({ error: "Invalid method" });
+  } catch (err) {
+    console.error("Get suggested follows error:", err);
     return res.status(500).json({ error: err.message });
   }
 };

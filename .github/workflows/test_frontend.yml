@@ -1,0 +1,36 @@
+name: Test Frontend
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+defaults:
+  run:
+    working-directory: ./frontend
+
+jobs:
+  unit-test-with-jest:
+    runs-on: ubuntu-latest
+
+    steps:
+      # checkout the repository content
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # setup nodejs environment
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      # install dependencies
+      - name: Install dependencies
+        run: npm install
+
+      # run tests
+      - name: Run Jest tests
+        run: npm test

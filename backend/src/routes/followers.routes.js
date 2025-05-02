@@ -7,6 +7,7 @@ import {
   unfollowUser,
   createFollow,
   getUserFollowStats,
+  getSuggestedFollows,
 } from "../controllers/followers.js";
 
 const followersRouter = express.Router();
@@ -30,6 +31,11 @@ followersRouter.get(
   "/:follower_id/is_following/:followed_id",
   useValidators("follows"),
   isUserFollowing
+);
+followersRouter.get(
+  "/:id/suggested_follows",
+  useValidators("follows"),
+  getSuggestedFollows
 );
 followersRouter.post("/follows", useValidators("follows"), createFollow);
 followersRouter.delete(

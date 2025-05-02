@@ -2,18 +2,35 @@ import request from "supertest";
 import app from "../src/app.js";
 import { connectDB, closeDB } from "../src/database/connection.js";
 import { createTestUsers } from "./testUtils.js";
-import { jest } from "@jest/globals";
+import { jest, test } from "@jest/globals";
 import * as followersController from "../src/controllers/followers.js";
 import { ErrorMsg } from "../src/services/responseMessages.js";
 describe("Follower functionality", () => {
   let db;
   let testIds;
+  let testUsers;
   let mockRes;
+
+  const testCities = [
+    { address: { city: "London" } },
+    { address: { city: "New York" } },
+    { address: { city: "London" } },
+    { address: { city: "London" } },
+    { address: { city: "Tokyo" } },
+    { address: { city: "London" } },
+  ];
 
   beforeAll(async () => {
     db = await connectDB();
     // Insert test users
-    const createdUsers = await createTestUsers(db, 5);
+  });
+
+  beforeEach(async () => {
+    await db.collection("followers").deleteMany({});
+    await db.collection("users").deleteMany({});
+    await db.collection("posts").deleteMany({});
+    const createdUsers = await createTestUsers(db, 6, testCities);
+    testUsers = createdUsers.users;
     testIds = createdUsers.insertedIds;
   });
 
@@ -484,6 +501,224 @@ describe("Follower functionality", () => {
       expect(mockRes.json).toHaveBeenCalledWith({
         error: "Unexpected database error",
       });
+    });
+  });
+
+  describe("getSuggestedFollows", () => {
+    test("should return error when id is invalid oid", async () => {
+      const mockRequest = {
+        params: {
+          id: "invalid_id",
+        },
+        query: {
+          method: "mutuals",
+        },
+      };
+
+      await followersController.getSuggestedFollows(mockRequest, mockRes);
+      expect(mockRes.status).toHaveBeenCalledWith(500);
+      expect(mockRes.json).toHaveBeenCalledWith({
+        error:
+          "input must be a 24 character hex string, 12 byte Uint8Array, or an integer",
+      });
+    });
+
+    test("should return error when no user matches provided id", async () => {
+      const mockRequest = {
+        params: {
+          id: "67db47aaaaaaaa4e3b02d37f",
+        },
+        query: {
+          method: "mutuals",
+        },
+      };
+
+      await followersController.getSuggestedFollows(mockRequest, mockRes);
+      expect(mockRes.status).toHaveBeenCalledWith(400);
+      expect(mockRes.json).toHaveBeenCalledWith({
+        error: ErrorMsg.NO_SUCH_ID,
+      });
+    });
+
+    test("should return error when method is invalid", async () => {
+      const mockRequest = {
+        params: {
+          id: testIds[0],
+        },
+        query: {
+          method: "invalid",
+        },
+      };
+
+      await followersController.getSuggestedFollows(mockRequest, mockRes);
+
+      expect(mockRes.status).toHaveBeenCalledWith(400);
+      expect(mockRes.json).toHaveBeenCalledWith({ error: "Invalid method" });
+    });
+
+    test("should return error response when database error occurs", async () => {
+      const collectionSpy = jest
+        .spyOn(db, "collection")
+        .mockImplementationOnce(() => {
+          throw new Error("Unexpected database error");
+        });
+
+      const mockRequest = {
+        params: {
+          id: testIds[0],
+        },
+        query: {
+          method: "mutuals",
+        },
+      };
+
+      await followersController.getSuggestedFollows(mockRequest, mockRes);
+
+      expect(mockRes.status).toHaveBeenCalledWith(500);
+      expect(mockRes.json).toHaveBeenCalledWith({
+        error: "Unexpected database error",
+      });
+    });
+
+    test("should return suggested follows based on mutuals", async () => {
+      await db.collection("followers").insertMany([
+        // 0 the target, follows 4 and 5
+        {
+          follower_id: testIds[0],
+          followed_id: testIds[4],
+        },
+        {
+          follower_id: testIds[0],
+          followed_id: testIds[5],
+        },
+        // 1 follows both 4 and 5, 2 mutuals
+        {
+          follower_id: testIds[1],
+          followed_id: testIds[4],
+        },
+        // 1 follows both 4 and 5, 2 mutuals
+        {
+          follower_id: testIds[1],
+          followed_id: testIds[5],
+        },
+        // 2 follows 4 only, 1 mutual
+        {
+          follower_id: testIds[2],
+          followed_id: testIds[4],
+        },
+        // 3 follows both 4 and 5, 2 mutuals
+        {
+          follower_id: testIds[3],
+          followed_id: testIds[4],
+        },
+        {
+          follower_id: testIds[3],
+          followed_id: testIds[5],
+        },
+        // 0 alraedy follow 3
+        {
+          follower_id: testIds[0],
+          followed_id: testIds[3],
+        },
+      ]);
+
+      const expectedResponse = [
+        {
+          ...testUsers[1],
+          mutualCount: 2,
+        },
+        {
+          ...testUsers[2],
+          mutualCount: 1,
+        },
+      ];
+
+      const mockRequest = {
+        params: {
+          id: testIds[0],
+        },
+        query: {
+          method: "mutuals",
+        },
+      };
+
+      await followersController.getSuggestedFollows(mockRequest, mockRes);
+
+      expect(mockRes.status).toHaveBeenCalledWith(200);
+      expect(mockRes.json).toHaveBeenCalledWith(expectedResponse);
+    });
+
+    test("should return suggested follows based on area", async () => {
+      const mockRequest = {
+        params: {
+          id: testIds[0],
+        },
+        query: {
+          method: "area",
+        },
+      };
+
+      await db.collection("followers").insertOne(
+        // 0 already follows 3
+        {
+          follower_id: testIds[0],
+          followed_id: testIds[3],
+        }
+      );
+
+      await followersController.getSuggestedFollows(mockRequest, mockRes);
+
+      expect(mockRes.status).toHaveBeenCalledWith(200);
+      expect(mockRes.json).toHaveBeenCalledWith(
+        expect.arrayContaining([testUsers[2], testUsers[5]])
+      );
+      expect(mockRes.json.mock.calls[0][0].length).toBe(2);
+    });
+
+    test("should return suggested follows based on interests", async () => {
+      //0 likes sports 2x, art 1x
+      await db.collection("posts").insertMany([
+        { likes: [testIds[0], testIds[1], testIds[4]], tags: ["art"] },
+        { likes: [testIds[0], testIds[1]], tags: ["art"] },
+        { likes: [testIds[0]], tags: ["art", "gaming"] },
+        { likes: [testIds[1], testIds[4]], tags: ["art"] },
+        { likes: [testIds[2]], tags: ["gaming", "sports"] },
+        { likes: [testIds[2]], tags: ["gaming", "travel"] },
+        { likes: [testIds[1], testIds[2], testIds[3]], tags: ["travel"] },
+        { likes: [testIds[2], testIds[3]], tags: ["sports"] },
+      ]);
+      await db.collection("followers").insertOne(
+        // 0 already follows 4
+        {
+          follower_id: testIds[0],
+          followed_id: testIds[4],
+        }
+      );
+
+      const expectedResponse = [
+        {
+          ...testUsers[1],
+          interestScore: 9,
+        },
+        {
+          ...testUsers[2],
+          interestScore: 2,
+        },
+      ];
+
+      const mockRequest = {
+        params: {
+          id: testIds[0],
+        },
+        query: {
+          method: "interests",
+        },
+      };
+
+      await followersController.getSuggestedFollows(mockRequest, mockRes);
+
+      expect(mockRes.status).toHaveBeenCalledWith(200);
+      expect(mockRes.json).toHaveBeenCalledWith(expectedResponse);
     });
   });
 });

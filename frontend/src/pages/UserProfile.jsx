@@ -15,7 +15,8 @@ import { Spinner } from "flowbite-react";
 import UserInteractionButtons from "../components/UserInteractionButtons.jsx";
 import { useCacheUpdater } from "../hooks/useUserCache";
 import { getSafeObject } from "../util/defaultObjects.js";
-import DailyPostCounter from '../components/DailyPostCounter';
+import DailyPostCounter from "../components/DailyPostCounter";
+import SuggestedUsers from "../components/SuggestedUsers.jsx";
 
 function UserProfile() {
   const auth = useAuth();
@@ -105,14 +106,14 @@ function UserProfile() {
   // Filter posts to get only today's posts
   const getTodayPosts = () => {
     if (!Array.isArray(posts)) return 0;
-    
+
     const today = new Date();
     today.setHours(0, 0, 0, 0); // Set to start of day
-    
-    return posts.filter(post => {
+
+    return posts.filter((post) => {
       const postDate = new Date(post.created_at);
       postDate.setHours(0, 0, 0, 0); // Set to start of day
-      
+
       // Compare the dates (ignoring time)
       return postDate.getTime() === today.getTime();
     }).length;
@@ -121,81 +122,120 @@ function UserProfile() {
   if (loading) return <Spinner className="p-16 text-center" size="xl" />;
 
   return isUserFound ? (
-    <div className="m-4 mx-auto max-w-2xl p-4 text-lg text-gray-900 dark:text-white">
-      <div
-        className={`grid grid-cols-4 items-center justify-center ${cardStyle}`}
-      >
-        <div className="col-span-4 flex items-start sm:col-span-1">
-          <img
-            className="h-auto w-28 rounded-full object-cover"
-            src={userData?.profile_picture}
-            alt="Profile"
-          />
-        </div>
-        <div className="col-span-4 ml-2 flex flex-col justify-start gap-2 sm:col-span-3">
-          <div>
-            {" "}
-            <p className="text-xl font-semibold">
-              {userData.first_name} {userData.last_name}
-            </p>
-            <p className="text-base">@{userData.username}</p>
+    <div className="m-4 grid w-full grid-cols-7 gap-6">
+      <div className="col-span-2" />
+      <div className="col-span-3 text-lg text-gray-900 dark:text-white">
+        <div
+          className={`grid grid-cols-4 items-center justify-center ${cardStyle}`}
+        >
+          <div className="col-span-4 flex items-start sm:col-span-1">
+            <img
+              className="h-auto w-28 rounded-full object-cover"
+              src={userData?.profile_picture}
+              data-testid="main-profile-picture"
+              alt="Profile"
+            />
           </div>
+          <div className="col-span-4 ml-2 flex flex-col justify-start gap-2 sm:col-span-3">
+            <div>
+              <p
+                data-testid="profile-full-name"
+                className="text-xl font-semibold"
+              >
+                {userData.first_name} {userData.last_name}
+              </p>
+              <p data-testid="profile-username" className="text-base">
+                @{userData.username}
+              </p>
+            </div>
 
-          <p className="text-base text-gray-700 dark:text-gray-300">
-            {decode(userData.biography) || "No bio available"}
-          </p>
-          <ul className="flex text-sm">
-            <li className="me-2">
-              <Link
-                to={`/user/${userData._id}/following`}
-                className="hover:underline"
-              >
-                <span className="font-semibold text-gray-900 dark:text-white">
-                  {followStats.followedByUser.toLocaleString()}
-                </span>
-                <span className="text-gray-600 dark:text-gray-400">
-                  {" "}
-                  Following
-                </span>
-              </Link>
-            </li>
-            <li>
-              <Link
-                to={`/user/${userData._id}/followers`}
-                className="hover:underline"
-              >
-                <span className="font-semibold text-gray-900 dark:text-white">
-                  {followStats.followingUser.toLocaleString()}
-                </span>
-                <span className="text-gray-600 dark:text-gray-400">
-                  {" "}
-                  Followers
-                </span>
-              </Link>
-            </li>
-          </ul>
-          <UserInteractionButtons
-            viewerId={viewer._id}
-            targetId={userData._id}
-            onFollowChange={onFollowChange}
-            isFollowing={isFollowing}
-          />
+            <p
+              data-testid="profile-bio"
+              className="text-base text-gray-700 dark:text-gray-300"
+            >
+              {decode(userData.biography) || "No bio available"}
+            </p>
+            <ul className="flex text-sm">
+              <li className="me-2">
+                <Link
+                  to={`/user/${userData._id}/following`}
+                  className="hover:underline"
+                >
+                  <span
+                    data-testid="profile-followed-count"
+                    className="font-semibold text-gray-900 dark:text-white"
+                  >
+                    {followStats.followedByUser.toLocaleString()}
+                  </span>
+                  <span className="text-gray-600 dark:text-gray-400">
+                    {" "}
+                    Following
+                  </span>
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to={`/user/${userData._id}/followers`}
+                  className="hover:underline"
+                >
+                  <span
+                    data-testid="profile-following-count"
+                    className="font-semibold text-gray-900 dark:text-white"
+                  >
+                    {followStats.followingUser.toLocaleString()}
+                  </span>
+                  <span className="text-gray-600 dark:text-gray-400">
+                    Followers
+                  </span>
+                </Link>
+              </li>
+            </ul>
+            <UserInteractionButtons
+              viewerId={viewer._id}
+              targetId={userData._id}
+              onFollowChange={onFollowChange}
+              isFollowing={isFollowing}
+            />
+          </div>
         </div>
-      </div>
 
-      <div className="">
+        <div className="">
+          {viewer._id == userData._id && (
+            <div
+              data-testid="profile-post-composer"
+              className={`mb-3 p-2 ${cardStyle}`}
+            >
+              <Composer onSubmit={fetchUserData} mode="createPost" />
+            </div>
+          )}
+
+          {posts?.map((post) => (
+            <Post
+              key={post._id}
+              post={post}
+              viewer={viewer}
+              onDelete={onPostDeleted}
+            />
+          ))}
+        </div>
+
         <div className="my-3 rounded-md bg-white p-2 text-center shadow dark:border dark:border-gray-700 dark:bg-gray-800">
           <DailyPostCounter posts={getTodayPosts()} />
         </div>
 
         {viewer._id == userData._id && getTodayPosts() < 1 && (
-          <div className={`mb-3 p-2 ${cardStyle}`}>
+          <div
+            data-testid="profile-post-composer"
+            className={`mb-3 p-2 ${cardStyle}`}
+          >
             <Composer onSubmit={fetchUserData} mode="createPost" />
           </div>
         )}
-        
+
         {viewer._id == userData._id && getTodayPosts() >= 1 && (
-          <div className={`mb-3 p-2 ${cardStyle} text-center text-red-500 dark:text-red-400`}>
+          <div
+            className={`mb-3 p-2 ${cardStyle} text-center text-red-500 dark:text-red-400`}
+          >
             You've reached your daily post limit. Try again tomorrow.
           </div>
         )}
@@ -208,6 +248,9 @@ function UserProfile() {
             onDelete={onPostDeleted}
           />
         ))}
+      </div>
+      <div className="col-span-2">
+        <SuggestedUsers />
       </div>
     </div>
   ) : (
