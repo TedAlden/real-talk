@@ -12,10 +12,10 @@ export async function getFollowingFeed(userId) {
   }
 }
 
-export async function getLatestFeed() {
+export async function getLatestFeed({ limit, offset }) {
   try {
     const response = await axiosInstance.get(
-      `/api/feeds/latest`,
+      `/api/feeds/latest?limit=${limit}&offset=${offset}`
     );
     return response;
   } catch (error) {

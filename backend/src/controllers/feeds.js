@@ -58,10 +58,14 @@ export const getFollowingFeed = async (req, res) => {
 export const getLatestFeed = async (req, res) => {
   try {
     const db = await connectDB();
+    const { limit = 10, offset = 0 } = req.query;
+
     const posts = await db
       .collection("posts")
       .find()
       .sort({ created_at: -1 })
+      .skip(parseInt(offset))
+      .limit(parseInt(limit))
       .toArray();
 
     const userIds = posts.map((post) => post.user_id);
