@@ -27,6 +27,7 @@ import EnterOTP from "./pages/EnterOTP";
 import UserProfile from "./pages/UserProfile";
 import Followers from "./pages/Followers";
 import Following from "./pages/Following";
+import Network from "./pages/Network";
 import SinglePost from "./pages/SinglePost";
 import NotificationsPage from "./pages/Notifications";
 
@@ -78,6 +79,7 @@ function App() {
                     <Route path="/profile/:id" element={<UserProfile />} />
                     <Route path="/user/:id/followers" element={<Followers />} />
                     <Route path="/user/:id/following" element={<Following />} />
+                    <Route path="/network" element={<Network />} />
                     <Route path="/post/:id" element={<SinglePost />} />
                     <Route
                       path="/notifications"
