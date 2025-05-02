@@ -191,7 +191,14 @@ function Composer({ onSubmit, onCancel, target, mode }) {
       }
       if (response.success !== false) {
         if (mode === "createPost") {
-          onSubmit(response.data);
+          onSubmit({
+            ...response.data,
+            poster: {
+              _id: user._id,
+              username: user.username,
+              profile_picture: user.profile_picture,
+            },
+          });
         } else {
           onSubmit(sanitizedContent);
         }

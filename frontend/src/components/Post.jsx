@@ -1,14 +1,10 @@
 import { useEffect, useState } from "react";
 import { FaCommentDots, FaHeart, FaShare, FaLink } from "react-icons/fa6";
 import Markdown from "react-markdown";
-
 import { Popover } from "flowbite-react";
 
 import { likePost, getPostComments, deletePostById } from "../api/postService";
-import { getUserById } from "../api/userService";
-
-import { getSafeObject } from "../util/defaultObjects";
-import { useCacheUpdater, useCachedUser } from "../hooks/useUserCache";
+import { useCacheUpdater } from "../hooks/useUserCache";
 import getTimeAgo from "../util/getTimeAgo";
 
 import DropdownMenu from "./DropdownMenu";
@@ -17,25 +13,11 @@ import Comment from "./Comment";
 import PostCarousel from "./PostCarousel";
 
 function Post({ post, viewer, onDelete }) {
-  const [postData, setPostData] = useState(getSafeObject(post, "post"));
-  const [author, setAuthor] = useState(useCachedUser(postData.user_id));
-
+  const [postData, setPostData] = useState(post);
   const [commentsShown, setCommentsShown] = useState(false);
   const [mode, setMode] = useState("view");
 
-  const updateCache = useCacheUpdater();
-
-  useEffect(() => {
-    if (!author) {
-      getUserById(postData.user_id)
-        .then((user) => {
-          setAuthor(user.data);
-        })
-        .catch((error) => {
-          console.error("Error fetching user data:", error);
-        });
-    }
-  }, [postData, updateCache, author]);
+  const updateCache = useCacheUpdater(postData._id);
 
   useEffect(() => {
     if (postData.comments && commentsShown) {
@@ -157,21 +139,21 @@ function Post({ post, viewer, onDelete }) {
     >
       <div className="flex items-start justify-between">
         <div className="flex items-center space-x-4">
-          <a href={`/profile/${author?._id}`} className="shrink-0">
+          <a href={`/profile/${postData.poster?._id}`} className="shrink-0">
             <img
               data-testid="post-profile-picture"
               className="h-auto w-16 rounded-full object-cover shadow-lg"
-              src={author?.profile_picture}
+              src={postData.poster?.profile_picture}
               alt="Profile Picture"
             />
           </a>
           <div className="min-w-0 flex-1">
             <a
-              href={`/profile/${author?._id}`}
+              href={`/profile/${postData.poster?._id}`}
               className="text-lg font-semibold hover:underline"
               data-testid="post-username"
             >
-              @{author?.username}
+              @{postData.poster?.username}
             </a>
             <p
               data-testid="post-timestamp"

@@ -8,15 +8,12 @@ import useAuth from "../hooks/useAuth";
 import Composer from "../components/Composer";
 import SuggestedUsers from "../components/SuggestedUsers";
 import { getLatestFeed } from "../api/feeds.js";
-import { useCacheUpdater } from "../hooks/useUserCache";
 
 function Feed() {
   const auth = useAuth();
   const [posts, setPosts] = useState([]);
   const [viewer, setViewer] = useState(null);
   const [loading, setLoading] = useState(true);
-
-  const updateCache = useCacheUpdater();
 
   useEffect(() => {
     if (auth.loggedIn) {
@@ -25,9 +22,7 @@ function Feed() {
       });
     }
     getLatestFeed().then((response) => {
-      console.log("Trending feed response:", response.data);
       setPosts(response.data);
-      updateCache(response.data.map((post) => post.user_id));
       setLoading(false);
     });
   }, [auth]);
