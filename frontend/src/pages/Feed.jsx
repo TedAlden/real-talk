@@ -25,37 +25,37 @@ function Feed() {
     }
   }, [auth]);
 
-  const fetchPosts = useCallback(async (pageNumber) => {
-    if (loading || loading) return;
+  const fetchPosts = useCallback(
+    async (pageNumber) => {
+      if (loading || loading) return;
+      setLoading(true);
+      try {
+        const response = await getLatestFeed({
+          limit: POSTS_PER_PAGE,
+          offset: POSTS_PER_PAGE * pageNumber,
+        });
 
-    // setLoading(true);
-    setLoading(true);
-    try {
-      const response = await getLatestFeed({
-        limit: POSTS_PER_PAGE,
-        offset: POSTS_PER_PAGE * pageNumber,
-      });
-
-      if (response.success !== false) {
-        setPage(pageNumber + 1);
-        setPosts((prevPosts) => [...prevPosts, ...response.data]);
-        setHasMore(response.data.length === POSTS_PER_PAGE);
-        // Assuming there are more posts if the page is full. Could improve this
+        if (response.success !== false) {
+          setPage(pageNumber + 1);
+          setPosts((prevPosts) => [...prevPosts, ...response.data]);
+          setHasMore(response.data.length === POSTS_PER_PAGE);
+          // Assuming there are more posts if the page is full. Could improve this
+        }
+      } catch (error) {
+        console.error("Error fetching posts:", error);
+      } finally {
+        setLoading(false);
       }
-    } catch (error) {
-      console.error("Error fetching posts:", error);
-    } finally {
-      setLoading(false);
-      // setLoading(false);
-    }
-  }, []);
+    },
+    [loading],
+  );
 
   useEffect(() => {
     if (firstLoad.current) {
       fetchPosts(page);
       firstLoad.current = false;
     }
-  }, []);
+  }, [fetchPosts, page]);
 
   const handleScroll = useCallback(() => {
     if (
@@ -70,7 +70,7 @@ function Feed() {
         });
       }
     }
-  }, [hasMore, loading]);
+  }, [fetchPosts, page, hasMore, loading]);
 
   useEffect(() => {
     window.addEventListener("scroll", handleScroll);
