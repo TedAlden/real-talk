@@ -4,6 +4,7 @@ import Sidebar, { SidebarItem } from "../components/Sidebar";
 import TopBar from "../components/Topbar";
 import { User, House, Users, TrendingUp, Bell, Settings } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import Alert from "../components/Alert";
 
 export default function PrivateLayout() {
   const navigate = useNavigate();
@@ -46,6 +47,7 @@ export default function PrivateLayout() {
           <Outlet />
         </main>
       </div>
+      <Alert show={true} message={"Consider stepping away for a moment"}/>
     </div>
   );
 }
