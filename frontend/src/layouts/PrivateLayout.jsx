@@ -10,13 +10,13 @@ export default function PrivateLayout() {
   return (
     <div className="flex min-h-screen bg-gray-50 dark:bg-gray-900">
       <Sidebar>
-
         <div onClick={() => navigate("/")}>
           <SidebarItem icon={<House className="h-6 w-6" />} text="Home" />
         </div>
-        <div>
+        <div onClick={() => navigate("/feed")}>
           <SidebarItem
-            icon={<TrendingUp className="h-6 w-6" />} text="Trending"
+            icon={<TrendingUp className="h-6 w-6" />}
+            text="Trending"
           />
         </div>
         <div onClick={() => navigate("/followers")}>
@@ -27,12 +27,14 @@ export default function PrivateLayout() {
         </div>
         <div onClick={() => navigate("/notifications")}>
           <SidebarItem
-            icon={<Bell className="h-6 w-6" />} text="Notifications"
+            icon={<Bell className="h-6 w-6" />}
+            text="Notifications"
           />
         </div>
         <div onClick={() => navigate("/settings")}>
           <SidebarItem
-            icon={<Settings className="h-6 w-6" />} text="Settings"
+            icon={<Settings className="h-6 w-6" />}
+            text="Settings"
           />
         </div>
       </Sidebar>
