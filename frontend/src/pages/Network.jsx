@@ -125,7 +125,7 @@ function Network() {
                         <div className="min-w-0 flex-1">
                           <a
                             href={`/profile/${follower._id}`}
-                            className="text-md font-semibold hover:underline"
+                            className="text-lg font-semibold hover:underline"
                           >
                             @{follower.username}
                           </a>
