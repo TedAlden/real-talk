@@ -51,6 +51,15 @@ function UserSettings() {
       auth
         .getUser()
         .then((user) => {
+          // ─── hook in any existing usage settings from localStorage ───
+         const savedGray = localStorage.getItem("usage_grayscale_level");
+         if (savedGray != null) {
+           user.usage = {
+             ...user.usage,
+             grayscale_level: parseInt(savedGray, 10),
+           };
+         }
+
           originalData.current = deepCopy(user);
           setFormData(user);
           setLoading(false);
@@ -94,6 +103,14 @@ function UserSettings() {
       localStorage.setItem(
         "usage_time_limit",
         String(newUser.usage.time_limit)
+      );
+    }
+
+    // ─── persist the grayscale threshold (%) ───
+    if (newUser.usage?.grayscale_level != null) {
+      localStorage.setItem(
+        "usage_grayscale_level",
+        String(newUser.usage.grayscale_level)
       );
     }
 
