@@ -3,7 +3,7 @@ import { screen, waitFor } from "@testing-library/react";
 import renderWithProviders, { mockNavigate } from "./setupTests";
 import Login from "../pages/Login";
 import Register from "../pages/Register";
-import Navbar from "../components/Navbar";
+import PublicNavbar from "../components/PublicNavbar";
 
 describe("Authentication Flow", () => {
   const mockUser = {
@@ -86,7 +86,7 @@ describe("Authentication Flow", () => {
     // mock the login page with navbar
     const { user: loginUser } = renderWithProviders(
       <>
-        <Navbar />
+        <PublicNavbar />
         <Login />
       </>,
     );
