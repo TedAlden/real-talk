@@ -3,16 +3,21 @@ import { getFollowersById, getFollowedById } from "../api/followersService.js";
 import _ from "lodash";
 import useAuth from "../hooks/useAuth.js";
 import UserInteractionButtons from "../components/UserInteractionButtons.jsx";
+import { useSearchParams } from "react-router-dom";
 
 import { Spinner, Card, Tabs } from "flowbite-react";
 
 function Network() {
   const auth = useAuth();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [loading, setLoading] = useState(true);
   const [followers, setFollowers] = useState([]);
   const [following, setFollowing] = useState([]);
   const [viewerId, setViewerId] = useState();
-  const [activeTab, setActiveTab] = useState("followers");
+  const [activeTab, setActiveTab] = useState(() => {
+    const tabParam = searchParams.get("tab");
+    return tabParam === "following" ? "following" : "followers";
+  });
 
   useEffect(() => {
     const fetchData = async () => {
@@ -42,6 +47,13 @@ function Network() {
     fetchData();
   }, [auth]);
 
+  useEffect(() => {
+    const tabParam = searchParams.get("tab");
+    if (tabParam === "following" || tabParam === "followers") {
+      setActiveTab(tabParam);
+    }
+  }, [searchParams]);
+
   const onFollowerChange = (targetId, isFollow) => {
     setFollowers((prev) => {
       return prev.map((user) => {
@@ -66,6 +78,7 @@ function Network() {
 
   const handleTabChange = (tab) => {
     setActiveTab(tab);
+    setSearchParams({ tab });
   };
 
   return loading ? (
