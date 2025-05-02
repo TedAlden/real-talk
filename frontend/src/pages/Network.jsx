@@ -26,14 +26,17 @@ function Network() {
         const user = await auth.getUser();
         setViewerId(user._id);
         
+        // Get userId from URL params or default to current user
+        const userId = searchParams.get("userId") || user._id;
+        
         // Fetch followers data
-        const followersResponse = await getFollowersById(user._id, user._id);
+        const followersResponse = await getFollowersById(userId, user._id);
         if (followersResponse.success !== false) {
           setFollowers(followersResponse.data);
         }
         
-        // Fetch following data
-        const followingResponse = await getFollowedById(user._id, user._id);
+        
+        const followingResponse = await getFollowedById(userId, user._id);
         if (followingResponse.success !== false) {
           setFollowing(followingResponse.data);
         }
@@ -45,7 +48,7 @@ function Network() {
     };
 
     fetchData();
-  }, [auth]);
+  }, [auth, searchParams]);
 
   useEffect(() => {
     const tabParam = searchParams.get("tab");
@@ -77,8 +80,16 @@ function Network() {
   };
 
   const handleTabChange = (tab) => {
+    // Preserve the userId parameter when changing tabs
+    const userId = searchParams.get("userId");
+    const newParams = { tab };
+    
+    if (userId) {
+      newParams.userId = userId;
+    }
+    
     setActiveTab(tab);
-    setSearchParams({ tab });
+    setSearchParams(newParams);
   };
 
   return loading ? (
@@ -210,4 +221,4 @@ function Network() {
   );
 }
 
-export default Network; 
+export default Network;
