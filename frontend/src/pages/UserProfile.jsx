@@ -147,7 +147,7 @@ function UserProfile() {
             <ul className="flex text-sm">
               <li className="me-2">
                 <Link
-                  to={`/user/${userData._id}/following`}
+                  to={`/network?tab=following`}
                   className="hover:underline"
                 >
                   <span
@@ -164,7 +164,7 @@ function UserProfile() {
               </li>
               <li>
                 <Link
-                  to={`/user/${userData._id}/followers`}
+                  to={`/network?tab=followers`}
                   className="hover:underline"
                 >
                   <span
