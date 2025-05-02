@@ -19,7 +19,7 @@ export default function PrivateLayout() {
             text="Trending"
           />
         </div>
-        <div onClick={() => navigate("/followers")}>
+        <div onClick={() => navigate("/network")}>
           <SidebarItem icon={<Users className="h-6 w-6" />} text="Network" />
         </div>
         <div onClick={() => navigate("/profile/me")}>
