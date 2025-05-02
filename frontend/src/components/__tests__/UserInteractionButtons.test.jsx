@@ -10,7 +10,7 @@ describe("UserInteractionButtons", () => {
         viewerId="test-id"
         targetId="test-id"
         isFollowing={false}
-      />
+      />,
     );
     expect(container.firstChild).toBeNull();
   });
@@ -20,18 +20,28 @@ describe("UserInteractionButtons", () => {
         viewerId="test-id"
         targetId="different-id"
         isFollowing={false}
-      />
+      />,
     );
     expect(container.firstChild).not.toBeNull();
   });
-  it('should display "Follow" button initially', () => {
+  it("should display 'Follow' button initially", () => {
     render(
       <UserInteractionButtons
         viewerId="user-1"
         targetId="user-2"
         isFollowing={false}
-      />
+      />,
     );
-    expect(screen.getByText('Follow')).toBeInTheDocument();
+    expect(screen.getByText("Follow")).toBeInTheDocument();
+  });
+  it("should display 'Unfollow' button when following", () => {
+    render(
+      <UserInteractionButtons
+        viewerId="user-1"
+        targetId="user-2"
+        isFollowing={true}
+      />,
+    );
+    expect(screen.getByText("Unfollow")).toBeInTheDocument();
   });
 });

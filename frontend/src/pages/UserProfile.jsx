@@ -15,6 +15,7 @@ import UserInteractionButtons from "../components/UserInteractionButtons.jsx";
 import { getSafeObject } from "../util/defaultObjects.js";
 import DailyPostCounter from "../components/DailyPostCounter";
 import SuggestedUsers from "../components/SuggestedUsers.jsx";
+import Composer from "../components/Composer.jsx";
 
 function UserProfile() {
   const auth = useAuth();
