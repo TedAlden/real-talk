@@ -26,7 +26,6 @@ function Post({ post, viewer, onDelete }) {
   const updateCache = useCacheUpdater();
 
   useEffect(() => {
-    // Check if the author is already in the cache, otherwise fetch it
     if (!author) {
       getUserById(postData.user_id)
         .then((user) => {
@@ -36,7 +35,7 @@ function Post({ post, viewer, onDelete }) {
           console.error("Error fetching user data:", error);
         });
     }
-  }, [postData, author]);
+  }, [postData, updateCache, author]);
 
   useEffect(() => {
     if (postData.comments && commentsShown) {

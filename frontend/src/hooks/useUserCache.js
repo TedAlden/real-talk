@@ -19,8 +19,7 @@ export function useCacheUpdater() {
       response.data.forEach((user) => {
         const userData = {
           _id: user._id,
-          username: user.username,
-          profile_picture: user.profile_picture,
+          ...user
         };
         queryClient.setQueryData(["user", user._id], userData);
       });
