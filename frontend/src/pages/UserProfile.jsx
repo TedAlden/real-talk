@@ -174,6 +174,7 @@ function UserProfile() {
                     {followStats.followingUser.toLocaleString()}
                   </span>
                   <span className="text-gray-600 dark:text-gray-400">
+                    {" "}
                     Followers
                   </span>
                 </Link>
