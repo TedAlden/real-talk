@@ -62,12 +62,28 @@ export const getPostsByQuery = async (req, res) => {
     if (tag) filter.tags = { $in: [tag] };
     if (userId) filter.user_id = new ObjectId(userId);
 
-    console.log(filter);
     const posts = await db
       .collection("posts")
       .find(filter)
       .sort({ created_at: -1 })
       .toArray();
+
+    const userIds = posts.map((post) => post.user_id);
+    const users = await db
+      .collection("users")
+      .find({ _id: { $in: userIds } })
+      .toArray();
+
+    const userMap = Object.fromEntries(users.map((user) => [user._id, {
+      _id: user._id,
+      username: user.username,
+      profile_picture: user.profile_picture,
+    }]));
+
+    posts.forEach((post) => {
+      post.poster = userMap[post.user_id] || null;
+    });
+
     return res.status(200).json(posts);
   } catch (err) {
     console.error("Get posts by query error:", err);
@@ -97,6 +113,17 @@ export const getPostById = async (req, res) => {
     if (!post) {
       return res.status(404).json({ error: ErrorMsg.NO_SUCH_POST });
     }
+
+    // Get the user who created the post
+    const user = await db
+      .collection("users")
+      .findOne({ _id: new ObjectId(post.user_id) });
+
+    post.poster = {
+      _id: user._id,
+      username: user.username,
+      profile_picture: user.profile_picture,
+    };
 
     res.status(200).json(post);
   } catch (err) {

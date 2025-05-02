@@ -12,7 +12,6 @@ import useAuth from "../hooks/useAuth.js";
 import Post from "../components/Post.jsx";
 import { Spinner } from "flowbite-react";
 import UserInteractionButtons from "../components/UserInteractionButtons.jsx";
-import { useCacheUpdater } from "../hooks/useUserCache";
 import { getSafeObject } from "../util/defaultObjects.js";
 import SuggestedUsers from "../components/SuggestedUsers.jsx";
 
@@ -29,8 +28,6 @@ function UserProfile() {
   const [posts, setPosts] = useState(false);
   const paramId = useParams().id;
 
-  const updateCache = useCacheUpdater();
-
   useEffect(() => {
     const fetchUser = async () => {
       const user = await auth.getUser();
@@ -39,13 +36,6 @@ function UserProfile() {
     };
     fetchUser();
   }, [auth]);
-
-  useEffect(() => {
-    if (viewer) {
-      const userId = paramId === "me" ? viewer._id : paramId;
-      updateCache([userId]);
-    }
-  }, [viewer, updateCache, paramId]);
 
   const fetchUserData = useCallback(async () => {
     if (!viewer) return;
