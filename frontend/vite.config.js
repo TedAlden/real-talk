@@ -10,8 +10,8 @@ export default defineConfig({
   server: { port: PORT, allowedHosts: true },
   plugins: [react()],
   test: {
-    environment: "jsdom",
     globals: true,
-    setupFiles: ["./src/test/setupTests.jsx"],
-  },
+    environment: "jsdom",
+    setupFiles: "./src/setupTests.js"
+  }
 });

@@ -104,18 +104,6 @@ function Register() {
               </Label>
             </div>
             <Button type="submit">Create account</Button>
-            <div>
-              <p className="text-sm text-gray-500 dark:text-gray-400">
-                Already have an account?{" "}
-                <Link
-                  to="/login"
-                  className="font-medium text-blue-600 hover:underline dark:text-blue-500"
-                >
-                  Login here
-                </Link>
-                .
-              </p>
-            </div>
             {Object.keys(alertMessage).length > 0 && (
               <div>
                 <Alert

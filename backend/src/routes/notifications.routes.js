@@ -5,6 +5,7 @@ import {
   createNotification,
   readNotification,
   deleteNotification,
+  deleteAllNotifications,
 } from "../controllers/notifications.js";
 
 const notifyRouter = express.Router();
@@ -16,5 +17,6 @@ notifyRouter.delete(
   "/:user_id/notifications/:notification_id",
   deleteNotification
 );
+notifyRouter.delete("/:user_id/notifications", deleteAllNotifications);
 
 export default notifyRouter;

@@ -3,7 +3,7 @@ import { Navbar, DarkThemeToggle } from "flowbite-react";
 
 import useAuth from "../hooks/useAuth";
 import NavbarLink from "./NavbarLink";
-import Notifications from "./NotificationIcon";
+import Notifications from "./../private/NotificationIcon";
 export default function MyNavbar() {
   const auth = useAuth();
 
@@ -19,8 +19,9 @@ export default function MyNavbar() {
         <Navbar.Toggle />
         <div className="flex items-center space-x-6">
           <Navbar.Collapse>
-            <NavbarLink to="/" text="Home" />
-            <NavbarLink to="/feed" text="Feed" />
+            <NavbarLink to="/" text="Home">
+              <img src="/realtalk.svg" alt="Home" />
+            </NavbarLink>
             {auth.loggedIn ? (
               <>
                 <NavbarLink to="/profile/me" text="Profile" />
@@ -33,8 +34,7 @@ export default function MyNavbar() {
               </>
             ) : (
               <>
-                <NavbarLink to="/login" text="Login" />
-                <NavbarLink to="/register" text="Register" />
+                <NavbarLink to="/landing" text="Login/ Register" />
               </>
             )}
           </Navbar.Collapse>

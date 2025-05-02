@@ -29,3 +29,15 @@ export async function deleteNotification(userId, notificationId) {
     return apiErrorResponse(error);
   }
 }
+
+export async function deleteAllNotifications(userId) {
+  try {
+    console.log("userId", userId);
+    const response = await axiosInstance.delete(
+      `/api/users/${userId}/notifications`,
+    );
+    return response;
+  } catch (error) {
+    return apiErrorResponse(error);
+  }
+}

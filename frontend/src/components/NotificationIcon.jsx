@@ -4,7 +4,7 @@ import { useState, useCallback, useEffect } from "react";
 import {
   getNotificationsById,
   deleteNotification,
-} from "../api/notificationService";
+} from "../api/notificationService.js";
 import useAuth from "../hooks/useAuth.js";
 import { useNavigate } from "react-router-dom";
 
@@ -20,7 +20,7 @@ export default function Notifications() {
 
       const response = await getNotificationsById(user._id);
       if (response.success !== false) {
-        setNotifications(response.data);
+        setNotifications(Array.isArray(response.data) ? response.data : []);
       }
     } catch (error) {
       console.error("Error fetching notifications:", error);
@@ -70,7 +70,7 @@ export default function Notifications() {
               >
                 <div className="flex-1">
                   <a
-                    className="text-md font-semibold hover:text-white hover:underline"
+                    className="text-md font-semibold hover:text-gray-900 dark:hover:text-white hover:underline"
                     href={`/profile/${notification.actor_id}`}
                   >
                     {"@" + notification.actor_username}
@@ -91,7 +91,7 @@ export default function Notifications() {
       }
     >
       <button
-        className="relative p-1 text-gray-500 hover:text-white"
+        className="relative p-1 dark:text-gray-500 dark:hover:text-white hover:text-gray-900 text-gray-500"
         onClick={getNotifications}
       >
         {!!notifications.length && (

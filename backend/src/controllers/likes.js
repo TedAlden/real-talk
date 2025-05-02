@@ -1,6 +1,7 @@
 import { connectDB } from "../database/connection.js";
 import { ObjectId } from "mongodb";
 import { ErrorMsg, SuccessMsg } from "../services/responseMessages.js";
+import { createNotification } from "./notifications.js";
 
 export const setLike = async (req, res) => {
   try {
@@ -31,15 +32,15 @@ export const setLike = async (req, res) => {
       : { $pull: { likes: userId } };
 
     // Update post
-    const result = await db.collection("posts").updateOne(
-      { _id: new ObjectId(id) },
-      update
-    );
+    const result = await db
+      .collection("posts")
+      .updateOne({ _id: new ObjectId(id) }, update);
 
     if (result.acknowledged) {
+      createNotification(post.user_id, userId, "like");
       return res.status(200).json({
         message: SuccessMsg.LIKE_UPDATE_OK,
-        isLiked
+        isLiked,
       });
     } else {
       return res.sendStatus(500);

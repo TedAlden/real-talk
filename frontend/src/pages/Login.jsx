@@ -1,6 +1,9 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import useAuth from "../hooks/useAuth";
+import { useNavigate } from "react-router-dom";
+import Timer from "../components/Timer";
+import usePersistentTimer from "../hooks/usePersistentTimer";
 
 import { HiInformationCircle } from "react-icons/hi";
 import { Alert, Button, Checkbox, Label, TextInput } from "flowbite-react";
@@ -10,12 +13,16 @@ function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [alertMessage, setAlertMessage] = useState({});
+  const navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
     if (username !== "" && password !== "") {
       try {
         await auth.login(username, password);
+        navigate("/profile/me");
+        setIsLogin(true);
+        localStorage.setItem("isLoggedIn", "true");
       } catch (err) {
         setAlertMessage({
           color: "failure",
@@ -81,21 +88,6 @@ function Login() {
               </Link>
             </div>
             <Button type="submit">Sign in</Button>
-            <div>
-              <p
-                id="helper-text-explanation"
-                className="text-sm text-gray-500 dark:text-gray-400"
-              >
-                Not registered?{" "}
-                <Link
-                  to="/register"
-                  className="font-medium text-blue-600 hover:underline dark:text-blue-500"
-                >
-                  Create an account
-                </Link>
-                .
-              </p>
-            </div>
             {Object.keys(alertMessage).length > 0 && (
               <div className="">
                 <Alert
