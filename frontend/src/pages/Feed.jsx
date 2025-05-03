@@ -60,7 +60,7 @@ function Feed() {
   const handleScroll = useCallback(() => {
     if (
       window.innerHeight + document.documentElement.scrollTop >=
-      document.documentElement.offsetHeight - 100
+      document.documentElement.offsetHeight - 25
     ) {
       // Load more posts
       if (!loading && hasMore) {
