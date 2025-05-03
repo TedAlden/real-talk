@@ -27,7 +27,7 @@ function Feed() {
 
   const fetchPosts = useCallback(
     async (pageNumber) => {
-      if (loading || loading) return;
+      if (loading) return;
       setLoading(true);
       try {
         const response = await getLatestFeed({
