@@ -40,7 +40,7 @@ function UserProfile() {
   }, [auth]);
 
   const fetchUserData = useCallback(async () => {
-    if (!viewer) return;
+    if (!viewer || !viewer._id) return;
     setLoading(true);
     try {
       const profileUserId = paramId === "me" ? viewer._id : paramId;
