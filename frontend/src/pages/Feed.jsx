@@ -13,7 +13,7 @@ function Feed() {
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
   const [page, setPage] = useState(0);
-  const POSTS_PER_PAGE = 10;
+  const POSTS_PER_PAGE = 5;
 
   let firstLoad = useRef(true);
 
