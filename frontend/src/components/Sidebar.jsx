@@ -19,7 +19,7 @@ export default function Sidebar({ children }) {
 
   return (
     <aside className="h-screen">
-      <nav className="flex h-full flex-col border-r bg-white shadow-sm dark:bg-gray-800">
+      <nav className="flex h-full flex-col bg-white shadow-md dark:bg-gray-800">
         <div className="flex items-center justify-between p-4 pb-2">
           {/*}
           <img
@@ -51,7 +51,7 @@ export default function Sidebar({ children }) {
           <ul className="flex-1 px-3">{children}</ul>
         </SidebarContext.Provider>
 
-        <div className="flex items-center justify-center border-t p-3">
+        <div className="flex items-center justify-center p-3">
           <button
             onClick={handleLogout}
             className={`flex h-12 w-full items-center rounded px-3 text-red-600 transition-colors hover:bg-red-50 dark:text-red-400 dark:hover:bg-gray-700 ${
