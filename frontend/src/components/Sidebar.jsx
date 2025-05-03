@@ -2,7 +2,7 @@ import React, { useContext, createContext, useState } from "react";
 import { MoreVertical, ChevronLast, ChevronFirst } from "lucide-react";
 import { DarkThemeToggle } from "flowbite-react";
 import { LuLogOut } from "react-icons/lu";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import useAuth from "../hooks/useAuth";
 
 const SidebarContext = createContext();
@@ -66,9 +66,14 @@ export default function Sidebar({ children }) {
   );
 }
 
-export function SidebarItem({ icon, text, active, alert, link }) {
+export function SidebarItem({ icon, text, alert, link }) {
   const { expanded } = useContext(SidebarContext);
   const navigate = useNavigate();
+  const location = useLocation();
+  const isActive =
+    link === "/"
+      ? location.pathname === "/"
+      : location.pathname.startsWith(link);
 
   return (
     <li
@@ -76,10 +81,10 @@ export function SidebarItem({ icon, text, active, alert, link }) {
         navigate(link);
       }}
       className={`group relative my-1 flex cursor-pointer items-center rounded-md px-3 py-2 font-medium transition-colors ${
-        active
+        isActive
           ? "bg-gradient-to-tr from-indigo-200 to-indigo-100 text-indigo-800"
           : "text-gray-600 hover:bg-indigo-50 dark:text-gray-400 dark:hover:bg-gray-700"
-      } `}
+      }`}
     >
       {icon}
       <span
