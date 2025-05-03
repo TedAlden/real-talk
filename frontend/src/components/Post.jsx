@@ -27,6 +27,8 @@ function Post({ post, viewer, onDelete }) {
   }, [postData, commentsShown, updateCache]);
 
   const handleLike = async (postId, isLiked) => {
+    if (!viewer) return;
+
     likePost(postId, viewer._id, isLiked)
       .then((response) => {
         if (response.success !== false) {
@@ -112,7 +114,7 @@ function Post({ post, viewer, onDelete }) {
   };
 
   const postOptions =
-    viewer._id === postData.user_id
+    viewer?._id === postData.user_id
       ? [
           // If the viewer is the author of the post
           {
@@ -206,11 +208,11 @@ function Post({ post, viewer, onDelete }) {
           data-testid="post-like-button"
           className="m-0 flex flex-row items-center justify-items-center space-x-2 p-2"
           onClick={() =>
-            handleLike(postData._id, !postData.likes.includes(viewer._id))
+            handleLike(postData._id, !postData.likes.includes(viewer?._id))
           }
         >
           <FaHeart
-            className={`h-5 w-5 ${postData.likes.includes(viewer._id) ? "text-red-500 hover:text-red-800" : "text-gray-500 hover:text-red-500"}`}
+            className={`h-5 w-5 ${postData.likes.includes(viewer?._id) ? "text-red-500 hover:text-red-800" : "text-gray-500 hover:text-red-500"}`}
           />
           <span>{postData.likes.length}</span>
         </button>
