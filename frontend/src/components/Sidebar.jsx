@@ -1,7 +1,7 @@
 import React, { useContext, createContext, useState } from "react";
 import { MoreVertical, ChevronLast, ChevronFirst } from "lucide-react";
 import { DarkThemeToggle } from "flowbite-react";
-import { LuPower } from "react-icons/lu";
+import { LuLogOut } from "react-icons/lu";
 import { useNavigate } from "react-router-dom";
 import useAuth from "../hooks/useAuth";
 
@@ -51,7 +51,7 @@ export default function Sidebar({ children }) {
               expanded ? "justify-start" : "justify-center"
             }`}
           >
-            <LuPower className="h-6 w-6 flex-shrink-0" />
+            <LuLogOut className="h-6 w-6 flex-shrink-0" />
             <span
               className={`overflow-hidden transition-all ${
                 expanded ? "ml-3 w-auto" : "w-0"
