@@ -72,12 +72,12 @@ export default function NotificationsPage() {
             >
               <div className="flex-1">
                 <a
-                  className="text-md font-semibold hover:text-gray-900 dark:hover:text-white hover:underline"
+                  className="text-md font-semibold text-gray-500 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:underline"
                   href={`/profile/${notification.actor_id}`}
                 >
                   {"@" + notification.actor_username}
                 </a>
-                <span className="ml-2 text-gray-600 dark:text-gray-300">
+                <span className="text-gray-600 dark:text-gray-300">
                   {notification.content}
                 </span>
               </div>
