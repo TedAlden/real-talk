@@ -16,6 +16,7 @@ import { getSafeObject } from "../util/defaultObjects.js";
 import DailyPostCounter from "../components/DailyPostCounter";
 import SuggestedUsers from "../components/SuggestedUsers.jsx";
 import Composer from "../components/Composer.jsx";
+import Unauthorised from "../components/Unauthorised.jsx";
 
 function UserProfile() {
   const auth = useAuth();
@@ -109,6 +110,8 @@ function UserProfile() {
     }).length;
   };
 
+  if (!auth.loggedIn) return <Unauthorised />;
+
   if (loading)
     return (
       <div className="p-16 text-center">
@@ -116,7 +119,20 @@ function UserProfile() {
       </div>
     );
 
-  return isUserFound ? (
+  if (!isUserFound) {
+    return (
+      <div>
+        <h1 className="my-5 text-2xl font-bold text-gray-900 dark:text-white">
+          User not found!
+        </h1>
+        <p className="my-5 text-gray-900 dark:text-white">
+          The link may be invalid or the account may have been deleted.
+        </p>
+      </div>
+    );
+  }
+
+  return (
     <div className="container mx-auto">
       <div className="mx-4 mt-4 grid w-full grid-cols-7 gap-6">
         <div className="col-span-2" />
@@ -230,15 +246,6 @@ function UserProfile() {
           <SuggestedUsers />
         </div>
       </div>
-    </div>
-  ) : (
-    <div>
-      <h1 className="my-5 text-2xl font-bold text-gray-900 dark:text-white">
-        User not found!
-      </h1>
-      <p className="my-5 text-gray-900 dark:text-white">
-        The link may be invalid or the account may have been deleted.
-      </p>
     </div>
   );
 }

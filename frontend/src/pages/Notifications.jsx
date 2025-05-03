@@ -1,15 +1,22 @@
 import { useState, useCallback, useEffect } from "react";
 import { HiX } from "react-icons/hi";
-import { getNotificationsById, deleteNotification } from "../api/notificationService.js";
+import {
+  getNotificationsById,
+  deleteNotification,
+} from "../api/notificationService.js";
 import useAuth from "../hooks/useAuth.js";
 import { useNavigate } from "react-router-dom";
+import { Spinner } from "flowbite-react";
+import Unauthorised from "../components/Unauthorised.jsx";
 
 export default function NotificationsPage() {
   const [notifications, setNotifications] = useState([]);
+  const [loading, setLoading] = useState(true);
   const auth = useAuth();
   const navigate = useNavigate();
 
   const getNotifications = useCallback(async () => {
+    setLoading(true);
     try {
       const user = await auth.getUser();
       if (!user || !user._id) return;
@@ -20,6 +27,8 @@ export default function NotificationsPage() {
       }
     } catch (error) {
       console.error("Error fetching notifications:", error);
+    } finally {
+      setLoading(false);
     }
   }, [auth]);
 
@@ -43,12 +52,21 @@ export default function NotificationsPage() {
     }
   };
 
+  if (!auth.loggedIn) return <Unauthorised />;
+
+  if (loading)
+    return (
+      <div className="p-16 text-center">
+        <Spinner aria-label="Loading notifications data" size="xl" />
+      </div>
+    );
+
   return (
-    <div className="max-w-4xl mx-auto p-4">
-      <div className="flex justify-between items-center mb-6">
+    <div className="mx-auto max-w-4xl p-4">
+      <div className="mb-6 flex items-center justify-between">
         <h1 className="text-2xl font-bold dark:text-white">Notifications</h1>
         {notifications.length > 0 && (
-          <button 
+          <button
             className="text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
             onClick={() => {
               // TODO: Implement mark all as read functionality
@@ -61,18 +79,18 @@ export default function NotificationsPage() {
 
       <div className="space-y-4">
         {notifications.length === 0 ? (
-          <div className="text-center py-8 text-gray-500 dark:text-gray-400">
+          <div className="py-8 text-center text-gray-500 dark:text-gray-400">
             No notifications yet
           </div>
         ) : (
           notifications.map((notification) => (
             <div
-              className="flex items-center justify-between p-4 bg-white dark:bg-gray-800 rounded-lg shadow hover:shadow-md transition-shadow"
+              className="flex items-center justify-between rounded-lg bg-white p-4 shadow transition-shadow hover:shadow-md dark:bg-gray-800"
               key={notification._id}
             >
               <div className="flex-1">
                 <a
-                  className="text-md font-semibold text-gray-500 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:underline"
+                  className="text-md font-semibold text-gray-500 hover:text-gray-900 hover:underline dark:text-gray-300 dark:hover:text-white"
                   href={`/profile/${notification.actor_id}`}
                 >
                   {"@" + notification.actor_username}
