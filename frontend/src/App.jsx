@@ -11,8 +11,7 @@ export const GrayscaleContext = createContext({
 
 const queryClient = new QueryClient();
 
-import PublicLayout from "./layouts/PublicLayout";
-import PrivateLayout from "./layouts/PrivateLayout";
+import Layout from "./layouts/Layout";
 
 import Home from "./pages/Home";
 import Feed from "./pages/Feed";
@@ -44,25 +43,8 @@ function App() {
           <AuthProvider>
             <QueryClientProvider client={queryClient}>
               <div className="container min-w-full">
-                {/* Grayscale dev slider — remove in production */}
-                {/*
-              <div className="p-4">
-                <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                  Grayscale Level: {grayscale}
-                </label>
-                <input
-                  type="range"
-                  min="0"
-                  max="1"
-                  step="0.01"
-                  value={grayscale}
-                  onChange={(e) => setGrayscale(e.target.value)}
-                  className="w-full"
-                />
-              </div>
-              */}
                 <Routes>
-                  <Route element={<PublicLayout />}>
+                  <Route element={<Layout />}>
                     <Route path="/" element={<Home />} />
                     <Route path="/login" element={<Login />} />
                     <Route path="/register" element={<Register />} />
@@ -73,8 +55,6 @@ function App() {
                     />
                     <Route path="/verify-email" element={<VerifyUser />} />
                     <Route path="/reset-password" element={<ResetPassword />} />
-                  </Route>
-                  <Route element={<PrivateLayout />}>
                     <Route path="/feed" element={<Feed />} />
                     <Route path="/settings" element={<UserSettings />} />
                     <Route path="/enter-otp" element={<EnterOTP />} />
