@@ -21,13 +21,6 @@ export default function Sidebar({ children }) {
     <aside className="h-screen">
       <nav className="flex h-full flex-col bg-white shadow-md dark:bg-gray-800">
         <div className="flex items-center justify-between p-4 pb-2">
-          {/*}
-          <img
-            src="https://img.logoipsum.com/243.svg"
-            alt="Logo"
-            className={`overflow-hidden transition-all ${expanded ? "w-32" : "w-0"}`}
-          />
-          */}
           <div
             className={`flex items-center overflow-hidden transition-all ${
               expanded ? "ml-2 w-auto" : "w-0"
