@@ -58,10 +58,12 @@ function Feed() {
   }, [fetchPosts, page]);
 
   const handleScroll = useCallback(() => {
+    const mainContent = document.getElementById("main-content-scrollable");
     if (
-      window.innerHeight + document.documentElement.scrollTop >=
-      document.documentElement.offsetHeight - 25
+      mainContent.scrollTop + mainContent.clientHeight >=
+      mainContent.scrollHeight - 100
     ) {
+      console.log("Loading more posts...");
       // Load more posts
       if (!loading && hasMore) {
         setLoading(true);
@@ -73,8 +75,9 @@ function Feed() {
   }, [fetchPosts, page, hasMore, loading]);
 
   useEffect(() => {
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
+    const mainContent = document.getElementById("main-content-scrollable");
+    mainContent.addEventListener("scroll", handleScroll);
+    return () => mainContent.removeEventListener("scroll", handleScroll);
   }, [handleScroll]);
 
   const onPostDeleted = (postId) => {

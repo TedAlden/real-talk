@@ -42,7 +42,7 @@ export default function PrivateLayout() {
       </Sidebar>
       <div className="flex h-screen flex-1 flex-col">
         <TopBar />
-        <main className="flex-1 overflow-auto p-6">
+        <main id="main-content-scrollable" className="flex-1 overflow-auto p-6">
           <Outlet />
         </main>
       </div>
