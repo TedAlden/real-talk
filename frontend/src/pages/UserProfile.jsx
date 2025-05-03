@@ -109,7 +109,12 @@ function UserProfile() {
     }).length;
   };
 
-  if (loading) return <Spinner className="p-16 text-center" size="xl" />;
+  if (loading)
+    return (
+      <div className="p-16 text-center">
+        <Spinner aria-label="Profile loading spinner" size="xl" />
+      </div>
+    );
 
   return isUserFound ? (
     <div className="container mx-auto">
