@@ -15,7 +15,7 @@ function Feed() {
   const [page, setPage] = useState(0);
   const POSTS_PER_PAGE = 5;
 
-  let firstLoad = useRef(true);
+  const firstLoad = useRef(true);
 
   useEffect(() => {
     if (auth.loggedIn) {
