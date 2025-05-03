@@ -64,6 +64,8 @@ function App() {
                 <Routes>
                   <Route element={<PublicLayout />}>
                     <Route path="/" element={<Home />} />
+                    <Route path="/login" element={<Login />} />
+                    <Route path="/register" element={<Register />} />
                     <Route path="/landing" element={<Landing />} />
                     <Route
                       path="/forgot-password"
