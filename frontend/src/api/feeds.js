@@ -1,10 +1,10 @@
 import axiosInstance from "./axios";
 import { apiErrorResponse } from "./apiUtils";
 
-export async function getFollowingFeed(userId) {
+export async function getFollowingFeed(userId, { limit, offset }) {
   try {
     const response = await axiosInstance.get(
-      `/api/feeds/latest/${userId}`,
+      `/api/feeds/following/${userId}?limit=${limit}&offset=${offset}`,
     );
     return response;
   } catch (error) {
