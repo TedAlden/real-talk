@@ -6,6 +6,7 @@ import {
   updatePostById,
   deletePostById,
   createPost,
+  getTrendingTags,
 } from "../controllers/posts.js";
 import {
   createComment,
@@ -38,5 +39,8 @@ postsRouter.get("/:id/comments", getComments);
 postsRouter.get("/:id/comments/:commentId", getCommentById);
 postsRouter.put("/:id/comments/:commentId", updateComment);
 postsRouter.delete("/:id/comments/:commentId", deleteComment);
+
+// Posts :: tags
+postsRouter.get("/tags/trending", getTrendingTags);
 
 export default postsRouter;

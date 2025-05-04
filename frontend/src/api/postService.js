@@ -103,3 +103,15 @@ export async function deleteComment(_id, commentId) {
     return apiErrorResponse(error);
   }
 }
+
+export async function getTrendingTags(period) {
+  try {
+    const response = await axiosInstance.get(
+      `/api/posts/tags/trending?period=${period}`,
+    );
+    console.log("Trending tags response:", response);
+    return response;
+  } catch (error) {
+    return apiErrorResponse(error);
+  }
+}

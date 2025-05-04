@@ -76,11 +76,16 @@ export const getPostsByQuery = async (req, res) => {
       .find({ _id: { $in: userIds } })
       .toArray();
 
-    const userMap = Object.fromEntries(users.map((user) => [user._id, {
-      _id: user._id,
-      username: user.username,
-      profile_picture: user.profile_picture,
-    }]));
+    const userMap = Object.fromEntries(
+      users.map((user) => [
+        user._id,
+        {
+          _id: user._id,
+          username: user.username,
+          profile_picture: user.profile_picture,
+        },
+      ])
+    );
 
     posts.forEach((post) => {
       post.poster = userMap[post.user_id] || null;
@@ -202,6 +207,65 @@ export const deletePostById = async (req, res) => {
     res.status(200).json({ message: SuccessMsg.POST_DELETE_OK });
   } catch (err) {
     console.error("Delete post error:", err);
+    return res.status(500).json({ error: err.message });
+  }
+};
+
+/**
+ * GET /posts/tags/trending?period={}
+ *
+ * Get trending tags based on the period.
+ *
+ * Query parameters:
+ * {
+ *  period: string
+ * }
+ */
+
+export const getTrendingTags = async (req, res) => {
+  const { period } = req.query;
+  const daysInMs = {
+    daily: 1 * 24 * 60 * 60 * 1000,
+    weekly: 7 * 24 * 60 * 60 * 1000,
+    monthly: 30 * 24 * 60 * 60 * 1000,
+  };
+
+  if (!daysInMs[period]) {
+    return res.status(400).json({ error: ErrorMsg.INVALID_PERIOD });
+  }
+
+  try {
+    const db = await connectDB();
+    const minDate = new Date(Date.now() - daysInMs[period]);
+    const tags = await db
+      .collection("posts")
+      .aggregate([
+        { $match: { created_at: { $gte: minDate } } },
+        { $unwind: "$tags" },
+        {
+          $group: {
+            _id: "$tags",
+            count: { $sum: 1 },
+          },
+        },
+        { $sort: { count: -1 } },
+        {
+          $project: {
+            _id: 0,
+            name: "$_id",
+            postCount: "$count",
+          },
+        },
+        { $limit: 10 },
+      ])
+      .toArray();
+    if (!tags) {
+      return res.status(404).json({ error: ErrorMsg.NO_SUCH_POST });
+    }
+    console.log("Trending tags:", tags);
+    return res.status(200).json(tags);
+  } catch (err) {
+    console.error("Get trending tags error:", err);
     return res.status(500).json({ error: err.message });
   }
 };
