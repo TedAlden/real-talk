@@ -88,8 +88,12 @@ export function SidebarItem({ icon, text, alert, link }) {
     >
       <div className="relative">
         {icon}
-        {alert && (
-          <div className="absolute -top-1 right-0 size-4 rounded-full bg-red-500" />
+        {alert > 0 && (
+          <div className="absolute -top-1 right-0 size-4 rounded-full bg-red-500 flex items-center justify-center">
+            <span className="text-[8px] font-bold text-white">
+              {alert > 9 ? "9+" : alert}
+            </span>
+          </div>
         )}
       </div>
       <span
