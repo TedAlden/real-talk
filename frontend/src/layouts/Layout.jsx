@@ -4,10 +4,11 @@ import {
   User,
   House,
   Users,
-  TrendingUp,
+  TimerReset,
   Bell,
   Settings,
   ShieldBan,
+  BookUser,
 } from "lucide-react";
 
 import Sidebar, { SidebarItem } from "../components/Sidebar";
@@ -38,9 +39,14 @@ export default function PrivateLayout() {
           text="Home"
         />
         <SidebarItem
-          link="/feed"
-          icon={<TrendingUp className="h-6 w-6" />}
-          text="Trending"
+          link="/feed/latest"
+          icon={<TimerReset className="h-6 w-6" />}
+          text="Latest"
+        />
+        <SidebarItem
+          link="/feed/following"
+          icon={<BookUser className="h-6 w-6" />}
+          text="Following"
         />
         <SidebarItem
           link="/network"

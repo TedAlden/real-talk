@@ -57,7 +57,7 @@ export const getPostsByQuery = async (req, res) => {
   try {
     const db = await connectDB();
 
-    const { userId, tag } = req.query;
+    const { userId, tag, limit = 10, offset = 0 } = req.query;
     const filter = {};
     if (tag) filter.tags = { $in: [tag] };
     if (userId) filter.user_id = new ObjectId(userId);
@@ -66,6 +66,8 @@ export const getPostsByQuery = async (req, res) => {
       .collection("posts")
       .find(filter)
       .sort({ created_at: -1 })
+      .skip(parseInt(offset))
+      .limit(parseInt(limit))
       .toArray();
 
     const userIds = posts.map((post) => post.user_id);

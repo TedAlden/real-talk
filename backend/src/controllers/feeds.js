@@ -9,6 +9,7 @@ export const getFollowingFeed = async (req, res) => {
   try {
     const db = await connectDB();
     const { userId } = req.params;
+    const { limit = 10, offset = 0 } = req.query;
 
     // Get the id of the user requesting the following feed
     const user = await db
@@ -31,6 +32,8 @@ export const getFollowingFeed = async (req, res) => {
       .collection("posts")
       .find({ user_id: { $in: followingIds } })
       .sort({ created_at: -1 })
+      .skip(parseInt(offset))
+      .limit(parseInt(limit))
       .toArray();
 
     // Get the user/poster details for each post
