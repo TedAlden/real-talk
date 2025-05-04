@@ -14,7 +14,7 @@ const queryClient = new QueryClient();
 import Layout from "./layouts/Layout";
 
 import Home from "./pages/Home";
-import Feed from "./pages/Feed";
+import FeedLatest from "./pages/FeedLatest";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Landing from "./pages/Landing";
@@ -55,7 +55,8 @@ function App() {
                     />
                     <Route path="/verify-email" element={<VerifyUser />} />
                     <Route path="/reset-password" element={<ResetPassword />} />
-                    <Route path="/feed" element={<Feed />} />
+                    <Route path="/feed" element={<FeedLatest />} />
+                    <Route path="/feed/latest" element={<FeedLatest />} />
                     <Route path="/settings" element={<UserSettings />} />
                     <Route path="/enter-otp" element={<EnterOTP />} />
                     <Route path="/profile/:id" element={<UserProfile />} />

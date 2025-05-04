@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
 import { Spinner } from "flowbite-react";
 
-import useAuth from "../hooks/useAuth";
-import useScrollingFeed from "../hooks/useScrollingFeed";
+import useAuth from "../hooks/useAuth.js";
+import useScrollingFeed from "../hooks/useScrollingFeed.js";
 
-import Post from "../components/Post";
-import Composer from "../components/Composer";
-import SuggestedUsers from "../components/SuggestedUsers";
+import Post from "../components/Post.jsx";
+import Composer from "../components/Composer.jsx";
+import SuggestedUsers from "../components/SuggestedUsers.jsx";
 
 import { getLatestFeed } from "../api/feeds.js";
 
