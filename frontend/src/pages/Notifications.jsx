@@ -71,8 +71,8 @@ export default function NotificationsPage() {
 
       if (response.success !== false) {
         setNotifications([]);
-        // Refresh Layout component to update notification badge
-        window.location.reload();
+        // Emit event to update other components
+        window.dispatchEvent(new Event('notification-update'));
       } else {
         setNotifications(oldNotifications);
         setError("Failed to mark all notifications as read");
