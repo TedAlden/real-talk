@@ -178,12 +178,14 @@ function UserProfile() {
         <div className="col-span-2" />
         <div className="col-span-1 mb-4 flex w-full items-center justify-between rounded-md bg-white p-4 text-lg text-gray-900 shadow dark:border dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100">
           <p>User has been banned.</p>
-          <button
-            className="rounded-md p-1 text-blue-600 hover:text-blue-400 dark:text-blue-500 dark:hover:text-blue-600"
-            onClick={handleBanUser}
-          >
-            Undo
-          </button>
+          {viewer?.is_admin && (
+            <button
+              className="rounded-md p-1 text-blue-600 hover:text-blue-400 dark:text-blue-500 dark:hover:text-blue-600"
+              onClick={handleBanUser}
+            >
+              Undo
+            </button>
+          )}
         </div>
       </div>
     );

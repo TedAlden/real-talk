@@ -104,8 +104,6 @@ export default function Comment({ postId, comment, onDelete }) {
             label: "Report comment",
             action: handleReportComment,
           },
-
-          ,
           ...(viewer?.is_admin
             ? [
                 {
@@ -122,13 +120,14 @@ export default function Comment({ postId, comment, onDelete }) {
         className="flex items-center justify-between bg-white p-4 text-lg text-gray-900 dark:bg-gray-800 dark:text-gray-100"
       >
         <p>Comment has been removed.</p>
-
-        <button
-          className="rounded-md p-1 text-blue-600 hover:text-blue-400 dark:text-blue-500 dark:hover:text-blue-600"
-          onClick={handleBanComment}
-        >
-          Undo
-        </button>
+        {viewer?.is_admin && (
+          <button
+            className="rounded-md p-1 text-blue-600 hover:text-blue-400 dark:text-blue-500 dark:hover:text-blue-600"
+            onClick={handleBanComment}
+          >
+            Undo
+          </button>
+        )}
       </div>
     );
   return (
