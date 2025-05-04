@@ -65,6 +65,8 @@ export default function Notifications() {
 
       if (response.success !== false) {
         setNotifications([]);
+        // Refresh Layout component to update notification badge
+        window.location.reload();
       } else {
         setNotifications(oldNotifications);
         setError("Failed to mark all as read");
@@ -145,7 +147,11 @@ export default function Notifications() {
         onClick={getNotifications}
       >
         {!!notifications.length && (
-          <div className="absolute -top-1 right-0 size-4 rounded-full bg-red-500" />
+          <div className="absolute -top-1 right-0 size-4 rounded-full bg-red-500 flex items-center justify-center">
+            <span className="text-[8px] font-bold text-white">
+              {notifications.length > 9 ? "9+" : notifications.length}
+            </span>
+          </div>
         )}
 
         <HiBell className="size-5" />
