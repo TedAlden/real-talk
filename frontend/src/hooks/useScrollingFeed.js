@@ -11,6 +11,8 @@ export default function useScrollingFeed({
   const [page, setPage] = useState(0);
   const firstLoad = useRef(true);
 
+  const scrollMargin = 10;
+
   /**
    * Fetch posts from the server.
    */
@@ -47,7 +49,7 @@ export default function useScrollingFeed({
     const mainContent = document.getElementById("main-content-scrollable");
     if (
       mainContent.scrollTop + mainContent.clientHeight >=
-      mainContent.scrollHeight - 100
+      mainContent.scrollHeight - scrollMargin
     ) {
       setFeedLoading(true);
       fetchPosts(page);
