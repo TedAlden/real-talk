@@ -192,9 +192,13 @@ function Admin() {
                       <p className="text-md mb-2">{report.content}</p>
 
                       <div className="flex justify-end gap-4 text-sm font-semibold text-blue-600 dark:text-blue-500">
-                        <button className="rounded-md p-1 hover:text-blue-400 dark:hover:text-blue-600">
+                        <a
+                          className="rounded-md p-1 hover:text-blue-400 dark:hover:text-blue-600"
+                          href={getTargetLink(report)}
+                          target="_blank"
+                        >
                           View {_.capitalize(report.targetType)}
-                        </button>
+                        </a>
                         <button
                           className="rounded-md p-1 hover:text-blue-400 dark:hover:text-blue-600"
                           onClick={() => handleMarkReport(report._id, "active")}

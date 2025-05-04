@@ -4,6 +4,7 @@ import Post from "../components/Post";
 import useAuth from "../hooks/useAuth";
 import { getPostById } from "../api/postService";
 import { useCacheUpdater } from "../hooks/useUserCache";
+import { getSafeObject } from "../util/defaultObjects";
 
 function SinglePost() {
   const paramId = useParams().id;
@@ -30,8 +31,13 @@ function SinglePost() {
   }, [paramId]);
 
   useEffect(() => {
+    const fetchUser = async () => {
+      const user = await auth.getUser();
+
+      setViewer(getSafeObject(user, "user"));
+    };
+    fetchUser();
     fetchPostDate();
-    setViewer(auth.getUser());
   }, [auth, fetchPostDate]);
 
   if (!post) {

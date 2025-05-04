@@ -98,7 +98,7 @@ export default function Comment({ postId, comment, onDelete, viewer }) {
           ...(viewer?.is_admin
             ? [
                 {
-                  label: "Remove Comm...",
+                  label: "Remove Comment",
                   action: handleBanComment,
                 },
               ]
