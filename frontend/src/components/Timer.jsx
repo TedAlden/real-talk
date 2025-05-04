@@ -8,16 +8,13 @@ import { GrayscaleContext } from "../App";
 
 function Timer() {
   const auth = useAuth();
-  // pull the user’s choice (in seconds) from localStorage or fallback to 20m
   const defaultTotal = 1200;
   const stored = localStorage.getItem("usage_time_limit");
   const totalTimeInSeconds = stored ?
     parseInt(stored, 10)
     : defaultTotal;
 
-  // pull the user’s grayscale threshold (0–100) or fallback to 100%
   const storedGray = localStorage.getItem("usage_grayscale_level");
-  // convert to a 0–1 fraction
   const thresholdFraction = storedGray
     ? parseInt(storedGray, 10) / 100
     : 1;
@@ -35,7 +32,6 @@ function Timer() {
   
   useEffect(() => {
     const halfWay = totalTimeInSeconds / 2;
-    // below half-time, use the user’s chosen gray level; otherwise full color
     setGrayscale(timeRemaining >= halfWay ? thresholdFraction : 1);
   }, [timeRemaining, setGrayscale]);
 
