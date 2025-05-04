@@ -50,13 +50,24 @@ function UserProfile() {
   /**
    * Use scrolling feed for the user's posts.
    */
-  const { posts, feedLoading, hasMore, onPostDeleted } = useScrollingFeed({
-    viewer: viewer,
-    postsPerPage: 5,
-    fetchFeedFunction: async ({ limit, offset }) => {
-      const profileUserId = profileId === "me" ? viewer._id : profileId;
-      return await getPostByQuery("userId", profileUserId, { limit, offset });
-    },
+  const { posts, feedLoading, hasMore, onPostDeleted, onPostCreated } =
+    useScrollingFeed({
+      viewer: viewer,
+      postsPerPage: 5,
+      fetchFeedFunction: async ({ limit, offset }) => {
+        const profileUserId = profileId === "me" ? viewer._id : profileId;
+        return await getPostByQuery("userId", profileUserId, { limit, offset });
+      },
+    });
+
+  const dailyPosts = posts.filter((post) => {
+    const postDate = new Date(post.created_at);
+    const today = new Date();
+    return (
+      postDate.getDate() === today.getDate() &&
+      postDate.getMonth() === today.getMonth() &&
+      postDate.getFullYear() === today.getFullYear()
+    );
   });
 
   /**
@@ -87,6 +98,11 @@ function UserProfile() {
       setLoading(false);
     }
   }, [viewer, profileId]);
+
+  const handleSubmit = (post) => {
+    onPostCreated(post);
+    fetchUserData();
+  };
 
   /**
    * Handle following toggle.
@@ -307,19 +323,19 @@ function UserProfile() {
             </div>
 
             <div className="mb-4 rounded-md bg-white p-2 text-center shadow dark:border dark:border-gray-700 dark:bg-gray-800">
-              <DailyPostCounter posts={posts.length} />
+              <DailyPostCounter posts={dailyPosts.length} />
             </div>
 
-            {viewer._id == userData._id && posts.length < 1 && (
+            {viewer._id == userData._id && dailyPosts.length < 1 && (
               <div
                 data-testid="profile-post-composer"
                 className={`mb-4 p-2 ${style.card}`}
               >
-                <Composer onSubmit={fetchUserData} mode="createPost" />
+                <Composer onSubmit={handleSubmit} mode="createPost" />
               </div>
             )}
 
-            {viewer._id == userData._id && posts.length >= 1 && (
+            {viewer._id == userData._id && dailyPosts.length >= 1 && (
               <div
                 className={`mb-4 p-2 ${style.card} text-center text-red-500 dark:text-red-400`}
               >
