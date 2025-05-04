@@ -327,7 +327,7 @@ function UserProfile() {
             ))}
           </div>
           <div className="col-span-2">
-            <SuggestedUsers />
+            <SuggestedUsers viewer={viewer} />
           </div>
         </div>
       </div>{" "}

@@ -320,6 +320,7 @@ function Post({ post, viewer, onDelete, focusedComment }) {
                   <Comment
                     postId={postData._id}
                     comment={comment}
+                    viewer={viewer}
                     onDelete={fetchComments}
                   />
                 </div>

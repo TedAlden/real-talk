@@ -1,7 +1,6 @@
 import { useCachedUser } from "../hooks/useUserCache";
 import getTimeAgo from "../util/getTimeAgo";
 import DropdownMenu from "./DropdownMenu";
-import useAuth from "../hooks/useAuth";
 import { useState, useEffect } from "react";
 import { deleteComment } from "../api/postService";
 import _ from "lodash";
@@ -17,9 +16,7 @@ const defaultUser = {
     "https://static.vecteezy.com/system/resources/thumbnails/003/337/584/small/default-avatar-photo-placeholder-profile-icon-vector.jpg",
 };
 
-export default function Comment({ postId, comment, onDelete }) {
-  const auth = useAuth();
-  const [viewer, setViewer] = useState(null);
+export default function Comment({ postId, comment, onDelete, viewer }) {
   const [mode, setMode] = useState("view");
   const [commentData, setCommentData] = useState(comment);
   const [isReporting, setIsReporting] = useState(false);
@@ -32,12 +29,6 @@ export default function Comment({ postId, comment, onDelete }) {
   useEffect(() => {
     setCommentData(comment);
   }, [comment]);
-
-  useEffect(() => {
-    auth.getUser().then((user) => {
-      setViewer(user);
-    });
-  }, [auth]);
 
   const handleReportComment = () => {
     setIsReporting(true);
