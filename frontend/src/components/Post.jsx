@@ -12,6 +12,7 @@ import Composer from "./Composer";
 import Comment from "./Comment";
 import PostCarousel from "./PostCarousel";
 import ReportWindow from "./ReportWindow";
+import { banTarget } from "../api/adminService";
 
 function Post({ post, viewer, onDelete, focusedComment }) {
   const [postData, setPostData] = useState(post);
@@ -113,6 +114,26 @@ function Post({ post, viewer, onDelete, focusedComment }) {
     });
   };
 
+  const handleBanPost = async () => {
+    try {
+      if (!viewer?.is_admin) return;
+      const response = await banTarget({
+        targetType: "post",
+        targetId: postData._id,
+        is_banned: !postData.is_banned,
+      });
+
+      if (response.success !== false) {
+        setPostData((prev) => ({
+          ...prev,
+          is_banned: !prev.is_banned,
+        }));
+      }
+    } catch (error) {
+      console.error("Error banning post:", error);
+    }
+  };
+
   const postOptions =
     viewer?._id === postData.user_id
       ? [
@@ -132,7 +153,31 @@ function Post({ post, viewer, onDelete, focusedComment }) {
             label: "Report post",
             action: handleReportPost,
           },
+
+          ...(viewer?.is_admin
+            ? [
+                {
+                  label: "Remove post",
+                  action: handleBanPost,
+                },
+              ]
+            : []),
         ];
+  if (postData.is_banned)
+    return (
+      <div
+        data-testid="post"
+        className="col-span-4 mb-4 flex items-center justify-between rounded-md bg-white p-4 text-lg text-gray-900 shadow dark:border dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
+      >
+        <p>Post has been removed.</p>
+        <button
+          className="rounded-md p-1 text-blue-600 hover:text-blue-400 dark:text-blue-500 dark:hover:text-blue-600"
+          onClick={handleBanPost}
+        >
+          Undo
+        </button>
+      </div>
+    );
 
   return (
     <>
