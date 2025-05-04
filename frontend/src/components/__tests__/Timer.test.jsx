@@ -6,8 +6,8 @@ import { useContext, useEffect } from "react";
 import * as authHook from "../../hooks/useAuth";
 
 vi.spyOn(authHook, "default").mockReturnValue({
-  logout: vi.fn(), // ✅ Mock logout
-  getUser: vi.fn().mockResolvedValue({ _id: "user-1" }), // or whatever your component uses
+  logout: vi.fn(),
+  getUser: vi.fn().mockResolvedValue({ _id: "user-1" }),
 });
 
 describe("Timer", () => {
