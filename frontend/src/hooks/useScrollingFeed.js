@@ -1,14 +1,29 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 
+import useAuth from "../hooks/useAuth";
+
 export default function useScrollingFeed({
   postsPerPage = 5,
   fetchFeedFunction,
 }) {
+  const auth = useAuth();
+  const [viewer, setViewer] = useState(null);
   const [posts, setPosts] = useState([]);
   const [feedLoading, setFeedLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
   const [page, setPage] = useState(0);
   const firstLoad = useRef(true);
+
+  /**
+   * Determine viewer
+   */
+  useEffect(() => {
+    const fetchUser = async () => {
+      const user = await auth.getUser();
+      setViewer(user);
+    };
+    fetchUser();
+  }, [auth]);
 
   /**
    * Fetch posts from the server.
@@ -71,11 +86,11 @@ export default function useScrollingFeed({
    * Load first page of posts on initial render.
    */
   useEffect(() => {
-    if (firstLoad.current) {
+    if (firstLoad.current && viewer?._id) {
       fetchPosts(page);
       firstLoad.current = false;
     }
-  }, [fetchPosts, page]);
+  }, [fetchPosts, page, viewer]);
 
   /**
    * Add scroll event listener to main content area.
