@@ -62,6 +62,7 @@ export default function NotificationsPage() {
 
   const markAllAsRead = async () => {
     try {
+      setLoading(true);
       const userId = (await auth.getUser())._id;
       if (!userId) return;
 
@@ -70,6 +71,8 @@ export default function NotificationsPage() {
 
       if (response.success !== false) {
         setNotifications([]);
+        // Refresh Layout component to update notification badge
+        window.location.reload();
       } else {
         setNotifications(oldNotifications);
         setError("Failed to mark all notifications as read");
@@ -77,6 +80,8 @@ export default function NotificationsPage() {
     } catch (error) {
       console.error("Error marking all as read:", error);
       setError("An error occurred while marking all as read");
+    } finally {
+      setLoading(false);
     }
   };
 
