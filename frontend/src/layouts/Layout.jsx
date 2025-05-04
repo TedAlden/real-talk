@@ -1,6 +1,14 @@
 import React from "react";
 import { Outlet } from "react-router-dom";
-import { User, House, Users, TrendingUp, Bell, Settings } from "lucide-react";
+import {
+  User,
+  House,
+  Users,
+  TrendingUp,
+  Bell,
+  Settings,
+  ShieldBan,
+} from "lucide-react";
 
 import Sidebar, { SidebarItem } from "../components/Sidebar";
 import TopBar from "../components/Topbar";
@@ -38,6 +46,12 @@ export default function PrivateLayout() {
           link="/settings"
           icon={<Settings className="h-6 w-6" />}
           text="Settings"
+        />
+
+        <SidebarItem
+          link="/admin"
+          icon={<ShieldBan className="h-6 w-6" />}
+          text="Administration"
         />
       </Sidebar>
       <div className="flex h-screen flex-1 flex-col">
