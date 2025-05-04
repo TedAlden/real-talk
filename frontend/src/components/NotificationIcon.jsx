@@ -145,9 +145,7 @@ export default function Notifications() {
         onClick={getNotifications}
       >
         {!!notifications.length && (
-          <div className="absolute -bottom-1 -right-1 size-[14px] rounded-sm bg-red-500 text-[10px] font-bold text-white">
-            {notifications.length}
-          </div>
+          <div className="absolute -top-1 right-0 size-4 rounded-full bg-red-500" />
         )}
 
         <HiBell className="size-5" />
