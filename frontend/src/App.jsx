@@ -29,7 +29,7 @@ import Following from "./pages/Following";
 import Network from "./pages/Network";
 import SinglePost from "./pages/SinglePost";
 import NotificationsPage from "./pages/Notifications";
-
+import Admin from "./pages/Admin";
 function App() {
   const [grayscale, setGrayscale] = useState(0);
 
@@ -67,6 +67,7 @@ function App() {
                       path="/notifications"
                       element={<NotificationsPage />}
                     />
+                    <Route path="/admin" element={<Admin />} />
                   </Route>
                 </Routes>
               </div>
