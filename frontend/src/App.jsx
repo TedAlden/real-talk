@@ -15,6 +15,7 @@ import Layout from "./layouts/Layout";
 
 import Home from "./pages/Home";
 import FeedLatest from "./pages/FeedLatest";
+import FeedFollowing from "./pages/FeedFollowing";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Landing from "./pages/Landing";
@@ -57,6 +58,7 @@ function App() {
                     <Route path="/reset-password" element={<ResetPassword />} />
                     <Route path="/feed" element={<FeedLatest />} />
                     <Route path="/feed/latest" element={<FeedLatest />} />
+                    <Route path="/feed/following" element={<FeedFollowing />} />
                     <Route path="/settings" element={<UserSettings />} />
                     <Route path="/enter-otp" element={<EnterOTP />} />
                     <Route path="/profile/:id" element={<UserProfile />} />
