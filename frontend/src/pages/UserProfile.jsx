@@ -20,6 +20,7 @@ import DropdownMenu from "../components/DropdownMenu.jsx";
 import { useNavigate } from "react-router-dom";
 import ReportWindow from "../components/ReportWindow.jsx";
 import Unauthorised from "../components/Unauthorised.jsx";
+import { banTarget } from "../api/adminService.js";
 
 function UserProfile() {
   const auth = useAuth();
@@ -96,21 +97,52 @@ function UserProfile() {
     setPosts((prevPosts) => prevPosts.filter((post) => post._id !== postId));
   };
 
-  const userOptions = [
+  const handleBanUser = async () => {
+    try {
+      if (!viewer?.is_admin) return;
+      const response = await banTarget({
+        targetType: "user",
+        targetId: userData._id,
+        is_banned: !userData.is_banned,
+      });
+
+      if (response.success !== false) {
+        setUserData((prev) => ({
+          ...prev,
+          is_banned: !prev.is_banned,
+        }));
+      }
+    } catch (error) {
+      console.error("Error banning user:", error);
+    }
+  };
+
+  const userOptions =
     viewer?._id !== userData?._id
-      ? {
-          label: "Report user",
-          action: () => {
-            setIsReporting(true);
+      ? [
+          {
+            label: "Report user",
+            action: () => {
+              setIsReporting(true);
+            },
           },
-        }
-      : {
-          label: "Edit profile",
-          action: () => {
-            navigate("/settings");
+          ...(viewer?.is_admin
+            ? [
+                {
+                  label: "Ban user",
+                  action: handleBanUser,
+                },
+              ]
+            : []),
+        ]
+      : [
+          {
+            label: "Edit profile",
+            action: () => {
+              navigate("/settings");
+            },
           },
-        },
-  ];
+        ];
 
   const cardStyle =
     "p-4 bg-white rounded-md shadow dark:border dark:border-gray-700 dark:bg-gray-800";
@@ -137,6 +169,22 @@ function UserProfile() {
     return (
       <div className="p-16 text-center">
         <Spinner aria-label="Profile loading spinner" size="xl" />
+      </div>
+    );
+
+  if (userData?.is_banned)
+    return (
+      <div className="grid w-full grid-cols-5">
+        <div className="col-span-2" />
+        <div className="col-span-1 mb-4 flex w-full items-center justify-between rounded-md bg-white p-4 text-lg text-gray-900 shadow dark:border dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100">
+          <p>User has been banned.</p>
+          <button
+            className="rounded-md p-1 text-blue-600 hover:text-blue-400 dark:text-blue-500 dark:hover:text-blue-600"
+            onClick={handleBanUser}
+          >
+            Undo
+          </button>
+        </div>
       </div>
     );
 
