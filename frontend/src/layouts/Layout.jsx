@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Outlet } from "react-router-dom";
 import {
   User,
@@ -13,8 +13,9 @@ import {
 
 import Sidebar, { SidebarItem } from "../components/Sidebar";
 import TopBar from "../components/Topbar";
+import Alert from "../components/Alert";
+import useAlert from "../hooks/useAlert";
 import useAuth from "../hooks/useAuth";
-import { useState, useEffect } from "react";
 
 export default function PrivateLayout() {
   const [viewer, setViewer] = useState(null);
@@ -28,12 +29,26 @@ export default function PrivateLayout() {
     }
   }, [auth]);
 
+  const alert = useAlert({
+    thresholds: [601, 301, 181, 61],
+    title: "Heads up!",
+    color: "info",
+  });
+
   const isAdmin = viewer?.is_admin;
 
   return (
     <div className="flex h-screen bg-gray-50 dark:bg-gray-900">
+      <Alert
+        show={alert.show}
+        onClose={alert.onClose}
+        title={alert.title}
+        message={alert.message}
+        color={alert.color}
+      />
+
       <Sidebar>
-        <SidebarItem
+      <SidebarItem
           link="/"
           icon={<House className="h-6 w-6" />}
           text="Home"
@@ -79,7 +94,10 @@ export default function PrivateLayout() {
       </Sidebar>
       <div className="flex h-screen flex-1 flex-col">
         <TopBar />
-        <main id="main-content-scrollable" className="flex-1 overflow-auto p-6">
+        <main
+          id="main-content-scrollable"
+          className="flex-1 overflow-auto p-6"
+        >
           <Outlet />
         </main>
       </div>
