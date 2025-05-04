@@ -1,8 +1,13 @@
 import { useState, useEffect, useRef } from 'react';
 
 export default function useAlert({
-  thresholds = [601, 301, 181, 61],
-  title = 'Time Warning',
+  thresholds = [
+    { threshold: 601, message: "10 minutes left" },
+    { threshold: 301, message: "5 minutes left" },
+    { threshold: 181, message: "3 minutes left" },
+    { threshold: 61,  message: "1 minute left" },
+  ],
+  title = 'Screen Time Alert',
   color = 'info'
 } = {}) {
   const [show, setShow] = useState(false);
@@ -15,11 +20,15 @@ export default function useAlert({
       const timeRemaining = stored !== null ? parseInt(stored, 10) : NaN;
       if (isNaN(timeRemaining)) return;
 
-      thresholds.forEach((t) => {
-        if (timeRemaining === t && !firedRef.current.has(t)) {
-          firedRef.current.add(t);
-          setMessage(`Only ${t} seconds remaining!`);
+      thresholds.forEach(({ threshold, message }) => {
+        if (timeRemaining === threshold && !firedRef.current.has(threshold)) {
+          firedRef.current.add(threshold);
+          setMessage(message);
           setShow(true);
+
+          setTimeout(() => {
+            setShow(false);
+          }, 7500);
         }
       });
     }, 1000);

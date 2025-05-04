@@ -30,8 +30,13 @@ export default function PrivateLayout() {
   }, [auth]);
 
   const alert = useAlert({
-    thresholds: [601, 301, 181, 61],
-    title: "Heads up!",
+    thresholds: [
+      { threshold: 601, message: "10 minutes left" },
+      { threshold: 301, message: "5 minutes left" },
+      { threshold: 181, message: "3 minutes left" },
+      { threshold: 61,  message: "1 minute left" },
+    ],
+    title: "Screen Time Reminder:",
     color: "info",
   });
 
@@ -39,15 +44,19 @@ export default function PrivateLayout() {
 
   return (
     <div className="flex h-screen bg-gray-50 dark:bg-gray-900">
-      <Alert
-        show={alert.show}
-        onClose={alert.onClose}
-        title={alert.title}
-        message={alert.message}
-        color={alert.color}
-      />
+      {alert.show && (
+        <div className="fixed top-4 left-1/2 transform -translate-x-1/2 z-50 w-[90%] max-w-xl">
+          <Alert
+            show={alert.show}
+            onClose={alert.onClose}
+            title={alert.title}
+            message={alert.message}
+            color={alert.color}
+          />
+        </div>
+      )}
 
-      <Sidebar>
+<Sidebar>
       <SidebarItem
           link="/"
           icon={<House className="h-6 w-6" />}
