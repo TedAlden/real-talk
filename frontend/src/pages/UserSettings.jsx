@@ -44,15 +44,13 @@ function UserSettings() {
 
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const originalData = useRef({}); // Initial user data fetched from the server
-  // to populate the form fields.
+  const originalData = useRef({});
 
   useEffect(() => {
     if (auth.loggedIn) {
       auth
         .getUser()
         .then((user) => {
-          // ─── hook in any existing usage settings from localStorage ───
          const savedGray = localStorage.getItem("usage_grayscale_level");
          if (savedGray != null) {
            user.usage = {
@@ -99,7 +97,6 @@ function UserSettings() {
       ...formData,
     };
   
-    // persist the chosen daily limit to localStorage
     if (newUser.usage?.time_limit) {
       localStorage.setItem(
         "usage_time_limit",
@@ -107,7 +104,6 @@ function UserSettings() {
       );
     }
 
-    // ─── persist the grayscale threshold (%) ───
     if (newUser.usage?.grayscale_level != null) {
       localStorage.setItem(
         "usage_grayscale_level",
@@ -115,7 +111,6 @@ function UserSettings() {
       );
     }
 
-    // Update password, if confirm password is matching
     if (newPassword !== "" || confirmPassword !== "") {
       if (newPassword == confirmPassword) {
         newUser.password = newPassword;
@@ -508,7 +503,6 @@ function UserSettings() {
                   className="flex max-w-2xl flex-col gap-4"
                   onSubmit={handleFormSubmit}
                 >
-                  {/* 1) Daily Time Limit Dropdown */}
                   <div>
                     <Label htmlFor="usage.time_limit" value="Daily Time Limit" />
                     <Select
@@ -525,7 +519,6 @@ function UserSettings() {
                     </Select>
                   </div>
 
-                  {/* 2) Grayscale Threshold Slider */}
                   <div>
                     <Label
                       htmlFor="usage.grayscale_level"
@@ -555,7 +548,6 @@ function UserSettings() {
                     </div>
                   </div>
 
-                  {/* 3) Screen Time Reminders Toggle */}
                   <div className="flex items-center justify-between">
                     <Label
                       htmlFor="usage.reminders_enabled"
