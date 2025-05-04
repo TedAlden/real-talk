@@ -19,7 +19,7 @@ import { getNotificationsById } from "../api/notificationService.js";
 
 export default function PrivateLayout() {
   const [viewer, setViewer] = useState(null);
-  const [hasNotifications, setHasNotifications] = useState(false);
+  const [notificationCount, setNotificationCount] = useState(0);
   const auth = useAuth();
 
   useEffect(() => {
@@ -37,7 +37,7 @@ export default function PrivateLayout() {
           const response = await getNotificationsById(viewer._id);
           if (response.success !== false) {
             const notifications = Array.isArray(response.data) ? response.data : [];
-            setHasNotifications(notifications.length > 0);
+            setNotificationCount(notifications.length);
           }
         } catch (error) {
           console.error("Error fetching notifications:", error);
@@ -86,7 +86,7 @@ export default function PrivateLayout() {
           link="/notifications"
           icon={<Bell className="h-6 w-6" />}
           text="Notifications"
-          alert={hasNotifications}
+          alert={notificationCount}
         />
         <SidebarItem
           link="/settings"
