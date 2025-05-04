@@ -3,7 +3,7 @@ import { Navbar, DarkThemeToggle } from "flowbite-react";
 
 import useAuth from "../hooks/useAuth";
 import NavbarLink from "./NavbarLink";
-import Notifications from "./../private/NotificationIcon";
+import Notifications from "./NotificationIcon";
 export default function MyNavbar() {
   const auth = useAuth();
 
