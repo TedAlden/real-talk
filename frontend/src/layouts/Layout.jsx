@@ -15,9 +15,11 @@ import Sidebar, { SidebarItem } from "../components/Sidebar";
 import TopBar from "../components/Topbar";
 import useAuth from "../hooks/useAuth";
 import { useState, useEffect } from "react";
+import { getNotificationsById } from "../api/notificationService.js";
 
 export default function PrivateLayout() {
   const [viewer, setViewer] = useState(null);
+  const [hasNotifications, setHasNotifications] = useState(false);
   const auth = useAuth();
 
   useEffect(() => {
@@ -27,6 +29,28 @@ export default function PrivateLayout() {
       });
     }
   }, [auth]);
+
+  useEffect(() => {
+    if (auth.loggedIn && viewer?._id) {
+      const checkNotifications = async () => {
+        try {
+          const response = await getNotificationsById(viewer._id);
+          if (response.success !== false) {
+            const notifications = Array.isArray(response.data) ? response.data : [];
+            setHasNotifications(notifications.length > 0);
+          }
+        } catch (error) {
+          console.error("Error fetching notifications:", error);
+        }
+      };
+      
+      checkNotifications();
+      
+      // Check for new notifications every 30 seconds
+      const interval = setInterval(checkNotifications, 30000);
+      return () => clearInterval(interval);
+    }
+  }, [auth.loggedIn, viewer]);
 
   const isAdmin = viewer?.is_admin;
 
@@ -62,6 +86,7 @@ export default function PrivateLayout() {
           link="/notifications"
           icon={<Bell className="h-6 w-6" />}
           text="Notifications"
+          alert={hasNotifications}
         />
         <SidebarItem
           link="/settings"
