@@ -12,8 +12,23 @@ import {
 
 import Sidebar, { SidebarItem } from "../components/Sidebar";
 import TopBar from "../components/Topbar";
+import useAuth from "../hooks/useAuth";
+import { useState, useEffect } from "react";
 
 export default function PrivateLayout() {
+  const [viewer, setViewer] = useState(null);
+  const auth = useAuth();
+
+  useEffect(() => {
+    if (auth.loggedIn) {
+      auth.getUser().then((user) => {
+        setViewer(user);
+      });
+    }
+  }, [auth]);
+
+  const isAdmin = viewer?.is_admin;
+
   return (
     <div className="flex h-screen bg-gray-50 dark:bg-gray-900">
       <Sidebar>
@@ -48,11 +63,13 @@ export default function PrivateLayout() {
           text="Settings"
         />
 
-        <SidebarItem
-          link="/admin"
-          icon={<ShieldBan className="h-6 w-6" />}
-          text="Administration"
-        />
+        {isAdmin && (
+          <SidebarItem
+            link="/admin"
+            icon={<ShieldBan className="h-6 w-6" />}
+            text="Administration"
+          />
+        )}
       </Sidebar>
       <div className="flex h-screen flex-1 flex-col">
         <TopBar />
