@@ -30,20 +30,22 @@ export default function PrivateLayout() {
     }
   }, [auth]);
 
+  const checkNotifications = async () => {
+    if (!auth.loggedIn || !viewer?._id) return;
+    
+    try {
+      const response = await getNotificationsById(viewer._id);
+      if (response.success !== false) {
+        const notifications = Array.isArray(response.data) ? response.data : [];
+        setNotificationCount(notifications.length);
+      }
+    } catch (error) {
+      console.error("Error fetching notifications:", error);
+    }
+  };
+
   useEffect(() => {
     if (auth.loggedIn && viewer?._id) {
-      const checkNotifications = async () => {
-        try {
-          const response = await getNotificationsById(viewer._id);
-          if (response.success !== false) {
-            const notifications = Array.isArray(response.data) ? response.data : [];
-            setNotificationCount(notifications.length);
-          }
-        } catch (error) {
-          console.error("Error fetching notifications:", error);
-        }
-      };
-      
       checkNotifications();
       
       // Check for new notifications every 30 seconds
@@ -51,6 +53,19 @@ export default function PrivateLayout() {
       return () => clearInterval(interval);
     }
   }, [auth.loggedIn, viewer]);
+
+  // Listen for notification updates from other components
+  useEffect(() => {
+    const handleNotificationUpdate = () => {
+      checkNotifications();
+    };
+    
+    window.addEventListener('notification-update', handleNotificationUpdate);
+    
+    return () => {
+      window.removeEventListener('notification-update', handleNotificationUpdate);
+    };
+  }, []);
 
   const isAdmin = viewer?.is_admin;
 
