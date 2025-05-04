@@ -2,20 +2,7 @@ import React from "react";
 import { useEffect, useState } from "react";
 import { Card, Dropdown, Spinner } from "flowbite-react";
 import { useQuery } from "@tanstack/react-query";
-
-const getTrendingTags = async (period) => {
-  console.log("Fetching trending tags for period:", period);
-  return [
-    { name: "#trending", postCount: 3234 },
-    { name: "#popular", postCount: 3211 },
-    { name: "#hot", postCount: 3111 },
-    { name: "#viral", postCount: 2331 },
-    { name: "#buzz", postCount: 2211 },
-    { name: "#explore", postCount: 1333 },
-    { name: "#discover", postCount: 321 },
-    { name: "#trendingnow", postCount: 123 },
-  ];
-};
+import { getTrendingTags } from "../api/postService.js";
 
 export default function Trending({ className = "" }) {
   const [period, setPeriod] = useState("daily");
@@ -25,14 +12,16 @@ export default function Trending({ className = "" }) {
     { key: "monthly", label: "This Month" },
   ];
   const {
-    data: tags,
+    data: response,
     isLoading,
     error,
   } = useQuery({
     queryKey: ["trending-tags", period],
     queryFn: () => getTrendingTags(period),
-    staleTime: 10 * 60 * 1000,
+    staleTime: 5 * 60 * 10 * 1000,
   });
+
+  const tags = response?.data;
 
   return (
     <Card className={`mb-5 h-fit text-gray-900 dark:text-white ${className}`}>
