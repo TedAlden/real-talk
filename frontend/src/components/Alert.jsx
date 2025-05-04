@@ -2,14 +2,10 @@ import React from 'react';
 import { Toast } from 'flowbite-react';
 import {
   HiInformationCircle,
-  HiCheckCircle,
-  HiExclamationCircle,
 } from 'react-icons/hi';
 
 const ICONS = {
   info: HiInformationCircle,
-  success: HiCheckCircle,
-  failure: HiExclamationCircle,
 };
 
 export default function Alert({ show, onClose, color = 'info', title, message }) {
