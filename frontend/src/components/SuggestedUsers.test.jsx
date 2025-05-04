@@ -3,10 +3,8 @@ import { render, screen, waitFor, act } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import SuggestedUsers from "./SuggestedUsers";
 import { getSuggestedFollows } from "../api/followersService";
-import useAuth from "../hooks/useAuth";
 
 vi.mock("../api/followersService");
-vi.mock("../hooks/useAuth");
 
 describe("SuggestedUsers", () => {
   const mockUser = { _id: "user123", username: "testuser" };
@@ -28,10 +26,6 @@ describe("SuggestedUsers", () => {
   beforeEach(() => {
     vi.clearAllMocks();
 
-    useAuth.mockReturnValue({
-      getUser: vi.fn().mockResolvedValue(mockUser),
-    });
-
     getSuggestedFollows.mockResolvedValue({
       success: true,
       data: mockSuggestions,
@@ -52,11 +46,10 @@ describe("SuggestedUsers", () => {
 
   it("fetches suggestions on render", async () => {
     await act(async () => {
-      render(<SuggestedUsers method="mutuals" />);
+      render(<SuggestedUsers viewer={mockUser} method="mutuals" />);
     });
 
     await waitFor(() => {
-      expect(useAuth().getUser).toHaveBeenCalled();
       expect(getSuggestedFollows).toHaveBeenCalledWith("user123", "mutuals");
     });
 
@@ -66,7 +59,7 @@ describe("SuggestedUsers", () => {
 
   it("displays the correct mutual follows", async () => {
     await act(async () => {
-      render(<SuggestedUsers method="mutuals" />);
+      render(<SuggestedUsers viewer={mockUser} method="mutuals" />);
     });
 
     expect(await screen.findByText("2 mutual follows")).toBeInTheDocument();
