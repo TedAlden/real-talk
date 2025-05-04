@@ -3,20 +3,23 @@ import { HiX } from "react-icons/hi";
 import {
   getNotificationsById,
   deleteNotification,
+  deleteAllNotifications,
 } from "../api/notificationService.js";
 import useAuth from "../hooks/useAuth.js";
 import { useNavigate } from "react-router-dom";
-import { Spinner } from "flowbite-react";
+import { Spinner, Tooltip } from "flowbite-react";
 import Unauthorised from "../components/Unauthorised.jsx";
 
 export default function NotificationsPage() {
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const auth = useAuth();
   const navigate = useNavigate();
 
   const getNotifications = useCallback(async () => {
     setLoading(true);
+    setError(null);
     try {
       const user = await auth.getUser();
       if (!user || !user._id) return;
@@ -24,9 +27,12 @@ export default function NotificationsPage() {
       const response = await getNotificationsById(user._id);
       if (response.success !== false) {
         setNotifications(Array.isArray(response.data) ? response.data : []);
+      } else {
+        setError("Failed to fetch notifications");
       }
     } catch (error) {
       console.error("Error fetching notifications:", error);
+      setError("An error occurred while fetching notifications");
     } finally {
       setLoading(false);
     }
@@ -46,9 +52,31 @@ export default function NotificationsPage() {
         setNotifications(notifications.filter((n) => n._id !== timestamp));
       } else {
         setNotifications(oldNotifications);
+        setError("Failed to delete notification");
       }
     } catch (error) {
       console.error("Error deleting notification:", error);
+      setError("An error occurred while deleting notification");
+    }
+  };
+
+  const markAllAsRead = async () => {
+    try {
+      const userId = (await auth.getUser())._id;
+      if (!userId) return;
+
+      const oldNotifications = [...notifications];
+      const response = await deleteAllNotifications(userId);
+
+      if (response.success !== false) {
+        setNotifications([]);
+      } else {
+        setNotifications(oldNotifications);
+        setError("Failed to mark all notifications as read");
+      }
+    } catch (error) {
+      console.error("Error marking all as read:", error);
+      setError("An error occurred while marking all as read");
     }
   };
 
@@ -65,22 +93,37 @@ export default function NotificationsPage() {
     <div className="mx-auto max-w-4xl p-4">
       <div className="mb-6 flex items-center justify-between">
         <h1 className="text-2xl font-bold dark:text-white">Notifications</h1>
-        {notifications.length > 0 && (
+        <Tooltip
+          content={
+            notifications.length > 0
+              ? "Mark all notifications as read"
+              : "No notifications to mark as read"
+          }
+        >
           <button
-            className="text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
-            onClick={() => {
-              // TODO: Implement mark all as read functionality
-            }}
+            className={`${
+              notifications.length > 0
+                ? "text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
+                : "cursor-not-allowed text-gray-400 dark:text-gray-600"
+            }`}
+            onClick={markAllAsRead}
+            disabled={notifications.length === 0}
           >
             Mark all as read
           </button>
-        )}
+        </Tooltip>
       </div>
+
+      {error && (
+        <div className="mb-4 rounded-lg bg-red-50 p-4 text-red-500 dark:bg-red-900/20 dark:text-red-400">
+          {error}
+        </div>
+      )}
 
       <div className="space-y-4">
         {notifications.length === 0 ? (
           <div className="py-8 text-center text-gray-500 dark:text-gray-400">
-            No notifications yet
+            No new notifications
           </div>
         ) : (
           notifications.map((notification) => (
