@@ -8,6 +8,7 @@ import followersRouter from "./routes/followers.routes.js";
 import postsRouter from "./routes/posts.routes.js";
 import feedsRouter from "./routes/feeds.routes.js";
 import notifyRouter from "./routes/notifications.routes.js";
+import adminRouter from "./routes/admin.routes.js";
 
 // Secret key required for GitHub Actions testing workflow where a .env file
 // does not exist
@@ -33,6 +34,7 @@ app.use("/api/users", followersRouter);
 app.use("/api/users", notifyRouter);
 app.use("/api/posts", postsRouter);
 app.use("/api/feeds", feedsRouter);
+app.use("/api/admin", adminRouter);
 
 // Health check endpoint
 app.get("/health", (req, res) => {
