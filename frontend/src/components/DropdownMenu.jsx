@@ -33,7 +33,7 @@ function DropdownMenu({ items }) {
       </button>
 
       {isOpen && (
-        <div className="absolute left-0 z-10 mt-2 w-36 rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 dark:bg-gray-700">
+        <div className="absolute left-0 z-10 mt-2 w-40 rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 dark:bg-gray-700">
           {items.map((item, index) => (
             <button
               key={index}

@@ -10,10 +10,10 @@ export async function createPost(post) {
   }
 }
 
-export async function getPostByQuery(query_type, query) {
+export async function getPostByQuery(query_type, query, { limit, offset }) {
   try {
     const response = await axiosInstance.get(
-      `/api/posts?${query_type}=${query}`,
+      `/api/posts?${query_type}=${query}&limit=${limit}&offset=${offset}`,
     );
     return response;
   } catch (error) {
