@@ -1,9 +1,8 @@
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import Comment from '../Comment';
-import { vi } from 'vitest';
-import * as userCache from '../../hooks/useUserCache';
-import * as authHook from '../../hooks/useAuth';
-import * as postService from '../../api/postService';
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import Comment from "../Comment";
+import { vi } from "vitest";
+import * as userCache from "../../hooks/useUserCache";
+import * as postService from "../../api/postService";
 
 vi.mock("react-markdown", () => ({
   __esModule: true,
@@ -12,7 +11,7 @@ vi.mock("react-markdown", () => ({
 vi.mock("../DropdownMenu", () => ({
   __esModule: true,
   default: ({ items }) => (
-    <div>
+    <div id="dropdown">
       {items.map((item, idx) => (
         <button key={idx} onClick={item.action}>
           {item.label}
@@ -25,7 +24,7 @@ vi.mock("../Composer", () => ({
   __esModule: true,
   default: ({ onSubmit, onCancel }) => (
     <div>
-      <button onClick={() => onSubmit("Updated content")}>Submit</button>
+      <button onClick={() => onSubmit("Updated content")}>Comment</button>
       <button onClick={onCancel}>Cancel</button>
     </div>
   ),
@@ -38,6 +37,12 @@ describe("Comment component", () => {
     profile_picture: "user-profile-pic.jpg",
   };
 
+  const mockUser2 = {
+    _id: "user-2",
+    username: "username-2",
+    profile_picture: "user-2-profile-pic.jpg",
+  };
+
   const comment = {
     comment_id: "comment-1",
     user_id: "user-1",
@@ -47,14 +52,20 @@ describe("Comment component", () => {
   };
 
   const setup = (viewerId = "user-1") => {
+    const viewer = viewerId === "user-1" ? mockUser : mockUser2;
+
     vi.spyOn(userCache, "useCachedUser").mockReturnValue(mockUser);
-    vi.spyOn(authHook, "default").mockReturnValue({
-      getUser: () => Promise.resolve({ _id: viewerId }),
-    });
 
     const onDelete = vi.fn();
 
-    render(<Comment postId="post-1" comment={comment} onDelete={onDelete} />);
+    render(
+      <Comment
+        postId="post-1"
+        comment={comment}
+        viewer={viewer}
+        onDelete={onDelete}
+      />,
+    );
     return { onDelete };
   };
 
@@ -96,7 +107,7 @@ describe("Comment component", () => {
   it("enters edit mode and updates comment", async () => {
     setup();
     fireEvent.click(await screen.findByText("Edit comment"));
-    fireEvent.click(screen.getByText("Submit"));
+    fireEvent.click(screen.getByText("Comment"));
 
     expect(await screen.findByText("Updated content")).toBeInTheDocument();
   });
