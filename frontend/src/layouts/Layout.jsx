@@ -33,10 +33,10 @@ export default function PrivateLayout() {
     thresholds: [
       { threshold: 601, message: "10 minutes left" },
       { threshold: 301, message: "5 minutes left" },
-      { threshold: 181, message: "3 minutes left" },
-      { threshold: 61,  message: "1 minute left" },
+      { threshold: 180, message: "3 minutes left" },
+      { threshold: 60,  message: "1 minute left" },
     ],
-    title: "Screen Time Reminder:",
+    title: "Screen Time Alert:",
     color: "info",
   });
 

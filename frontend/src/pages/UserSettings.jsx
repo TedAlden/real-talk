@@ -59,6 +59,14 @@ function UserSettings() {
            };
          }
 
+        const savedReminders = localStorage.getItem("usage_reminders_enabled");
+        if (savedReminders != null) {
+          user.usage = {
+            ...user.usage,
+            reminders_enabled: savedReminders === "true",
+          };
+        }
+
           originalData.current = deepCopy(user);
           setFormData(user);
           setLoading(false);
@@ -108,6 +116,13 @@ function UserSettings() {
       localStorage.setItem(
         "usage_grayscale_level",
         String(newUser.usage.grayscale_level)
+      );
+    }
+
+    if (newUser.usage?.reminders_enabled != null) {
+      localStorage.setItem(
+        "usage_reminders_enabled",
+        newUser.usage.reminders_enabled ? "true" : "false"
       );
     }
 
@@ -551,7 +566,7 @@ function UserSettings() {
                   <div className="flex items-center justify-between">
                     <Label
                       htmlFor="usage.reminders_enabled"
-                      value="Screen Time Reminders"
+                      value="Screen Time Alert"
                     />
                     <ToggleSwitch
                       id="usage.reminders_enabled"

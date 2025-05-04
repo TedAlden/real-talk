@@ -15,6 +15,12 @@ export default function useAlert({
   const firedRef = useRef(new Set());
 
   useEffect(() => {
+    const enabled = localStorage.getItem('usage_reminders_enabled') === 'true';
+    if (!enabled) {
+      setShow(false);
+      return;
+    }
+
     const interval = setInterval(() => {
       const stored = localStorage.getItem('time_remaining');
       const timeRemaining = stored !== null ? parseInt(stored, 10) : NaN;
