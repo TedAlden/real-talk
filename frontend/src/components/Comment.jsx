@@ -7,6 +7,8 @@ import { deleteComment } from "../api/postService";
 import _ from "lodash";
 import Composer from "./Composer";
 import Markdown from "react-markdown";
+import ReportWindow from "./ReportWindow";
+
 const defaultUser = {
   _id: "",
   username: "Loading...",
@@ -19,7 +21,7 @@ export default function Comment({ postId, comment, onDelete }) {
   const [viewer, setViewer] = useState(null);
   const [mode, setMode] = useState("view");
   const [commentData, setCommentData] = useState(comment);
-
+  const [isReporting, setIsReporting] = useState(false);
   const commentor = useCachedUser(comment.user_id) || defaultUser;
   const commentWithPost = {
     ...commentData,
@@ -36,8 +38,8 @@ export default function Comment({ postId, comment, onDelete }) {
     });
   }, [auth]);
 
-  const handleReportComment = (comment) => {
-    console.log("Report comment:", comment._id);
+  const handleReportComment = () => {
+    setIsReporting(true);
   };
 
   const handleDeleteComment = async () => {
@@ -64,90 +66,100 @@ export default function Comment({ postId, comment, onDelete }) {
     setMode("view");
   };
 
-  const getCommentOptions = () => {
-    const items = [];
-
-    if (viewer?._id === commentor._id) {
-      items.push({
-        label: "Delete comment",
-        action: handleDeleteComment,
-      });
-      items.push({
-        label: "Edit comment",
-        action: handleEditComment,
-      });
-    }
-
-    items.push({
-      label: "Report comment",
-      action: () => handleReportComment,
-    });
-
-    return items;
-  };
+  const commentOptions =
+    viewer?._id === comment.user_id
+      ? [
+          // If the viewer is the author of the comment
+          {
+            label: "Edit comment",
+            action: handleEditComment,
+          },
+          {
+            label: "Delete comment",
+            action: handleDeleteComment,
+          },
+        ]
+      : [
+          // If the viewer is not the author of the comment
+          {
+            label: "Report comment",
+            action: handleReportComment,
+          },
+        ];
 
   return (
-    <div
-      data-testid="comment"
-      className="flex items-start space-x-4 rounded-lg bg-gray-500 bg-opacity-10 p-2 pb-0"
-    >
-      <a href={`/profile/${comment.user_id}`} className="shrink-0">
-        <img
-          className="mt-1 h-auto w-10 rounded-full object-cover shadow-lg"
-          src={commentor.profile_picture}
-          alt="Profile"
-        />
-      </a>
-      <div className="flex flex-1 flex-col">
-        <div className="mb-1 flex items-center justify-between">
-          <div className="flex items-center space-x-2">
-            <a
-              href={`/profile/${comment.user_id}`}
-              className="text-md font-semibold hover:underline"
-            >
-              @{commentor.username}
-            </a>
-            <span className="text-sm text-gray-500 dark:text-gray-400">
-              {getTimeAgo(comment.created_at)}
-              {comment.updated_at !== comment.created_at &&
-                ` (edited ${getTimeAgo(comment.updated_at)})`}
-            </span>
-          </div>
-
-          <div className="ml-auto">
-            <DropdownMenu items={getCommentOptions(comment)} />
-          </div>
-        </div>
-        <div className="-mt-4">
-          {mode === "view" ? (
-            <div className="py-3">
-              <Markdown
-                components={{
-                  a: ({ ...props }) => (
-                    <a
-                      {...props}
-                      className="bg-blue-400 bg-opacity-50 px-1 font-semibold text-blue-600 hover:text-blue-700 hover:underline dark:text-blue-100"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    />
-                  ),
-                }}
+    <>
+      <div
+        data-testid="comment"
+        className="flex items-start space-x-4 rounded-lg bg-gray-500 bg-opacity-10 p-2 pb-0"
+      >
+        <a href={`/profile/${comment.user_id}`} className="shrink-0">
+          <img
+            className="mt-1 h-auto w-10 rounded-full object-cover shadow-lg"
+            src={commentor.profile_picture}
+            alt="Profile"
+          />
+        </a>
+        <div className="flex flex-1 flex-col">
+          <div className="mb-1 flex items-center justify-between">
+            <div className="flex items-center space-x-2">
+              <a
+                href={`/profile/${comment.user_id}`}
+                className="text-md font-semibold hover:underline"
               >
-                {commentData.content}
-              </Markdown>
+                @{commentor.username}
+              </a>
+              <span className="text-sm text-gray-500 dark:text-gray-400">
+                {getTimeAgo(comment.created_at)}
+                {comment.updated_at !== comment.created_at &&
+                  ` (edited ${getTimeAgo(comment.updated_at)})`}
+              </span>
             </div>
-          ) : (
-            <Composer
-              target={commentWithPost}
-              mode={mode}
-              onSubmit={handleEditSubmit}
-              onCancel={() => {
-                setMode("view");
-              }}
-            />
-          )}
+
+            <div className="ml-auto">
+              <DropdownMenu items={commentOptions} />
+            </div>
+          </div>
+          <div className="-mt-4">
+            {mode === "view" ? (
+              <div className="py-3">
+                <Markdown
+                  components={{
+                    a: ({ ...props }) => (
+                      <a
+                        {...props}
+                        className="bg-blue-400 bg-opacity-50 px-1 font-semibold text-blue-600 hover:text-blue-700 hover:underline dark:text-blue-100"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      />
+                    ),
+                  }}
+                >
+                  {commentData.content}
+                </Markdown>
+              </div>
+            ) : (
+              <Composer
+                target={commentWithPost}
+                mode={mode}
+                onSubmit={handleEditSubmit}
+                onCancel={() => {
+                  setMode("view");
+                }}
+              />
+            )}
+          </div>
         </div>
       </div>
-    </div>
+      <ReportWindow
+        visible={isReporting}
+        targetType="comment"
+        target={commentWithPost}
+        onClose={() => {
+          setIsReporting(false);
+        }}
+        reporter={viewer}
+      />
+    </>
   );
 }
