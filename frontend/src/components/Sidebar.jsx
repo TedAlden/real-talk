@@ -86,7 +86,12 @@ export function SidebarItem({ icon, text, alert, link }) {
           : "text-gray-600 hover:bg-indigo-50 dark:text-gray-400 dark:hover:bg-gray-700"
       }`}
     >
-      {icon}
+      <div className="relative">
+        {icon}
+        {alert && (
+          <div className="absolute -top-1 right-0 size-4 rounded-full bg-red-500" />
+        )}
+      </div>
       <span
         className={`overflow-hidden transition-all ${
           expanded ? "ml-3 w-52" : "w-0"
@@ -94,13 +99,6 @@ export function SidebarItem({ icon, text, alert, link }) {
       >
         {text}
       </span>
-      {alert && (
-        <div
-          className={`absolute right-2 h-2 w-2 rounded bg-indigo-400 ${
-            expanded ? "" : "top-2"
-          }`}
-        />
-      )}
 
       {!expanded && (
         <div
