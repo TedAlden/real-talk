@@ -14,6 +14,7 @@ import ReportWindow from "../components/ReportWindow.jsx";
 import Unauthorised from "../components/Unauthorised.jsx";
 import Composer from "../components/Composer.jsx";
 import Post from "../components/Post.jsx";
+import Trending from "../components/Trending.jsx";
 
 import { getSafeObject } from "../util/defaultObjects.js";
 
@@ -216,7 +217,7 @@ function UserProfile() {
     <>
       <div className="container mx-auto">
         <div className="mx-4 mt-4 grid w-full grid-cols-7 gap-6">
-          <div className="col-span-2" />
+          <Trending className="col-span-2" />
           <div className="col-span-3 text-lg text-gray-900 dark:text-white">
             <div
               className={`mb-4 grid grid-cols-4 items-center justify-center ${style.card}`}
