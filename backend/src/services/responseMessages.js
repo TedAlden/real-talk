@@ -5,10 +5,10 @@ export const ErrorMsg = Object.freeze({
   NO_SUCH_USERNAME: "No registered user with that username.",
   NO_SUCH_EMAIL: "No registered user with that email.",
   NO_SUCH_ID: "No registered user with that id.",
-
+  UNAUTHORIZED_USER: "Unauthorized user.",
   UNVERIFIED_USER: "User is not verified. ",
   INVALID_ID: "User ID is invalid.",
-
+  BANNED_USER: "User is banned.",
   NEEDS_EMAIL: "A valid email is required but missing.",
   NEEDS_USERNAME: "Username is required.",
   NEEDS_PASSWORD: "Password is required.",
@@ -27,11 +27,15 @@ export const ErrorMsg = Object.freeze({
   NOTIFICATION_ERROR: "Unable to update user notifications.",
   FOLLOW_SELF_ERROR: "Cannot follow yourself.",
   ALREADY_FOLLOWING: "Already following user.",
-
+  INVALID_REPORT_TYPE: "Invalid report type.",
   INVALID_LIKE_VALUE: "Invalid like value.",
   INCORRECT_OTP: "Incorrect OTP.",
   OTP_EXPIRED: "OTP has expired.",
   MFA_NOT_ENABLED: "MFA is not enabled for this user.",
+  REPORT_CREATE_ERROR: "Error creating report.",
+  REPORT_DELETE_ERROR: "Error deleting report.",
+  REPORT_UPDATE_ERROR: "Invalid report type.",
+  BAN_ERROR: "Error (un)banning target.",
 });
 
 export const SuccessMsg = Object.freeze({
@@ -49,4 +53,8 @@ export const SuccessMsg = Object.freeze({
   COMMENT_CREATE_OK: "Comment created successfully.",
   COMMENT_DELETE_OK: "Comment deleted successfully.",
   NOTIFICATION_DELETE_OK: "Notification deleted successfully.",
+  REPORT_CREATE_OK: "Report created successfully.",
+  REPORT_DELETE_OK: "Report deleted successfully.",
+  REPORT_UPDATE_OK: "Report updated successfully.",
+  REPORT_BAN_OK: "Report target (un)banned successfully.",
 });

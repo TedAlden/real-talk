@@ -157,6 +157,10 @@ export const login = async (req, res) => {
       return res.status(401).json({ error: ErrorMsg.UNVERIFIED_USER });
     }
 
+    if (user.is_banned) {
+      return res.status(403).json({ error: ErrorMsg.BANNED_USER });
+    }
+
     // Compare password attempt against the password in the database
     bcrypt.compare(password, user.password, (err, result) => {
       if (err) throw err;

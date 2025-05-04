@@ -3,6 +3,7 @@ import { getFollowedById } from "../api/followersService.js";
 import { useNavigate, useParams } from "react-router-dom";
 import _ from "lodash";
 import useAuth from "../hooks/useAuth.js";
+import Unauthorised from "../components/Unauthorised.jsx";
 import UserInteractionButtons from "../components/UserInteractionButtons.jsx";
 import { Spinner, Card } from "flowbite-react";
 
@@ -46,11 +47,16 @@ function Following() {
     });
   };
 
-  return loading ? (
-    <div className="p-16 text-center">
-      <Spinner aria-label="Extra large spinner example" size="xl" />
-    </div>
-  ) : (
+  if (!auth.loggedIn) return <Unauthorised />;
+
+  if (loading)
+    return (
+      <div className="p-16 text-center">
+        <Spinner aria-label="Loading following data" size="xl" />
+      </div>
+    );
+
+  return (
     <div className="flex justify-center">
       <Card className="mt-16 w-2/5 text-gray-900 dark:text-white">
         <div className="mb-4 flex items-center justify-between">

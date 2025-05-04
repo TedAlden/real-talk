@@ -1,38 +1,28 @@
 import React from "react";
-import useAuth from "../hooks/useAuth";
 import { useEffect, useState } from "react";
 import UserInteractionButtons from "./UserInteractionButtons";
 import { getSuggestedFollows } from "../api/followersService";
 
-export default function SuggestedUsers({ method = "mutuals" }) {
-  const auth = useAuth();
-  const [viewer, setViewer] = useState(null);
+export default function SuggestedUsers({ viewer, method = "mutuals" }) {
   const [suggestions, setSuggestions] = useState([]);
 
   useEffect(() => {
-    auth.getUser().then((user) => {
-      setViewer(user);
-    });
-  }, [auth]);
+    const fetchSuggestions = async () => {
+      if (!viewer) return;
+      try {
+        const response = await getSuggestedFollows(viewer._id, method);
 
-  const fetchSuggestions = async () => {
-    if (!viewer) return;
-    try {
-      const response = await getSuggestedFollows(viewer._id, method);
-
-      if (response.success !== false) {
-        const suggestedUsers = response.data.map((user) => ({
-          ...user,
-          isFollowing: false,
-        }));
-        setSuggestions(suggestedUsers);
+        if (response.success !== false) {
+          const suggestedUsers = response.data.map((user) => ({
+            ...user,
+            isFollowing: false,
+          }));
+          setSuggestions(suggestedUsers);
+        }
+      } catch (error) {
+        console.error("Error fetching suggestions:", error);
       }
-    } catch (error) {
-      console.error("Error fetching suggestions:", error);
-    }
-  };
-
-  useEffect(() => {
+    };
     fetchSuggestions();
   }, [viewer, method]);
 

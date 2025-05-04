@@ -94,6 +94,11 @@ const AuthProvider = ({ children }) => {
     if (loggedIn) {
       const authCookie = getCookie();
       const userData = await getUserById(authCookie.userId);
+      if (userData.data.is_banned) {
+        logout();
+        navigate("/login");
+        return null;
+      }
       return userData.data;
     } else {
       return null;
