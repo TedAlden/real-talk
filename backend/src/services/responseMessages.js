@@ -8,7 +8,7 @@ export const ErrorMsg = Object.freeze({
   UNAUTHORIZED_USER: "Unauthorized user.",
   UNVERIFIED_USER: "User is not verified. ",
   INVALID_ID: "User ID is invalid.",
-
+  BANNED_USER: "User is banned.",
   NEEDS_EMAIL: "A valid email is required but missing.",
   NEEDS_USERNAME: "Username is required.",
   NEEDS_PASSWORD: "Password is required.",
