@@ -8,12 +8,19 @@ import {
 } from "../api/notificationService.js";
 import useAuth from "../hooks/useAuth.js";
 import { useNavigate } from "react-router-dom";
+import { createContext, useContext } from "react";
+
+// Create a context for notification updates
+export const NotificationContext = createContext({
+  refreshNotifications: () => {},
+});
 
 export default function Notifications() {
   const [notifications, setNotifications] = useState([]);
   const [error, setError] = useState(null);
   const auth = useAuth();
   const navigate = useNavigate();
+  const notificationContext = useContext(NotificationContext);
 
   const getNotifications = useCallback(async () => {
     setError(null);
@@ -37,6 +44,22 @@ export default function Notifications() {
     getNotifications();
   }, [navigate, getNotifications]);
 
+  // This effect allows external components to trigger a refresh
+  useEffect(() => {
+    // Create a custom event to listen for notification updates
+    const handleNotificationUpdate = () => {
+      getNotifications();
+    };
+    
+    // Add event listener
+    window.addEventListener('notification-update', handleNotificationUpdate);
+    
+    // Cleanup
+    return () => {
+      window.removeEventListener('notification-update', handleNotificationUpdate);
+    };
+  }, [getNotifications]);
+
   const onDelete = async (timestamp) => {
     try {
       const oldNotifications = [...notifications];
@@ -45,6 +68,8 @@ export default function Notifications() {
 
       if (response.success !== false) {
         setNotifications(notifications.filter((n) => n._id !== timestamp));
+        // Emit event to update other components
+        window.dispatchEvent(new Event('notification-update'));
       } else {
         setNotifications(oldNotifications);
         setError("Failed to delete notification");
@@ -65,8 +90,8 @@ export default function Notifications() {
 
       if (response.success !== false) {
         setNotifications([]);
-        // Refresh Layout component to update notification badge
-        window.location.reload();
+        // Emit event to update other components
+        window.dispatchEvent(new Event('notification-update'));
       } else {
         setNotifications(oldNotifications);
         setError("Failed to mark all as read");
