@@ -13,9 +13,9 @@ import Comment from "./Comment";
 import PostCarousel from "./PostCarousel";
 import ReportWindow from "./ReportWindow";
 
-function Post({ post, viewer, onDelete }) {
+function Post({ post, viewer, onDelete, focusedComment }) {
   const [postData, setPostData] = useState(post);
-  const [commentsShown, setCommentsShown] = useState(false);
+  const [commentsShown, setCommentsShown] = useState(!!focusedComment || false);
   const [mode, setMode] = useState("view");
   const [isReporting, setIsReporting] = useState(false);
 
@@ -266,12 +266,16 @@ function Post({ post, viewer, onDelete }) {
           {commentsShown && (
             <div className="flex flex-col space-y-2 p-2">
               {postData.comments.map((comment, idx) => (
-                <Comment
+                <div
                   key={idx}
-                  postId={postData._id}
-                  comment={comment}
-                  onDelete={fetchComments}
-                />
+                  className={`${focusedComment === comment.comment_id ? "border border-4 border-blue-400" : ""}`}
+                >
+                  <Comment
+                    postId={postData._id}
+                    comment={comment}
+                    onDelete={fetchComments}
+                  />
+                </div>
               ))}
 
               <Composer
