@@ -1,56 +1,71 @@
 import { useState, useEffect, useCallback } from "react";
+import { Link, useParams, useNavigate } from "react-router-dom";
+import { decode } from "html-entities";
+import { Spinner } from "flowbite-react";
+
+import useScrollingFeed from "../hooks/useScrollingFeed.js";
+import useAuth from "../hooks/useAuth.js";
+
+import UserInteractionButtons from "../components/UserInteractionButtons.jsx";
+import DailyPostCounter from "../components/DailyPostCounter";
+import SuggestedUsers from "../components/SuggestedUsers.jsx";
+import DropdownMenu from "../components/DropdownMenu.jsx";
+import ReportWindow from "../components/ReportWindow.jsx";
+import Unauthorised from "../components/Unauthorised.jsx";
+import Composer from "../components/Composer.jsx";
+import Post from "../components/Post.jsx";
+
+import { getSafeObject } from "../util/defaultObjects.js";
+
+import { getPostByQuery } from "../api/postService.js";
+import { getUserById } from "../api/userService.js";
+import { banTarget } from "../api/adminService.js";
 import {
   getFollowStatsById,
   checkIsFollowing,
 } from "../api/followersService.js";
-import { Link, useParams } from "react-router-dom";
-import { decode } from "html-entities";
-import _ from "lodash";
-import { getPostByQuery } from "../api/postService.js";
-import { getUserById } from "../api/userService.js";
-import useAuth from "../hooks/useAuth.js";
-import Post from "../components/Post.jsx";
-import { Spinner, Card } from "flowbite-react";
-import UserInteractionButtons from "../components/UserInteractionButtons.jsx";
-import { getSafeObject } from "../util/defaultObjects.js";
-import DailyPostCounter from "../components/DailyPostCounter";
-import SuggestedUsers from "../components/SuggestedUsers.jsx";
-import Composer from "../components/Composer.jsx";
-import DropdownMenu from "../components/DropdownMenu.jsx";
-import { useNavigate } from "react-router-dom";
-import ReportWindow from "../components/ReportWindow.jsx";
-import Unauthorised from "../components/Unauthorised.jsx";
-import { banTarget } from "../api/adminService.js";
+
+const style = {
+  card: "p-4 bg-white rounded-md shadow dark:border dark:border-gray-700 dark:bg-gray-800",
+};
 
 function UserProfile() {
   const auth = useAuth();
+  const params = useParams();
   const navigate = useNavigate();
+
+  const [viewer, setViewer] = useState(null);
   const [userData, setUserData] = useState({});
   const [loading, setLoading] = useState(true);
+  const [isReporting, setIsReporting] = useState(false);
   const [isFollowing, setIsFollowing] = useState(false);
   const [followStats, setFollowStats] = useState({
     followingUser: 0,
     followedByUser: 0,
   });
-  const [viewer, setViewer] = useState(null);
-  const [posts, setPosts] = useState(false);
-  const [isReporting, setIsReporting] = useState(false);
-  const paramId = useParams().id;
 
-  useEffect(() => {
-    const fetchUser = async () => {
-      const user = await auth.getUser();
+  const profileId = params.id; // User ID, i.e. realtalk.com/profile/:profileId
 
-      setViewer(getSafeObject(user, "user"));
-    };
-    fetchUser();
-  }, [auth]);
+  /**
+   * Use scrolling feed for the user's posts.
+   */
+  const { posts, feedLoading, hasMore, onPostDeleted } = useScrollingFeed({
+    viewer: viewer,
+    postsPerPage: 5,
+    fetchFeedFunction: async ({ limit, offset }) => {
+      const profileUserId = profileId === "me" ? viewer._id : profileId;
+      return await getPostByQuery("userId", profileUserId, { limit, offset });
+    },
+  });
 
+  /**
+   * Fetch all user data.
+   */
   const fetchUserData = useCallback(async () => {
     if (!viewer || !viewer._id) return;
     setLoading(true);
     try {
-      const profileUserId = paramId === "me" ? viewer._id : paramId;
+      const profileUserId = profileId === "me" ? viewer._id : profileId;
       if (!profileUserId) return;
       if (profileUserId === viewer._id) {
         setUserData(viewer);
@@ -63,9 +78,6 @@ function UserProfile() {
         if (followRes.success !== false) setIsFollowing(followRes.data);
       }
 
-      const postsRes = await getPostByQuery("userId", profileUserId);
-      if (postsRes.success !== false) setPosts(postsRes.data);
-
       const statsRes = await getFollowStatsById(profileUserId);
       if (statsRes.success !== false) setFollowStats(statsRes.data);
     } catch (error) {
@@ -73,14 +85,11 @@ function UserProfile() {
     } finally {
       setLoading(false);
     }
-  }, [viewer, paramId]);
+  }, [viewer, profileId]);
 
-  const isUserFound = userData && userData._id;
-
-  useEffect(() => {
-    fetchUserData();
-  }, [fetchUserData]);
-
+  /**
+   * Handle following toggle.
+   */
   const onFollowChange = async (targetId, isFollow) => {
     setIsFollowing(isFollow);
     try {
@@ -93,10 +102,9 @@ function UserProfile() {
     }
   };
 
-  const onPostDeleted = async (postId) => {
-    setPosts((prevPosts) => prevPosts.filter((post) => post._id !== postId));
-  };
-
+  /**
+   * Handle banning the user. Can only be done by admins.
+   */
   const handleBanUser = async () => {
     try {
       if (!viewer?.is_admin) return;
@@ -116,6 +124,8 @@ function UserProfile() {
       console.error("Error banning user:", error);
     }
   };
+
+  const isUserFound = userData && userData._id;
 
   const userOptions =
     viewer?._id !== userData?._id
@@ -144,24 +154,23 @@ function UserProfile() {
           },
         ];
 
-  const cardStyle =
-    "p-4 bg-white rounded-md shadow dark:border dark:border-gray-700 dark:bg-gray-800";
+  /**
+   * Determine which user is viewing this profile page.
+   */
+  useEffect(() => {
+    const fetchUser = async () => {
+      const user = await auth.getUser();
+      setViewer(getSafeObject(user, "user"));
+    };
+    fetchUser();
+  }, [auth]);
 
-  // Filter posts to get only today's posts
-  const getTodayPosts = () => {
-    if (!Array.isArray(posts)) return 0;
-
-    const today = new Date();
-    today.setHours(0, 0, 0, 0); // Set to start of day
-
-    return posts.filter((post) => {
-      const postDate = new Date(post.created_at);
-      postDate.setHours(0, 0, 0, 0); // Set to start of day
-
-      // Compare the dates (ignoring time)
-      return postDate.getTime() === today.getTime();
-    }).length;
-  };
+  /**
+   * Fetch the user data to display on the profile page.
+   */
+  useEffect(() => {
+    fetchUserData();
+  }, [fetchUserData]);
 
   if (!auth.loggedIn) return <Unauthorised />;
 
@@ -210,7 +219,7 @@ function UserProfile() {
           <div className="col-span-2" />
           <div className="col-span-3 text-lg text-gray-900 dark:text-white">
             <div
-              className={`mb-4 grid grid-cols-4 items-center justify-center ${cardStyle}`}
+              className={`mb-4 grid grid-cols-4 items-center justify-center ${style.card}`}
             >
               <div className="col-span-4 flex items-start sm:col-span-1">
                 <img
@@ -297,27 +306,27 @@ function UserProfile() {
             </div>
 
             <div className="mb-4 rounded-md bg-white p-2 text-center shadow dark:border dark:border-gray-700 dark:bg-gray-800">
-              <DailyPostCounter posts={getTodayPosts()} />
+              <DailyPostCounter posts={posts.length} />
             </div>
 
-            {viewer._id == userData._id && getTodayPosts() < 1 && (
+            {viewer._id == userData._id && posts.length < 1 && (
               <div
                 data-testid="profile-post-composer"
-                className={`mb-4 p-2 ${cardStyle}`}
+                className={`mb-4 p-2 ${style.card}`}
               >
                 <Composer onSubmit={fetchUserData} mode="createPost" />
               </div>
             )}
 
-            {viewer._id == userData._id && getTodayPosts() >= 1 && (
+            {viewer._id == userData._id && posts.length >= 1 && (
               <div
-                className={`mb-4 p-2 ${cardStyle} text-center text-red-500 dark:text-red-400`}
+                className={`mb-4 p-2 ${style.card} text-center text-red-500 dark:text-red-400`}
               >
                 You've reached your daily post limit. Try again tomorrow.
               </div>
             )}
 
-            {posts?.map((post) => (
+            {posts.map((post) => (
               <Post
                 key={post._id}
                 post={post}
@@ -325,6 +334,18 @@ function UserProfile() {
                 onDelete={onPostDeleted}
               />
             ))}
+
+            {feedLoading && (
+              <div className="p-4 text-center">
+                <Spinner aria-label="Loading more posts" size="lg" />
+              </div>
+            )}
+
+            {!hasMore && !feedLoading && (
+              <div className="p-4 text-center text-gray-500">
+                No more posts to load.
+              </div>
+            )}
           </div>
           <div className="col-span-2">
             <SuggestedUsers viewer={viewer} />
