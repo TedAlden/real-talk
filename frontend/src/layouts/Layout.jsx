@@ -9,6 +9,7 @@ import {
   Settings,
   ShieldBan,
   BookUser,
+  Search,
 } from "lucide-react";
 
 import Sidebar, { SidebarItem } from "../components/Sidebar";
@@ -37,6 +38,11 @@ export default function PrivateLayout() {
           link="/"
           icon={<House className="h-6 w-6" />}
           text="Home"
+        />
+        <SidebarItem
+          link="/search"
+          icon={<Search className="h-6 w-6" />}
+          text="Search"
         />
         <SidebarItem
           link="/feed/latest"
