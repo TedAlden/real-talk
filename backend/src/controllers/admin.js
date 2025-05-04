@@ -125,3 +125,69 @@ export const updateReportStatus = async (req, res) => {
     return res.status(500).json({ error: err.message });
   }
 };
+
+export const banTarget = async (req, res) => {
+  try {
+    const db = await connectDB();
+    const { is_banned, targetType, targetId } = req.body;
+    let result;
+    switch (targetType) {
+      case "post":
+        result = await db
+          .collection("posts")
+          .updateOne(
+            { _id: new ObjectId(targetId) },
+            { $set: { is_banned: is_banned } }
+          );
+
+        if (result.matchedCount === 0) {
+          return res.status(404).json({ message: ErrorMsg.NO_SUCH_POST });
+        }
+        break;
+
+      case "user":
+        result = await db
+          .collection("users")
+          .updateOne(
+            { _id: new ObjectId(targetId) },
+            { $set: { is_banned: is_banned } }
+          );
+
+        if (result.matchedCount === 0) {
+          return res.status(404).json({ message: ErrorMsg.NO_SUCH_ID });
+        }
+        break;
+
+      case "comment":
+        // First find the post containing the comment
+        const commentPost = await db
+          .collection("posts")
+          .findOne({ "comments._id": new ObjectId(targetId) });
+
+        if (!commentPost) {
+          return res.status(404).json({ message: ErrorMsg.NO_SUCH_COMMENT });
+        }
+
+        // Update the specific comment in the array
+        result = await db
+          .collection("posts")
+          .updateOne(
+            { "comments._id": new ObjectId(targetId) },
+            { $set: { "comments.$.is_banned": is_banned } }
+          );
+        break;
+
+      default:
+        return res.status(400).json({ message: ErrorMsg.INVALID_REPORT_TYPE });
+    }
+
+    if (result.modifiedCount === 0) {
+      return res.status(404).json({ message: ErrorMsg.BAN_ERROR });
+    }
+
+    return res.status(200).json({ message: SuccessMsg.REPORT_BAN_OK });
+  } catch (err) {
+    console.error("Ban target error:", err);
+    return res.status(500).json({ error: err.message });
+  }
+};

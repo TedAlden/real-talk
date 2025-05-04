@@ -43,3 +43,12 @@ export async function deleteReport(reportId) {
     return apiErrorResponse(error);
   }
 }
+
+export async function banTarget(target) {
+  try {
+    const response = await axiosInstance.post(`/api/admin/ban`, target);
+    return response;
+  } catch (error) {
+    return apiErrorResponse(error);
+  }
+}

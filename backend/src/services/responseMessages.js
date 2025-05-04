@@ -35,6 +35,7 @@ export const ErrorMsg = Object.freeze({
   REPORT_CREATE_ERROR: "Error creating report.",
   REPORT_DELETE_ERROR: "Error deleting report.",
   REPORT_UPDATE_ERROR: "Invalid report type.",
+  BAN_ERROR: "Error (un)banning target.",
 });
 
 export const SuccessMsg = Object.freeze({
@@ -55,4 +56,5 @@ export const SuccessMsg = Object.freeze({
   REPORT_CREATE_OK: "Report created successfully.",
   REPORT_DELETE_OK: "Report deleted successfully.",
   REPORT_UPDATE_OK: "Report updated successfully.",
+  REPORT_BAN_OK: "Report target (un)banned successfully.",
 });
