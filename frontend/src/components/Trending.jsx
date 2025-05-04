@@ -18,7 +18,7 @@ export default function Trending({ className = "" }) {
   } = useQuery({
     queryKey: ["trending-tags", period],
     queryFn: () => getTrendingTags(period),
-    staleTime: 5 * 60 * 10 * 1000,
+    staleTime: 1000,
   });
 
   const tags = response?.data;
