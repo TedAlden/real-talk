@@ -1,29 +1,15 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 
-import useAuth from "../hooks/useAuth";
-
 export default function useScrollingFeed({
+  viewer,
   postsPerPage = 5,
   fetchFeedFunction,
 }) {
-  const auth = useAuth();
-  const [viewer, setViewer] = useState(null);
   const [posts, setPosts] = useState([]);
   const [feedLoading, setFeedLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
   const [page, setPage] = useState(0);
   const firstLoad = useRef(true);
-
-  /**
-   * Determine viewer
-   */
-  useEffect(() => {
-    const fetchUser = async () => {
-      const user = await auth.getUser();
-      setViewer(user);
-    };
-    fetchUser();
-  }, [auth]);
 
   /**
    * Fetch posts from the server.

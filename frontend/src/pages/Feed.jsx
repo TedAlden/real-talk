@@ -15,7 +15,11 @@ function Feed() {
   const [viewer, setViewer] = useState(null);
 
   const { posts, feedLoading, hasMore, onPostDeleted, onPostCreated } =
-    useScrollingFeed({ POSTS_PER_PAGE: 5, fetchFeedFunction: getLatestFeed });
+    useScrollingFeed({
+      viewer: viewer,
+      postsPerPage: 5,
+      fetchFeedFunction: getLatestFeed,
+    });
 
   useEffect(() => {
     if (auth.loggedIn) {
