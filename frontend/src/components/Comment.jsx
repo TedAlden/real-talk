@@ -8,6 +8,7 @@ import _ from "lodash";
 import Composer from "./Composer";
 import Markdown from "react-markdown";
 import ReportWindow from "./ReportWindow";
+import { banTarget } from "../api/adminService";
 
 const defaultUser = {
   _id: "",
@@ -56,7 +57,25 @@ export default function Comment({ postId, comment, onDelete }) {
   const handleEditComment = () => {
     setMode("editComment");
   };
+  const handleBanComment = async () => {
+    try {
+      if (!viewer?.is_admin) return;
+      const response = await banTarget({
+        targetType: "comment",
+        targetId: commentData.comment_id,
+        is_banned: !commentData.is_banned,
+      });
 
+      if (response.success !== false) {
+        setCommentData((prev) => ({
+          ...prev,
+          is_banned: !prev.is_banned,
+        }));
+      }
+    } catch (error) {
+      console.error("Error banning post:", error);
+    }
+  };
   const handleEditSubmit = (updatedContent) => {
     setCommentData((prev) => ({
       ...prev,
@@ -85,8 +104,33 @@ export default function Comment({ postId, comment, onDelete }) {
             label: "Report comment",
             action: handleReportComment,
           },
-        ];
 
+          ,
+          ...(viewer?.is_admin
+            ? [
+                {
+                  label: "Remove Comm...",
+                  action: handleBanComment,
+                },
+              ]
+            : []),
+        ];
+  if (commentData.is_banned)
+    return (
+      <div
+        data-testid="post"
+        className="flex items-center justify-between bg-white p-4 text-lg text-gray-900 dark:bg-gray-800 dark:text-gray-100"
+      >
+        <p>Comment has been removed.</p>
+
+        <button
+          className="rounded-md p-1 text-blue-600 hover:text-blue-400 dark:text-blue-500 dark:hover:text-blue-600"
+          onClick={handleBanComment}
+        >
+          Undo
+        </button>
+      </div>
+    );
   return (
     <>
       <div

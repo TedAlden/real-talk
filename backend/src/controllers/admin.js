@@ -159,22 +159,20 @@ export const banTarget = async (req, res) => {
         break;
 
       case "comment":
-        // First find the post containing the comment
         const commentPost = await db
           .collection("posts")
-          .findOne({ "comments._id": new ObjectId(targetId) });
+          .findOne({ "comments.comment_id": new ObjectId(targetId) });
 
         if (!commentPost) {
           return res.status(404).json({ message: ErrorMsg.NO_SUCH_COMMENT });
         }
-
-        // Update the specific comment in the array
         result = await db
           .collection("posts")
           .updateOne(
-            { "comments._id": new ObjectId(targetId) },
+            { "comments.comment_id": new ObjectId(targetId) },
             { $set: { "comments.$.is_banned": is_banned } }
           );
+
         break;
 
       default:
