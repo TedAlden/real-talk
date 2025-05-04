@@ -89,10 +89,10 @@ export const deleteReport = async (req, res) => {
       .deleteOne({ _id: new ObjectId(id) });
 
     if (result.deletedCount === 0) {
-      return res.status(404).json({ message: ErrorMsg.REPORT_DELETE_ERROR });
+      return res.status(404).json({ error: ErrorMsg.REPORT_DELETE_ERROR });
     }
 
-    return res.status(200).json({ message: SuccessMsg.REPORT_DELETE_OK });
+    return res.status(200).json({ error: SuccessMsg.REPORT_DELETE_OK });
   } catch (err) {
     console.error("Delete report error:", err);
     return res.status(500).json({ error: err.message });
@@ -106,7 +106,7 @@ export const updateReportStatus = async (req, res) => {
     const { status } = req.body;
 
     if (status !== "resolved" && status !== "active") {
-      return res.status(400).json({ message: ErrorMsg.INVALID_REPORT_TYPE });
+      return res.status(400).json({ error: ErrorMsg.INVALID_REPORT_TYPE });
     }
 
     const result = await db
@@ -114,10 +114,10 @@ export const updateReportStatus = async (req, res) => {
       .updateOne({ _id: new ObjectId(id) }, { $set: { status: status } });
 
     if (result.modifiedCount === 0) {
-      return res.status(404).json({ message: ErrorMsg.REPORT_UPDATE_ERROR });
+      return res.status(404).json({ error: ErrorMsg.REPORT_UPDATE_ERROR });
     }
 
-    return res.status(200).json({ message: SuccessMsg.REPORT_UPDATE_OK });
+    return res.status(200).json({ error: SuccessMsg.REPORT_UPDATE_OK });
   } catch (err) {
     console.error("Update report status error:", err);
     return res.status(500).json({ error: err.message });
@@ -137,14 +137,14 @@ export const banUser = async (req, res) => {
       );
 
     if (result.matchedCount === 0) {
-      return res.status(404).json({ message: ErrorMsg.NO_SUCH_ID });
+      return res.status(404).json({ error: ErrorMsg.NO_SUCH_ID });
     }
 
     if (result.modifiedCount === 0) {
-      return res.status(404).json({ message: ErrorMsg.BAN_ERROR });
+      return res.status(404).json({ error: ErrorMsg.BAN_ERROR });
     }
 
-    return res.status(200).json({ message: SuccessMsg.USER_BAN_OK });
+    return res.status(200).json({ error: SuccessMsg.USER_BAN_OK });
   } catch (err) {
     console.error("Ban user error:", err);
     return res.status(500).json({ error: err.message });
@@ -164,14 +164,14 @@ export const banPost = async (req, res) => {
       );
 
     if (result.matchedCount === 0) {
-      return res.status(404).json({ message: ErrorMsg.NO_SUCH_POST });
+      return res.status(404).json({ error: ErrorMsg.NO_SUCH_POST });
     }
 
     if (result.modifiedCount === 0) {
-      return res.status(404).json({ message: ErrorMsg.BAN_ERROR });
+      return res.status(404).json({ error: ErrorMsg.BAN_ERROR });
     }
 
-    return res.status(200).json({ message: SuccessMsg.POST_BAN_OK });
+    return res.status(200).json({ error: SuccessMsg.POST_BAN_OK });
   } catch (err) {
     console.error("Ban post error:", err);
     return res.status(500).json({ error: err.message });
@@ -191,14 +191,14 @@ export const banComment = async (req, res) => {
       );
 
     if (result.matchedCount === 0) {
-      return res.status(404).json({ message: ErrorMsg.NO_SUCH_COMMENT });
+      return res.status(404).json({ error: ErrorMsg.NO_SUCH_COMMENT });
     }
 
     if (result.modifiedCount === 0) {
-      return res.status(404).json({ message: ErrorMsg.BAN_ERROR });
+      return res.status(404).json({ error: ErrorMsg.BAN_ERROR });
     }
 
-    return res.status(200).json({ message: SuccessMsg.COMMENT_BAN_OK });
+    return res.status(200).json({ error: SuccessMsg.COMMENT_BAN_OK });
   } catch (err) {
     console.error("Ban comment error:", err);
     return res.status(500).json({ error: err.message });

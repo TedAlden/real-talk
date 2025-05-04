@@ -91,7 +91,7 @@ function Admin() {
     );
 
     try {
-      const response = await updateReportStatus({ status: newStatus });
+      const response = await updateReportStatus(reportId, newStatus);
       if (response.success === false) {
         setReports(prev);
         console.error("Error updating report status:", response.message);

@@ -24,9 +24,12 @@ export async function updateReportStatus(reportId, newStatus) {
     if (newStatus !== "resolved" && newStatus !== "active") {
       return { error: "Invalid report status" };
     }
-    const response = await axiosInstance.put(`/api/admin/reports/${reportId}`, {
-      status: newStatus,
-    });
+    const response = await axiosInstance.patch(
+      `/api/admin/reports/${reportId}`,
+      {
+        status: newStatus,
+      },
+    );
     return response;
   } catch (error) {
     return apiErrorResponse(error);
