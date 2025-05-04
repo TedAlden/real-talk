@@ -5,7 +5,7 @@ import { ErrorMsg, SuccessMsg } from "../services/responseMessages.js";
 export const createReport = async (req, res) => {
   try {
     const db = await connectDB();
-    const { reporter, target, targetType, content, timestamp } = req.body;
+    const { reporter, target, targetType, content } = req.body;
     const user = await db
       .collection("users")
       .findOne({ _id: new ObjectId(reporter._id) });
@@ -13,9 +13,7 @@ export const createReport = async (req, res) => {
     if (!user) {
       return res.status(404).json({ message: ErrorMsg.NO_SUCH_ID });
     }
-    if (!user.is_admin) {
-      return res.status(403).json({ message: ErrorMsg.UNAUTHORIZED_USER });
-    }
+
     switch (targetType) {
       case "post":
         const post = await db
@@ -122,6 +120,87 @@ export const updateReportStatus = async (req, res) => {
     return res.status(200).json({ message: SuccessMsg.REPORT_UPDATE_OK });
   } catch (err) {
     console.error("Update report status error:", err);
+    return res.status(500).json({ error: err.message });
+  }
+};
+
+export const banUser = async (req, res) => {
+  try {
+    const db = await connectDB();
+    const { userId, is_banned } = req.body;
+
+    const result = await db
+      .collection("users")
+      .updateOne(
+        { _id: new ObjectId(userId) },
+        { $set: { is_banned: is_banned } }
+      );
+
+    if (result.matchedCount === 0) {
+      return res.status(404).json({ message: ErrorMsg.NO_SUCH_ID });
+    }
+
+    if (result.modifiedCount === 0) {
+      return res.status(404).json({ message: ErrorMsg.BAN_ERROR });
+    }
+
+    return res.status(200).json({ message: SuccessMsg.USER_BAN_OK });
+  } catch (err) {
+    console.error("Ban user error:", err);
+    return res.status(500).json({ error: err.message });
+  }
+};
+
+export const banPost = async (req, res) => {
+  try {
+    const db = await connectDB();
+    const { postId, is_banned } = req.body;
+
+    const result = await db
+      .collection("posts")
+      .updateOne(
+        { _id: new ObjectId(postId) },
+        { $set: { is_banned: is_banned } }
+      );
+
+    if (result.matchedCount === 0) {
+      return res.status(404).json({ message: ErrorMsg.NO_SUCH_POST });
+    }
+
+    if (result.modifiedCount === 0) {
+      return res.status(404).json({ message: ErrorMsg.BAN_ERROR });
+    }
+
+    return res.status(200).json({ message: SuccessMsg.POST_BAN_OK });
+  } catch (err) {
+    console.error("Ban post error:", err);
+    return res.status(500).json({ error: err.message });
+  }
+};
+
+export const banComment = async (req, res) => {
+  try {
+    const db = await connectDB();
+    const { commentId, is_banned } = req.body;
+
+    const result = await db
+      .collection("posts")
+      .updateOne(
+        { "comments.comment_id": new ObjectId(commentId) },
+        { $set: { "comments.$.is_banned": is_banned } }
+      );
+
+    if (result.matchedCount === 0) {
+      return res.status(404).json({ message: ErrorMsg.NO_SUCH_COMMENT });
+    }
+
+    if (result.modifiedCount === 0) {
+      return res.status(404).json({ message: ErrorMsg.BAN_ERROR });
+    }
+
+    return res.status(200).json({ message: SuccessMsg.COMMENT_BAN_OK });
+  } catch (err) {
+    console.error("Ban comment error:", err);
     return res.status(500).json({ error: err.message });
   }
 };
