@@ -3,7 +3,7 @@ import { Progress } from "flowbite-react";
 import usePersistentTimer from "../hooks/usePersistentTimer";
 import useAuth from "../hooks/useAuth";
 
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect } from "react";
 import { GrayscaleContext } from "../App";
 
 function Timer() {
@@ -21,32 +21,15 @@ function Timer() {
 
   const { logout } = useAuth();
   const { setGrayscale } = useContext(GrayscaleContext);
-  const [isAdmin, setIsAdmin] = useState(false);
-  const { timeRemaining, timerMinutes, timerSeconds, resetCountdownTimer } =
+
+  const { timeRemaining, timerMinutes, timerSeconds } =
     usePersistentTimer({
       totalTimeInSeconds,
-      isTimerActive: auth.loggedIn && !isAdmin,
+      isTimerActive: auth.loggedIn,
       // Auto logout line VVVVVVVVVVVVVVVVVV
       onTimeRunout: logout,
     });
-
-  useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        const user = await auth.getUser();
-        if (user && user.is_admin) {
-          resetCountdownTimer();
-          setIsAdmin(true);
-        } else {
-          setIsAdmin(false);
-        }
-      } catch (error) {
-        console.error("Error fetching user:", error);
-      }
-    };
-    fetchUser();
-  }, [auth, resetCountdownTimer]);
-
+  
   useEffect(() => {
     const halfWay = totalTimeInSeconds / 2;
     setGrayscale(timeRemaining >= halfWay ? thresholdFraction : 1);
