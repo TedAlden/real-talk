@@ -1,14 +1,14 @@
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-import Comment from "../Comment";
+import Comment from "../components/Comment";
 import { vi } from "vitest";
-import * as userCache from "../../hooks/useUserCache";
-import * as postService from "../../api/postService";
+import * as userCache from "../hooks/useUserCache";
+import * as postService from "../api/postService";
 
 vi.mock("react-markdown", () => ({
   __esModule: true,
   default: ({ children }) => <div>{children}</div>,
 }));
-vi.mock("../DropdownMenu", () => ({
+vi.mock("../components/DropdownMenu", () => ({
   __esModule: true,
   default: ({ items }) => (
     <div id="dropdown">
@@ -20,7 +20,7 @@ vi.mock("../DropdownMenu", () => ({
     </div>
   ),
 }));
-vi.mock("../Composer", () => ({
+vi.mock("../components/Composer", () => ({
   __esModule: true,
   default: ({ onSubmit, onCancel }) => (
     <div>

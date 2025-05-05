@@ -1,10 +1,10 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, waitFor, act } from "@testing-library/react";
 import "@testing-library/jest-dom";
-import SuggestedUsers from "../SuggestedUsers";
-import { getSuggestedFollows } from "../../api/followersService";
+import SuggestedUsers from "../components/SuggestedUsers";
+import { getSuggestedFollows } from "../api/followersService";
 
-vi.mock("../../api/followersService");
+vi.mock("../api/followersService");
 
 describe("SuggestedUsers", () => {
   const mockUser = { _id: "user123", username: "testuser" };

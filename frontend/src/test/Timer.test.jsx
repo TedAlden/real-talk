@@ -1,9 +1,9 @@
 import { render, screen } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import usePersistentTimer from "../../hooks/usePersistentTimer";
-import Timer from "../Timer";
+import usePersistentTimer from "../hooks/usePersistentTimer";
+import Timer from "../components/Timer";
 import { useContext, useEffect } from "react";
-import * as authHook from "../../hooks/useAuth";
+import * as authHook from "../hooks/useAuth";
 
 beforeEach(() => {
   vi.clearAllTimers();

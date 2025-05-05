@@ -1,7 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import { describe, it, expect } from "vitest";
-import Topbar from "../Topbar";
-import * as authHook from "../../hooks/useAuth";
+import Topbar from "../components/Topbar";
+import * as authHook from "../hooks/useAuth";
 
 vi.spyOn(authHook, "default").mockReturnValue({
   logout: vi.fn(),

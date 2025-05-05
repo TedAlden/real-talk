@@ -1,8 +1,8 @@
 import { vi, describe, it, expect } from "vitest";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-import Post from "../Post";
-import * as userCache from "../../hooks/useUserCache";
-import * as authHook from "../../hooks/useAuth";
+import Post from "../components/Post";
+import * as userCache from "../hooks/useUserCache";
+import * as authHook from "../hooks/useAuth";
 import {
   QueryClient,
   QueryClientProvider,

@@ -1,5 +1,5 @@
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-import PostCarousel from "../PostCarousel";
+import PostCarousel from "../components/PostCarousel";
 import { expect } from "vitest";
 
 describe("PostCarousel", () => {

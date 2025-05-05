@@ -1,6 +1,6 @@
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { describe, vitest } from "vitest";
-import Alert from "../Alert"
+import Alert from "../components/Alert"
 
 describe("Alert", () => {
     it("displays title and message", () => {

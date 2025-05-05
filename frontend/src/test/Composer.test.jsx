@@ -1,5 +1,5 @@
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-import Composer from "../Composer";
+import Composer from "../components/Composer";
 import { describe } from "vitest";
 
 describe("Composer", () => {

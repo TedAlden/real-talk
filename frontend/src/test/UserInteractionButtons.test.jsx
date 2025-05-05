@@ -1,6 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import { describe, it, expect } from "vitest";
-import UserInteractionButtons from "../UserInteractionButtons";
+import UserInteractionButtons from "../components/UserInteractionButtons";
 
 describe("UserInteractionButtons", () => {
   it("does not display if IDs are identical", () => {
