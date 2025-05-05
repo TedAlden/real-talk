@@ -1,3 +1,4 @@
+import { BrowserRouter } from "react-router-dom";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, waitFor, act } from "@testing-library/react";
 import "@testing-library/jest-dom";
@@ -46,7 +47,11 @@ describe("SuggestedUsers", () => {
 
   it("fetches suggestions on render", async () => {
     await act(async () => {
-      render(<SuggestedUsers viewer={mockUser} method="mutuals" />);
+      render(
+        <BrowserRouter>
+          <SuggestedUsers viewer={mockUser} method="mutuals" />
+        </BrowserRouter>,
+      );
     });
 
     await waitFor(() => {
@@ -59,7 +64,11 @@ describe("SuggestedUsers", () => {
 
   it("displays the correct mutual follows", async () => {
     await act(async () => {
-      render(<SuggestedUsers viewer={mockUser} method="mutuals" />);
+      render(
+        <BrowserRouter>
+          <SuggestedUsers viewer={mockUser} method="mutuals" />
+        </BrowserRouter>,
+      );
     });
 
     expect(await screen.findByText("2 mutual follows")).toBeInTheDocument();
