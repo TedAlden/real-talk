@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback } from "react";
 import { TextInput } from "flowbite-react";
-import { useSearchParams, Link } from "react-router-dom";
+import { useSearchParams, Link, useNavigate } from "react-router-dom";
 import { HiSearch, HiHashtag, HiNewspaper, HiUserCircle } from "react-icons/hi";
 import { Tabs, TabItem, Spinner } from "flowbite-react";
 import { getSearchResults } from "../api/searchService";
@@ -17,6 +17,7 @@ const style = {
 
 function Search() {
   const auth = useAuth();
+  const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const [viewer, setViewer] = useState(null);
   const [searchResults, setSearchResults] = useState(null);
@@ -124,6 +125,16 @@ function Search() {
               {post.content}
             </Markdown>
           </div>
+        </div>
+        <div className="flex items-center space-x-4">
+          <button
+            className="w-full rounded-md bg-blue-500 px-3 py-1.5 transition hover:bg-blue-600"
+            onClick={() => {
+              navigate(`/post/${post._id}`);
+            }}
+          >
+            View
+          </button>
         </div>
       </div>
     </li>
