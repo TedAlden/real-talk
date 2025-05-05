@@ -68,7 +68,7 @@ export default function Trending({ className = "" }) {
                   <span className="text-xl font-normal">{idx + 1}. </span>
                   <div className="flex flex-col">
                     <Link
-                      to={`/search?q=${tag.name}`}
+                      to={`/search?q=%23${tag.name}`}
                       className="rounded-lg text-lg font-semibold text-blue-950 dark:text-blue-100"
                     >
                       {tag.name}

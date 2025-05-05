@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import { useSearchParams, Link, useNavigate } from "react-router-dom";
 import { HiSearch, HiHashtag, HiNewspaper, HiUserCircle } from "react-icons/hi";
 import { Tabs, TabItem, Spinner, TextInput } from "flowbite-react";
@@ -20,6 +20,7 @@ function Search() {
   const [viewer, setViewer] = useState(null);
   const [searchResults, setSearchResults] = useState(null);
   const [loading, setLoading] = useState(false);
+  const tabsRef = useRef(null);
 
   /**
    * Get search results based on the query from the API.
@@ -80,9 +81,13 @@ function Search() {
    * this to do an initial search.
    */
   useEffect(() => {
-    const query = searchParams.get("q");
+    let query = searchParams.get("q");
     if (query) {
-      showSearchResults(query.replace("#", ""));
+      if (query.startsWith("#")) {
+        tabsRef.current?.setActiveTab(2);
+        query = query.replace("#", "");
+      }
+      showSearchResults(query);
       document.getElementById("real-talk-search").value = query;
     }
   }, [showSearchResults, searchParams]);
@@ -189,7 +194,12 @@ function Search() {
         />
       </form>
 
-      <Tabs aria-label="Search result tabs" variant="pills" className="rounded">
+      <Tabs
+        aria-label="Search result tabs"
+        variant="pills"
+        className="rounded"
+        ref={tabsRef}
+      >
         <TabItem active title="Users" icon={HiUserCircle}>
           <div className={`${style.card} mb-5 text-gray-900 dark:text-white`}>
             <h1 className="mb-3 text-xl font-bold">Search results</h1>
