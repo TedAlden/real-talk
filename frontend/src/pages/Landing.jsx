@@ -1,56 +1,17 @@
 import Login from "./Login";
 import Register from "./Register";
-
 import { useState } from "react";
-import { Link } from "react-router-dom";
 import useAuth from "../hooks/useAuth";
-import { motion, usePresence, AnimatePresence } from "framer-motion";
-import { HiInformationCircle } from "react-icons/hi";
-import { Alert, Button, Checkbox, Label, TextInput } from "flowbite-react";
+// eslint-disable-next-line no-unused-vars
+import { motion, AnimatePresence } from "framer-motion";
+import { Button } from "flowbite-react";
 
 function Landing() {
   const auth = useAuth();
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [alertMessage, setAlertMessage] = useState({});
-  const [email, setEmail] = useState("");
   const [isLogin, setIsLogin] = useState(true);
 
   const toggleForm = () => {
     setIsLogin((prev) => !prev);
-  };
-
-  const handleRegister = async (e) => {
-    e.preventDefault();
-    const response = await registerUser(username, email, password);
-
-    if (response.success !== false) {
-      setAlertMessage({
-        color: "success",
-        title: "Registration successful!",
-        message: "Check your email for a verification link.",
-      });
-    } else {
-      setAlertMessage({
-        color: "failure",
-        title: "Registration failed!",
-        message: response.message,
-      });
-    }
-  };
-  const handleLogin = async (e) => {
-    e.preventDefault();
-    if (username !== "" && password !== "") {
-      try {
-        await auth.login(username, password);
-      } catch (err) {
-        setAlertMessage({
-          color: "failure",
-          title: "Login failed!",
-          message: err.message,
-        });
-      }
-    }
   };
 
   if (auth.loggedIn)

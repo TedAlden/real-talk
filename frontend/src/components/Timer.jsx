@@ -8,12 +8,21 @@ import { GrayscaleContext } from "../App";
 
 function Timer() {
   const auth = useAuth();
-  const totalTimeInSeconds = 1200;
+  const defaultTotal = 1200;
+  const stored = localStorage.getItem("usage_time_limit");
+  const totalTimeInSeconds = stored ?
+    parseInt(stored, 10)
+    : defaultTotal;
+
+  const storedGray = localStorage.getItem("usage_grayscale_level");
+  const thresholdFraction = storedGray
+    ? parseInt(storedGray, 10) / 100
+    : 1;
 
   const { logout } = useAuth();
   const { setGrayscale } = useContext(GrayscaleContext);
 
-  const { timeRemaining, timerMinutes, timerSeconds, resetCountdownTimer } =
+  const { timeRemaining, timerMinutes, timerSeconds } =
     usePersistentTimer({
       totalTimeInSeconds,
       isTimerActive: auth.loggedIn,
@@ -23,11 +32,7 @@ function Timer() {
   
   useEffect(() => {
     const halfWay = totalTimeInSeconds / 2;
-    if (timeRemaining <= halfWay) {
-      setGrayscale(1);
-    } else {
-      setGrayscale(0);
-    }
+    setGrayscale(timeRemaining >= halfWay ? thresholdFraction : 1);
   }, [timeRemaining, setGrayscale]);
 
   const progressLabel =

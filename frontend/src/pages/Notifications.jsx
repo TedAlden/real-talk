@@ -3,11 +3,14 @@ import { HiX } from "react-icons/hi";
 import {
   getNotificationsById,
   deleteNotification,
+  deleteAllNotifications,
 } from "../api/notificationService.js";
 import useAuth from "../hooks/useAuth.js";
 import { useNavigate } from "react-router-dom";
 import { Spinner } from "flowbite-react";
 import Unauthorised from "../components/Unauthorised.jsx";
+
+export const NOTIFICATION_UPDATE_EVENT = "notification-update";
 
 export default function NotificationsPage() {
   const [notifications, setNotifications] = useState([]);
@@ -43,12 +46,34 @@ export default function NotificationsPage() {
       const response = await deleteNotification(userId, timestamp);
 
       if (response.success !== false) {
-        setNotifications(notifications.filter((n) => n._id !== timestamp));
+        const updatedNotifications = notifications.filter((n) => n._id !== timestamp);
+        setNotifications(updatedNotifications);
+        
+        window.dispatchEvent(new CustomEvent(NOTIFICATION_UPDATE_EVENT, { 
+          detail: { count: updatedNotifications.length } 
+        }));
       } else {
         setNotifications(oldNotifications);
       }
     } catch (error) {
       console.error("Error deleting notification:", error);
+    }
+  };
+
+  const markAllAsRead = async () => {
+    try {
+      const userId = (await auth.getUser())._id;
+      const response = await deleteAllNotifications(userId);
+      
+      if (response.success !== false) {
+        setNotifications([]);
+        
+        window.dispatchEvent(new CustomEvent(NOTIFICATION_UPDATE_EVENT, { 
+          detail: { count: 0 } 
+        }));
+      }
+    } catch (error) {
+      console.error("Error deleting all notifications:", error);
     }
   };
 
@@ -68,9 +93,7 @@ export default function NotificationsPage() {
         {notifications.length > 0 && (
           <button
             className="text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
-            onClick={() => {
-              // TODO: Implement mark all as read functionality
-            }}
+            onClick={markAllAsRead}
           >
             Mark all as read
           </button>
