@@ -159,7 +159,7 @@ function Search() {
       </form>
 
       <Tabs aria-label="Search result tabs" variant="pills" className="rounded">
-        <TabItem active title="Profiles" icon={HiUserCircle}>
+        <TabItem active title="Users" icon={HiUserCircle}>
           <div className={`${style.card} mb-5 text-gray-900 dark:text-white`}>
             <h1 className="mb-3 text-xl font-bold">Search results</h1>
             <div className="flow-root p-4">
