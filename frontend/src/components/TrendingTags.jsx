@@ -1,11 +1,11 @@
 import React from "react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Card, Dropdown, Spinner } from "flowbite-react";
+import { Dropdown, Spinner } from "flowbite-react";
 import { useQuery } from "@tanstack/react-query";
 import { getTrendingTags } from "../api/postService.js";
 
-export default function TrendingTags({ className = "" }) {
+export default function TrendingTags() {
   const [period, setPeriod] = useState("daily");
   const periodOptions = [
     { key: "daily", label: "Today" },
@@ -26,9 +26,10 @@ export default function TrendingTags({ className = "" }) {
 
   const cardStyle =
     "p-6 bg-white rounded-md shadow dark:border dark:border-gray-700 dark:bg-gray-800";
+
   return (
-    <Card
-      className={`mb-5 h-fit max-w-xl text-gray-900 dark:text-white ${className} shadow-sm`}
+    <div
+      className={`${cardStyle} mb-5 h-fit w-full text-gray-900 dark:text-white`}
     >
       <div className="xs:flex-col flex w-full flex-row items-center justify-between">
         <h1 className="text-xl font-bold">Trending</h1>
@@ -89,6 +90,6 @@ export default function TrendingTags({ className = "" }) {
           <p>No trending tags.</p>
         )}
       </div>
-    </Card>
+    </div>
   );
 }
