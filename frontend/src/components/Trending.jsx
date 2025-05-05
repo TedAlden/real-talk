@@ -1,5 +1,6 @@
 import React from "react";
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { Card, Dropdown, Spinner } from "flowbite-react";
 import { useQuery } from "@tanstack/react-query";
 import { getTrendingTags } from "../api/postService.js";
@@ -66,12 +67,12 @@ export default function Trending({ className = "" }) {
                 <div className="flex items-center justify-start gap-6">
                   <span className="text-xl font-normal">{idx + 1}. </span>
                   <div className="flex flex-col">
-                    <a
-                      href={`/search?tag=${tag.name}`}
+                    <Link
+                      to={`/search?q=${tag.name}`}
                       className="rounded-lg text-lg font-semibold text-blue-950 dark:text-blue-100"
                     >
                       {tag.name}
-                    </a>
+                    </Link>
                     <span className="text-sm text-gray-500 dark:text-gray-400">
                       {tag.postCount} posts
                     </span>
