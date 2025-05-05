@@ -1,9 +1,11 @@
-import React, { useContext, createContext, useState } from "react";
+import React, { useContext, createContext, useState, useEffect } from "react";
 import { MoreVertical, ChevronLast, ChevronFirst } from "lucide-react";
 import { DarkThemeToggle } from "flowbite-react";
 import { LuLogOut } from "react-icons/lu";
 import { useNavigate, useLocation } from "react-router-dom";
 import useAuth from "../hooks/useAuth";
+import { getNotificationsById } from "../api/notificationService";
+import { NOTIFICATION_UPDATE_EVENT } from "../pages/Notifications";
 
 const SidebarContext = createContext();
 
@@ -70,10 +72,46 @@ export function SidebarItem({ icon, text, alert, link }) {
   const { expanded } = useContext(SidebarContext);
   const navigate = useNavigate();
   const location = useLocation();
+  const [notificationCount, setNotificationCount] = useState(0);
+  const auth = useAuth();
   const isActive =
     link === "/"
       ? location.pathname === "/"
       : location.pathname.startsWith(link);
+  
+  useEffect(() => {
+    if (text === "Notifications" && auth.loggedIn) {
+      const fetchNotifications = async () => {
+        try {
+          const user = await auth.getUser();
+          if (!user || !user._id) return;
+          
+          const response = await getNotificationsById(user._id);
+          if (response.success !== false) {
+            const notifications = Array.isArray(response.data) ? response.data : [];
+            setNotificationCount(notifications.length);
+          }
+        } catch (error) {
+          console.error("Error fetching notifications:", error);
+        }
+      };
+      
+      fetchNotifications();
+      
+      const handleNotificationUpdate = (event) => {
+        setNotificationCount(event.detail.count);
+      };
+      
+      window.addEventListener(NOTIFICATION_UPDATE_EVENT, handleNotificationUpdate);
+      
+      const interval = setInterval(fetchNotifications, 60000);
+      
+      return () => {
+        window.removeEventListener(NOTIFICATION_UPDATE_EVENT, handleNotificationUpdate);
+        clearInterval(interval);
+      };
+    }
+  }, [text, auth, location.pathname]);
 
   return (
     <li
@@ -86,7 +124,14 @@ export function SidebarItem({ icon, text, alert, link }) {
           : "text-gray-600 hover:bg-indigo-50 dark:text-gray-400 dark:hover:bg-gray-700"
       }`}
     >
-      {icon}
+      <div className="relative">
+        {icon}
+        {text === "Notifications" && notificationCount > 0 && (
+          <div className="absolute -top-2 -right-2 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-xs font-bold text-white">
+            {notificationCount > 99 ? "99+" : notificationCount}
+          </div>
+        )}
+      </div>
       <span
         className={`overflow-hidden transition-all ${
           expanded ? "ml-3 w-52" : "w-0"
