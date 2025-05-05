@@ -4,7 +4,7 @@ import {
   User,
   House,
   Users,
-  TimerReset,
+  TrendingUp,
   Bell,
   Settings,
   ShieldBan,
@@ -66,6 +66,11 @@ export default function PrivateLayout() {
           link="/feed/following"
           icon={<BookUser className="h-6 w-6" />}
           text="Following"
+        />
+        <SidebarItem
+          link="/trending"
+          icon={<TrendingUp className="h-6 w-6" />}
+          text="Trending"
         />
         <SidebarItem
           link="/network"

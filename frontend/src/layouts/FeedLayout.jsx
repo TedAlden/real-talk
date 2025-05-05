@@ -1,11 +1,11 @@
-import Trending from "../components/Trending";
+import TrendingTags from "../components/TrendingTags";
 import SuggestedUsers from "../components/SuggestedUsers";
 
 function FeedLayout({ children, viewer }) {
   return (
     <div className="container mx-auto">
       <div className="grid w-full gap-6 lg:grid-cols-5 2xl:grid-cols-7">
-        <Trending className="col-span-5 hidden lg:col-span-2 lg:flex" />
+        <TrendingTags className="col-span-5 hidden lg:col-span-2 lg:flex" />
         <div className="col-span-3 text-lg text-gray-900 dark:text-white">
           {children}
         </div>

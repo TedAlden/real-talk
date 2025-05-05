@@ -43,7 +43,7 @@ export default function SuggestedUsers({ viewer, method = "mutuals" }) {
   const cardStyle =
     "p-4 bg-white rounded-md shadow dark:border dark:border-gray-700 dark:bg-gray-800";
   return (
-    <div className={`${cardStyle} mb-5 text-gray-900 dark:text-white`}>
+    <div className={`${cardStyle} mb-5 w-full text-gray-900 dark:text-white`}>
       <h1 className="mb-3 text-xl font-bold">Suggested Users</h1>
       <div className="flow-root p-4">
         {suggestions.length > 0 ? (
