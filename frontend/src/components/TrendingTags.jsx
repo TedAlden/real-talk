@@ -23,6 +23,8 @@ export default function TrendingTags({ className = "" }) {
 
   const tags = response?.data;
 
+  const cardStyle =
+    "p-6 bg-white rounded-md shadow dark:border dark:border-gray-700 dark:bg-gray-800";
   return (
     <Card
       className={`mb-5 h-fit max-w-xl text-gray-900 dark:text-white ${className} shadow-sm`}
@@ -86,6 +88,6 @@ export default function TrendingTags({ className = "" }) {
           <p>No trending tags.</p>
         )}
       </div>
-    </Card>
+    </div>
   );
 }

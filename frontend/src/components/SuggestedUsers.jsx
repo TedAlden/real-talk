@@ -41,7 +41,7 @@ export default function SuggestedUsers({ viewer, method = "mutuals" }) {
     return null;
   }
   const cardStyle =
-    "p-4 bg-white rounded-md shadow dark:border dark:border-gray-700 dark:bg-gray-800";
+    "p-6 bg-white rounded-md shadow dark:border dark:border-gray-700 dark:bg-gray-800";
   return (
     <div className={`${cardStyle} mb-5 w-full text-gray-900 dark:text-white`}>
       <h1 className="mb-3 text-xl font-bold">Suggested Users</h1>
