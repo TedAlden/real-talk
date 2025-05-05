@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { FaCommentDots, FaHeart, FaShare, FaLink } from "react-icons/fa6";
 import Markdown from "react-markdown";
 import { Popover } from "flowbite-react";
+import { Link } from "react-router-dom";
 
 import { likePost, getPostComments, deletePostById } from "../api/postService";
 import { useCacheUpdater } from "../hooks/useUserCache";
@@ -226,10 +227,10 @@ function Post({ post, viewer, onDelete, focusedComment }) {
               <Markdown
                 components={{
                   a: ({ ...props }) => (
-                    <a
+                    <Link
+                      to={props.href}
                       {...props}
                       className="bg-blue-400 bg-opacity-50 px-1 font-semibold text-blue-600 hover:text-blue-700 hover:underline dark:text-blue-100"
-                      target="_blank"
                       rel="noopener noreferrer"
                     />
                   ),
