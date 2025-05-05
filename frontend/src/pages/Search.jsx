@@ -110,7 +110,20 @@ function Search() {
             @{post.poster.username}
           </a>
           <p className="text-md text-gray-500 dark:text-gray-400">
-            {post.content}
+            <Markdown
+              components={{
+                a: ({ ...props }) => (
+                  <a
+                    {...props}
+                    className="bg-blue-400 bg-opacity-50 px-1 font-semibold text-blue-600 hover:text-blue-700 hover:underline dark:text-blue-100"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  />
+                ),
+              }}
+            >
+              {post.content}
+            </Markdown>
           </p>
         </div>
       </div>
