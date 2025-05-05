@@ -21,11 +21,11 @@ export default function Sidebar({ children }) {
 
   return (
     <aside className="h-screen">
-      <nav className="h-full flex flex-col bg-white dark:bg-gray-800 border-r shadow-sm">
-        <div className="p-4 pb-2 flex justify-between items-center">
+      <nav className="flex h-full flex-col border-r bg-white shadow-sm dark:border-gray-700 dark:bg-gray-800">
+        <div className="flex items-center justify-between p-4 pb-2">
           <div
-            className={`overflow-hidden transition-all flex items-center ${
-              expanded ? "w-auto ml-2" : "w-0"
+            className={`flex items-center overflow-hidden transition-all ${
+              expanded ? "ml-2 w-auto" : "w-0"
             }`}
           >
             <DarkThemeToggle />
@@ -78,36 +78,44 @@ export function SidebarItem({ icon, text, alert, link }) {
     link === "/"
       ? location.pathname === "/"
       : location.pathname.startsWith(link);
-  
+
   useEffect(() => {
     if (text === "Notifications" && auth.loggedIn) {
       const fetchNotifications = async () => {
         try {
           const user = await auth.getUser();
           if (!user || !user._id) return;
-          
+
           const response = await getNotificationsById(user._id);
           if (response.success !== false) {
-            const notifications = Array.isArray(response.data) ? response.data : [];
+            const notifications = Array.isArray(response.data)
+              ? response.data
+              : [];
             setNotificationCount(notifications.length);
           }
         } catch (error) {
           console.error("Error fetching notifications:", error);
         }
       };
-      
+
       fetchNotifications();
-      
+
       const handleNotificationUpdate = (event) => {
         setNotificationCount(event.detail.count);
       };
-      
-      window.addEventListener(NOTIFICATION_UPDATE_EVENT, handleNotificationUpdate);
-      
+
+      window.addEventListener(
+        NOTIFICATION_UPDATE_EVENT,
+        handleNotificationUpdate,
+      );
+
       const interval = setInterval(fetchNotifications, 60000);
-      
+
       return () => {
-        window.removeEventListener(NOTIFICATION_UPDATE_EVENT, handleNotificationUpdate);
+        window.removeEventListener(
+          NOTIFICATION_UPDATE_EVENT,
+          handleNotificationUpdate,
+        );
         clearInterval(interval);
       };
     }
@@ -127,7 +135,7 @@ export function SidebarItem({ icon, text, alert, link }) {
       <div className="relative">
         {icon}
         {text === "Notifications" && notificationCount > 0 && (
-          <div className="absolute -top-2 -right-2 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-xs font-bold text-white">
+          <div className="absolute -right-2 -top-2 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-xs font-bold text-white">
             {notificationCount > 99 ? "99+" : notificationCount}
           </div>
         )}
