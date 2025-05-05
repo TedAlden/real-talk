@@ -4,7 +4,6 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import AuthProvider from "./context/AuthProvider";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
-// 1) Create the context so Timer can flip it
 export const GrayscaleContext = createContext({
   setGrayscale: (/* value */) => {},
 });

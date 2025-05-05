@@ -5,7 +5,6 @@ export default function TopBar() {
   return (
     <>
       <header className="flex h-16 w-full items-center justify-between bg-white px-6 shadow-md dark:bg-gray-800">
-        {/* Logo */}
         <span className="text-xl font-bold text-gray-900 transition-colors duration-300 dark:text-white">
           RealTalk
         </span>

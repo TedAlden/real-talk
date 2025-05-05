@@ -9,6 +9,7 @@ import Composer from "../components/Composer.jsx";
 import SuggestedUsers from "../components/SuggestedUsers.jsx";
 
 import { getFollowingFeed } from "../api/feeds.js";
+import Trending from "../components/Trending.jsx";
 
 function Feed() {
   const auth = useAuth();
@@ -37,7 +38,7 @@ function Feed() {
   return (
     <div className="container mx-auto">
       <div className="mx-4 mt-4 grid w-full grid-cols-7 gap-6">
-        <div className="col-span-2"></div>
+        <Trending className="col-span-2" />
         <div className="col-span-3">
           <div
             data-testid="profile-post-composer"

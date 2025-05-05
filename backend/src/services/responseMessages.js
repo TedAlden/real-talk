@@ -36,6 +36,7 @@ export const ErrorMsg = Object.freeze({
   REPORT_DELETE_ERROR: "Error deleting report.",
   REPORT_UPDATE_ERROR: "Invalid report type.",
   BAN_ERROR: "Error (un)banning target.",
+  INVALID_PERIOD: "Provided period is invalid.",
 });
 
 export const SuccessMsg = Object.freeze({
