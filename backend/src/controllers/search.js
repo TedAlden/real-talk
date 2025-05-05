@@ -23,9 +23,9 @@ export const getSearchResults = async (req, res) => {
       .toArray();
 
     // Perform a search in the posts collection
-    const posts = await db.collection("posts").find({
-      content: { $regex: query, $options: "i" },
-    })
+    const posts = await db.collection("posts")
+      .find({ content: { $regex: query, $options: "i" } })
+      .sort({ created_at: -1 })
       .skip(Number(offset))
       .limit(Number(limit))
       .toArray();
@@ -51,9 +51,9 @@ export const getSearchResults = async (req, res) => {
     });
 
     // Search tags
-    const taggedPosts = await db.collection("posts").find({
-      tags: { $regex: query, $options: "i" },
-    })
+    const taggedPosts = await db.collection("posts")
+      .find({ tags: { $regex: query, $options: "i" } })
+      .sort({ created_at: -1 })
       .skip(Number(offset))
       .limit(Number(limit))
       .toArray();
