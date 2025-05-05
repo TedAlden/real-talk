@@ -1,14 +1,12 @@
 import { useEffect, useState, useCallback } from "react";
-import { TextInput } from "flowbite-react";
 import { useSearchParams, Link, useNavigate } from "react-router-dom";
 import { HiSearch, HiHashtag, HiNewspaper, HiUserCircle } from "react-icons/hi";
-import { Tabs, TabItem, Spinner } from "flowbite-react";
-import { getSearchResults } from "../api/searchService";
+import { Tabs, TabItem, Spinner, TextInput } from "flowbite-react";
 
 import Markdown from "react-markdown";
 
 import UserInteractionButtons from "../components/UserInteractionButtons";
-
+import { getSearchResults } from "../api/searchService";
 import useAuth from "../hooks/useAuth";
 
 const style = {
