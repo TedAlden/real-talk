@@ -8,6 +8,7 @@ import Composer from "./Composer";
 import Markdown from "react-markdown";
 import ReportWindow from "./ReportWindow";
 import { banTarget } from "../api/adminService";
+import { Link } from "react-router-dom";
 
 const defaultUser = {
   _id: "",
@@ -127,22 +128,22 @@ export default function Comment({ postId, comment, onDelete, viewer }) {
         data-testid="comment"
         className="flex items-start space-x-4 rounded-lg bg-gray-500 bg-opacity-10 p-2 pb-0"
       >
-        <a href={`/profile/${comment.user_id}`} className="shrink-0">
+        <Link to={`/profile/${comment.user_id}`} className="shrink-0">
           <img
             className="mt-1 h-auto w-10 rounded-full object-cover shadow-lg"
             src={commentor.profile_picture}
             alt="Profile"
           />
-        </a>
+        </Link>
         <div className="flex flex-1 flex-col">
           <div className="mb-1 flex items-center justify-between">
             <div className="flex items-center space-x-2">
-              <a
-                href={`/profile/${comment.user_id}`}
+              <Link
+                to={`/profile/${comment.user_id}`}
                 className="text-md font-semibold hover:underline"
               >
                 @{commentor.username}
-              </a>
+              </Link>
               <span className="text-sm text-gray-500 dark:text-gray-400">
                 {getTimeAgo(comment.created_at)}
                 {comment.updated_at !== comment.created_at &&

@@ -13,6 +13,7 @@ import Comment from "./Comment";
 import PostCarousel from "./PostCarousel";
 import ReportWindow from "./ReportWindow";
 import { banTarget } from "../api/adminService";
+import { Link } from "react-router-dom";
 
 function Post({ post, viewer, onDelete, focusedComment }) {
   const [postData, setPostData] = useState(post);
@@ -189,14 +190,14 @@ function Post({ post, viewer, onDelete, focusedComment }) {
       >
         <div className="flex items-start justify-between">
           <div className="flex items-center space-x-4">
-            <a href={`/profile/${postData.poster?._id}`} className="shrink-0">
+            <Link to={`/profile/${postData.poster?._id}`} className="shrink-0">
               <img
                 data-testid="post-profile-picture"
                 className="h-auto w-16 rounded-full object-cover shadow-lg"
                 src={postData.poster?.profile_picture}
                 alt="Profile Picture"
               />
-            </a>
+            </Link>
             <div className="min-w-0 flex-1">
               <a
                 href={`/profile/${postData.poster?._id}`}

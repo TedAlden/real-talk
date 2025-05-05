@@ -2,6 +2,7 @@ import React from "react";
 import { useEffect, useState } from "react";
 import UserInteractionButtons from "./UserInteractionButtons";
 import { getSuggestedFollows } from "../api/followersService";
+import { Link } from "react-router-dom";
 
 export default function SuggestedUsers({ viewer, method = "mutuals" }) {
   const [suggestions, setSuggestions] = useState([]);
@@ -50,20 +51,20 @@ export default function SuggestedUsers({ viewer, method = "mutuals" }) {
             {suggestions.map((user) => (
               <li key={user._id} className="flex shrink-0 flex-col py-3">
                 <div className="flex flex-row items-center justify-between">
-                  <a href={`/profile/${user._id}`} className="shrink-0">
+                  <Link to={`/profile/${user._id}`} className="shrink-0">
                     <img
                       className="size-16 rounded-full object-cover shadow-lg"
                       src={user?.profile_picture}
                       alt="Profile"
                     />
-                  </a>
+                  </Link>
                   <div className="mx-3 flex flex-grow flex-col text-left">
-                    <a
-                      href={`/profile/${user._id}`}
+                    <Link
+                      to={`/profile/${user._id}`}
                       className="min-w-40 overflow-hidden text-ellipsis text-lg font-semibold hover:underline"
                     >
                       @{user.username}
-                    </a>
+                    </Link>
                     <span className="text-md text-gray-500 dark:text-gray-400">
                       {user.mutualCount > 1
                         ? `${user.mutualCount} mutual follows`

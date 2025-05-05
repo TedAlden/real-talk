@@ -6,6 +6,7 @@ import {
 } from "../api/adminService";
 import { useEffect, useState } from "react";
 import { TabItem, Tabs } from "flowbite-react";
+import { Link } from "react-router-dom";
 
 import _ from "lodash";
 function Admin() {
@@ -118,9 +119,12 @@ function Admin() {
                     <div className="text-md m-2 mb-1 flex items-center justify-between border-b border-gray-300 p-1 pb-3 dark:border-gray-700">
                       <span className="text-lg text-gray-900 dark:text-gray-100">
                         Reported {_.capitalize(report.targetType)} by{" "}
-                        <a className="font-medium hover:underline" href="">
+                        <Link
+                          className="font-medium hover:underline"
+                          to={`/profile/${report.reporter._id}`}
+                        >
                           {"@" + report.reporter?.username || "Unknown"}
-                        </a>
+                        </Link>
                       </span>
                       <span className="text-gray-600 dark:text-gray-300">
                         {new Date(report.timestamp).toLocaleDateString()}{" "}
@@ -176,9 +180,12 @@ function Admin() {
                     <div className="text-md m-2 mb-1 flex items-center justify-between border-b border-gray-300 p-1 pb-3 dark:border-gray-700">
                       <span className="text-lg text-gray-900 dark:text-gray-100">
                         Reported {_.capitalize(report.targetType)} by{" "}
-                        <a className="font-medium hover:underline" href="">
+                        <Link
+                          className="font-medium hover:underline"
+                          href={`/profile/${report.reporter._id}`}
+                        >
                           {"@" + report.reporter?.username || "Unknown"}
-                        </a>
+                        </Link>
                       </span>
                       <span className="text-gray-600 dark:text-gray-300">
                         {new Date(report.timestamp).toLocaleDateString()}{" "}
