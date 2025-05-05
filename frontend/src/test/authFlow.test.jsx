@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { screen, waitFor } from "@testing-library/react";
-import renderWithProviders, { mockNavigate } from "./setupTests";
+import renderWithProviders, { mockNavigate } from "./setupTests.test";
 import Login from "../pages/Login";
 import Register from "../pages/Register";
 import PublicNavbar from "../components/Sidebar";

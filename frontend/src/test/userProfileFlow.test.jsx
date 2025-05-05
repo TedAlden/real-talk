@@ -2,6 +2,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { screen, waitFor, within } from "@testing-library/react";
 import renderWithProviders from "./setupTests";
 import UserProfile from "../pages/UserProfile";
+import {useParams} from "react-router-dom";
 
 describe("User Profile Flow", () => {
   // Setup some mocks for the fetched users/posts/stats
