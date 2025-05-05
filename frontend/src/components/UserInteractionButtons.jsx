@@ -48,13 +48,13 @@ function UserInteractionButtons({
   };
 
   const buttonClasses = `
-    w-full rounded-md px-6 py-2 transition sm:w-min
+    w-full rounded-md px-3 py-1.5 transition sm:w-min
     ${followState ? "bg-red-500 hover:bg-red-600" : "bg-blue-500 hover:bg-blue-600"}
     ${loading ? "opacity-70 cursor-not-allowed" : ""} 
   `;
 
   return (
-    <div className="inline-flex items-center gap-2 text-sm font-semibold">
+    <div className="inline-flex items-center gap-2 text-sm font-semibold text-white">
       <button
         onClick={handleFollowAction}
         className={buttonClasses}
