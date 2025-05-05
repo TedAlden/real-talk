@@ -4,11 +4,12 @@ import {
   User,
   House,
   Users,
-  TimerReset,
+  TrendingUp,
   Bell,
   Settings,
   ShieldBan,
   BookUser,
+  Search,
 } from "lucide-react";
 
 import Sidebar, { SidebarItem } from "../components/Sidebar";
@@ -34,7 +35,7 @@ export default function PrivateLayout() {
       { threshold: 601, message: "10 minutes left" },
       { threshold: 301, message: "5 minutes left" },
       { threshold: 180, message: "3 minutes left" },
-      { threshold: 60,  message: "1 minute left" },
+      { threshold: 60, message: "1 minute left" },
     ],
     title: "Screen Time Alert:",
     color: "info",
@@ -45,7 +46,7 @@ export default function PrivateLayout() {
   return (
     <div className="flex h-screen bg-gray-50 dark:bg-gray-900">
       {alert.show && (
-        <div className="fixed top-4 left-1/2 transform -translate-x-1/2 z-50 w-[90%] max-w-xl">
+        <div className="fixed left-1/2 top-4 z-50 w-[90%] max-w-xl -translate-x-1/2 transform">
           <Alert
             show={alert.show}
             onClose={alert.onClose}
@@ -56,15 +57,15 @@ export default function PrivateLayout() {
         </div>
       )}
 
-<Sidebar>
-      <SidebarItem
-          link="/"
-          icon={<House className="h-6 w-6" />}
-          text="Home"
+      <Sidebar>
+        <SidebarItem
+          link="/search"
+          icon={<Search className="h-6 w-6" />}
+          text="Search"
         />
         <SidebarItem
           link="/feed/latest"
-          icon={<TimerReset className="h-6 w-6" />}
+          icon={<House className="h-6 w-6" />}
           text="Latest"
         />
         <SidebarItem
@@ -73,19 +74,26 @@ export default function PrivateLayout() {
           text="Following"
         />
         <SidebarItem
+          link="/trending"
+          icon={<TrendingUp className="h-6 w-6" />}
+          text="Trending"
+        />
+        <SidebarItem
           link="/network"
           icon={<Users className="h-6 w-6" />}
           text="Network"
+        />
+
+        <div className="my-2 w-full border border-gray-200 dark:border-gray-600" />
+        <SidebarItem
+          link="/notifications"
+          icon={<Bell className="h-6 w-6" />}
+          text="Notifications"
         />
         <SidebarItem
           link="/profile/me"
           icon={<User className="h-6 w-6" />}
           text="Profile"
-        />
-        <SidebarItem
-          link="/notifications"
-          icon={<Bell className="h-6 w-6" />}
-          text="Notifications"
         />
         <SidebarItem
           link="/settings"
@@ -103,10 +111,7 @@ export default function PrivateLayout() {
       </Sidebar>
       <div className="flex h-screen flex-1 flex-col">
         <TopBar />
-        <main
-          id="main-content-scrollable"
-          className="flex-1 overflow-auto p-6"
-        >
+        <main id="main-content-scrollable" className="flex-1 overflow-auto p-6">
           <Outlet />
         </main>
       </div>

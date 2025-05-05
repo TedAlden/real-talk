@@ -7,6 +7,7 @@ import UserInteractionButtons from "../components/UserInteractionButtons.jsx";
 import Unauthorised from "../components/Unauthorised.jsx";
 
 import { Spinner, Card } from "flowbite-react";
+import { Link } from "react-router-dom";
 
 function Followers() {
   const navigate = useNavigate();
@@ -70,20 +71,20 @@ function Followers() {
               {followers.map((follower) => (
                 <li key={follower.id} className="py-3 sm:py-4">
                   <div className="flex items-center space-x-4">
-                    <a href={`/profile/${follower._id}`} className="shrink-0">
+                    <Link to={`/profile/${follower._id}`} className="shrink-0">
                       <img
                         className="h-auto w-16 rounded-full object-cover shadow-lg"
                         src={follower?.profile_picture}
                         alt="Profile"
                       />
-                    </a>
+                    </Link>
                     <div className="min-w-0 flex-1">
-                      <a
-                        href={`/profile/${follower._id}`}
+                      <Link
+                        to={`/profile/${follower._id}`}
                         className="text-md font-semibold hover:underline"
                       >
                         @{follower.username}
-                      </a>
+                      </Link>
                       <p className="text-sm font-normal italic text-gray-400">
                         0 mutual friends
                       </p>

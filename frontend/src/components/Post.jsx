@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { FaCommentDots, FaHeart, FaShare, FaLink } from "react-icons/fa6";
 import Markdown from "react-markdown";
 import { Popover } from "flowbite-react";
+import { Link } from "react-router-dom";
 
 import { likePost, getPostComments, deletePostById } from "../api/postService";
 import { useCacheUpdater } from "../hooks/useUserCache";
@@ -189,22 +190,22 @@ function Post({ post, viewer, onDelete, focusedComment }) {
       >
         <div className="flex items-start justify-between">
           <div className="flex items-center space-x-4">
-            <a href={`/profile/${postData.poster?._id}`} className="shrink-0">
+            <Link to={`/profile/${postData.poster?._id}`} className="shrink-0">
               <img
                 data-testid="post-profile-picture"
                 className="h-auto w-16 rounded-full object-cover shadow-lg"
                 src={postData.poster?.profile_picture}
                 alt="Profile Picture"
               />
-            </a>
+            </Link>
             <div className="min-w-0 flex-1">
-              <a
-                href={`/profile/${postData.poster?._id}`}
+              <Link
+                to={`/profile/${postData.poster?._id}`}
                 className="text-lg font-semibold hover:underline"
                 data-testid="post-username"
               >
                 @{postData.poster?.username}
-              </a>
+              </Link>
               <p
                 data-testid="post-timestamp"
                 className="text-sm text-gray-500 dark:text-gray-400"
@@ -226,11 +227,10 @@ function Post({ post, viewer, onDelete, focusedComment }) {
               <Markdown
                 components={{
                   a: ({ ...props }) => (
-                    <a
+                    <Link
+                      to={props.href}
                       {...props}
                       className="bg-blue-400 bg-opacity-50 px-1 font-semibold text-blue-600 hover:text-blue-700 hover:underline dark:text-blue-100"
-                      target="_blank"
-                      rel="noopener noreferrer"
                     />
                   ),
                 }}

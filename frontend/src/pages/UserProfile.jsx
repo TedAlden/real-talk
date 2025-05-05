@@ -8,13 +8,12 @@ import useAuth from "../hooks/useAuth.js";
 
 import UserInteractionButtons from "../components/UserInteractionButtons.jsx";
 import DailyPostCounter from "../components/DailyPostCounter";
-import SuggestedUsers from "../components/SuggestedUsers.jsx";
 import DropdownMenu from "../components/DropdownMenu.jsx";
 import ReportWindow from "../components/ReportWindow.jsx";
 import Unauthorised from "../components/Unauthorised.jsx";
 import Composer from "../components/Composer.jsx";
 import Post from "../components/Post.jsx";
-import Trending from "../components/Trending.jsx";
+import FeedLayout from "../layouts/FeedLayout.jsx";
 
 import { getSafeObject } from "../util/defaultObjects.js";
 
@@ -231,144 +230,130 @@ function UserProfile() {
 
   return (
     <>
-      <div className="container mx-auto">
-        <div className="mx-4 mt-4 grid w-full grid-cols-7 gap-6">
-          <Trending className="col-span-2" />
-          <div className="col-span-3 text-lg text-gray-900 dark:text-white">
-            <div
-              className={`mb-4 grid grid-cols-4 items-center justify-center ${style.card}`}
-            >
-              <div className="col-span-4 flex items-start sm:col-span-1">
-                <img
-                  className="h-auto w-28 rounded-full object-cover"
-                  src={userData?.profile_picture}
-                  data-testid="main-profile-picture"
-                  alt="Profile"
-                />
-              </div>
-              <div className="col-span-4 ml-2 flex flex-col justify-start gap-2 sm:col-span-3">
-                <div>
-                  {" "}
-                  <div className="flex items-center justify-between">
-                    <p
-                      data-testid="profile-full-name"
-                      className="text-xl font-semibold"
-                    >
-                      {userData.first_name} {userData.last_name}
-                    </p>{" "}
-                    <DropdownMenu
-                      items={userOptions}
-                      className="ml-auto"
-                      data-testid="profile-dropdown-menu"
-                    />
-                  </div>
-                  <p
-                    data-testid="profile-username"
-                    className="text-md text-gray-700 dark:text-gray-300"
-                  >
-                    @{userData.username}
-                  </p>
-                </div>
-
-                <p
-                  data-testid="profile-bio"
-                  className="text-base text-gray-700 dark:text-gray-300"
-                >
-                  {decode(userData.biography) || "No bio available"}
-                </p>
-                <ul className="flex text-sm">
-                  <li className="me-2">
-                    <Link
-                      to={`/network?tab=following`}
-                      className="hover:underline"
-                    >
-                      <span
-                        data-testid="profile-followed-count"
-                        className="font-semibold text-gray-900 dark:text-white"
-                      >
-                        {followStats.followedByUser.toLocaleString()}
-                      </span>
-                      <span className="text-gray-600 dark:text-gray-400">
-                        {" "}
-                        Following
-                      </span>
-                    </Link>
-                  </li>
-                  <li>
-                    <Link
-                      to={`/network?tab=followers`}
-                      className="hover:underline"
-                    >
-                      <span
-                        data-testid="profile-following-count"
-                        className="font-semibold text-gray-900 dark:text-white"
-                      >
-                        {followStats.followingUser.toLocaleString()}
-                      </span>
-                      <span className="text-gray-600 dark:text-gray-400">
-                        {" "}
-                        Followers
-                      </span>
-                    </Link>
-                  </li>
-                </ul>
-                <UserInteractionButtons
-                  viewerId={viewer._id}
-                  targetId={userData._id}
-                  onFollowChange={onFollowChange}
-                  isFollowing={isFollowing}
-                  mode="follow"
-                />
-              </div>
-            </div>
-
-            <div className="mb-4 rounded-md bg-white p-2 text-center shadow dark:border dark:border-gray-700 dark:bg-gray-800">
-              <DailyPostCounter posts={dailyPosts.length} />
-            </div>
-
-            {viewer._id == userData._id && dailyPosts.length < 1 && (
-              <div
-                data-testid="profile-post-composer"
-                className={`mb-4 p-2 ${style.card}`}
-              >
-                <Composer onSubmit={handleSubmit} mode="createPost" />
-              </div>
-            )}
-
-            {viewer._id == userData._id && dailyPosts.length >= 1 && (
-              <div
-                className={`mb-4 p-2 ${style.card} text-center text-red-500 dark:text-red-400`}
-              >
-                You've reached your daily post limit. Try again tomorrow.
-              </div>
-            )}
-
-            {posts.map((post) => (
-              <Post
-                key={post._id}
-                post={post}
-                viewer={viewer}
-                onDelete={onPostDeleted}
-              />
-            ))}
-
-            {feedLoading && (
-              <div className="p-4 text-center">
-                <Spinner aria-label="Loading more posts" size="lg" />
-              </div>
-            )}
-
-            {!hasMore && !feedLoading && (
-              <div className="p-4 text-center text-gray-500">
-                No more posts to load.
-              </div>
-            )}
+      <FeedLayout viewer={viewer}>
+        <div
+          className={`mb-4 grid grid-cols-4 items-center justify-center ${style.card}`}
+        >
+          <div className="col-span-4 mb-4 flex justify-center sm:col-span-1 sm:mb-0 sm:items-start">
+            <img
+              className="h-auto w-28 rounded-full object-cover"
+              src={userData?.profile_picture}
+              data-testid="main-profile-picture"
+              alt="Profile"
+            />
           </div>
-          <div className="col-span-2">
-            <SuggestedUsers viewer={viewer} />
+          <div className="col-span-4 ml-2 flex flex-col justify-start gap-2 sm:col-span-3">
+            <div>
+              <div className="flex items-center justify-between">
+                <p
+                  data-testid="profile-full-name"
+                  className="text-xl font-semibold"
+                >
+                  {userData.first_name} {userData.last_name}
+                </p>{" "}
+                <DropdownMenu
+                  items={userOptions}
+                  className="ml-auto"
+                  data-testid="profile-dropdown-menu"
+                />
+              </div>
+              <p
+                data-testid="profile-username"
+                className="text-md text-gray-700 dark:text-gray-300"
+              >
+                @{userData.username}
+              </p>
+            </div>
+
+            <p
+              data-testid="profile-bio"
+              className="text-base text-gray-700 dark:text-gray-300"
+            >
+              {decode(userData.biography) || "No bio available"}
+            </p>
+            <ul className="flex text-sm">
+              <li className="me-2">
+                <Link to={`/network?tab=following`} className="hover:underline">
+                  <span
+                    data-testid="profile-followed-count"
+                    className="font-semibold text-gray-900 dark:text-white"
+                  >
+                    {followStats.followedByUser.toLocaleString()}
+                  </span>
+                  <span className="text-gray-600 dark:text-gray-400">
+                    {" "}
+                    Following
+                  </span>
+                </Link>
+              </li>
+              <li>
+                <Link to={`/network?tab=followers`} className="hover:underline">
+                  <span
+                    data-testid="profile-following-count"
+                    className="font-semibold text-gray-900 dark:text-white"
+                  >
+                    {followStats.followingUser.toLocaleString()}
+                  </span>
+                  <span className="text-gray-600 dark:text-gray-400">
+                    {" "}
+                    Followers
+                  </span>
+                </Link>
+              </li>
+            </ul>
+            <UserInteractionButtons
+              viewerId={viewer._id}
+              targetId={userData._id}
+              onFollowChange={onFollowChange}
+              isFollowing={isFollowing}
+              mode="follow"
+            />
           </div>
         </div>
-      </div>{" "}
+
+        <div className="mb-4 rounded-md bg-white p-2 text-center shadow dark:border dark:border-gray-700 dark:bg-gray-800">
+          <DailyPostCounter posts={dailyPosts.length} />
+        </div>
+
+        {viewer._id == userData._id && dailyPosts.length < 1 && (
+          <div
+            data-testid="profile-post-composer"
+            className={`mb-4 p-2 ${style.card}`}
+          >
+            <Composer onSubmit={handleSubmit} mode="createPost" />
+          </div>
+        )}
+
+        {viewer._id == userData._id && dailyPosts.length >= 1 && (
+          <div
+            className={`mb-4 p-2 ${style.card} text-center text-red-500 dark:text-red-400`}
+          >
+            You've reached your daily post limit. Try again tomorrow.
+          </div>
+        )}
+
+        {posts.map((post) => (
+          <Post
+            key={post._id}
+            post={post}
+            viewer={viewer}
+            onDelete={onPostDeleted}
+          />
+        ))}
+
+        {feedLoading && (
+          <div className="p-4 text-center">
+            <Spinner aria-label="Loading more posts" size="lg" />
+          </div>
+        )}
+
+        {!hasMore && !feedLoading && (
+          <div className="p-4 text-center text-gray-500">
+            No more posts to load.
+          </div>
+        )}
+      </FeedLayout>
+
       <ReportWindow
         visible={isReporting}
         targetType="user"

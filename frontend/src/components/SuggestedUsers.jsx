@@ -2,6 +2,7 @@ import React from "react";
 import { useEffect, useState } from "react";
 import UserInteractionButtons from "./UserInteractionButtons";
 import { getSuggestedFollows } from "../api/followersService";
+import { Link } from "react-router-dom";
 
 export default function SuggestedUsers({ viewer, method = "mutuals" }) {
   const [suggestions, setSuggestions] = useState([]);
@@ -40,35 +41,35 @@ export default function SuggestedUsers({ viewer, method = "mutuals" }) {
     return null;
   }
   const cardStyle =
-    "p-4 bg-white rounded-md shadow dark:border dark:border-gray-700 dark:bg-gray-800";
+    "p-6 bg-white rounded-md shadow dark:border dark:border-gray-700 dark:bg-gray-800";
   return (
-    <div className={`${cardStyle} mb-5 text-gray-900 dark:text-white`}>
+    <div className={`${cardStyle} mb-5 w-full text-gray-900 dark:text-white`}>
       <h1 className="mb-3 text-xl font-bold">Suggested Users</h1>
       <div className="flow-root p-4">
         {suggestions.length > 0 ? (
           <ul className="divide-y divide-gray-200 dark:divide-gray-700">
             {suggestions.map((user) => (
-              <li key={user._id} className="py-3 sm:py-4">
-                <div className="flex items-center space-x-4">
-                  <a href={`/profile/${user._id}`} className="shrink-0">
+              <li key={user._id} className="flex shrink-0 flex-col py-3">
+                <div className="flex flex-row items-center justify-between">
+                  <Link to={`/profile/${user._id}`} className="shrink-0">
                     <img
-                      className="h-auto w-16 rounded-full object-cover shadow-lg"
+                      className="size-16 rounded-full object-cover shadow-lg"
                       src={user?.profile_picture}
                       alt="Profile"
                     />
-                  </a>
-                  <div className="min-w-0 flex-1">
-                    <a
-                      href={`/profile/${user._id}`}
-                      className="text-lg font-semibold hover:underline"
+                  </Link>
+                  <div className="mx-3 flex flex-grow flex-col text-left">
+                    <Link
+                      to={`/profile/${user._id}`}
+                      className="min-w-40 overflow-hidden text-ellipsis text-lg font-semibold hover:underline"
                     >
                       @{user.username}
-                    </a>
-                    <p className="text-md text-gray-500 dark:text-gray-400">
+                    </Link>
+                    <span className="text-md text-gray-500 dark:text-gray-400">
                       {user.mutualCount > 1
                         ? `${user.mutualCount} mutual follows`
                         : `${user.mutualCount} mutual follow`}
-                    </p>
+                    </span>
                   </div>
                   <UserInteractionButtons
                     viewerId={viewer._id}

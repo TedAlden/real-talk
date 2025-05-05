@@ -103,7 +103,7 @@ function Network() {
 
   return (
     <div className="flex justify-center">
-      <Card className="mt-16 w-2/5 text-gray-900 dark:text-white">
+      <Card className="w-full text-gray-900 dark:text-white lg:mt-16 lg:w-3/5 2xl:w-1/2">
         <div className="mb-4">
           <div className="border-b border-gray-200 dark:border-gray-700">
             <ul className="-mb-px flex flex-wrap text-center text-sm font-medium">
