@@ -102,7 +102,7 @@ function Search() {
         </a>
         <div className="min-w-0 flex-1">
           <a
-            href={`/profile/${post.userId}`}
+            href={`/profile/${post.user_id}`}
             className="text-lg font-semibold hover:underline"
           >
             @{post.poster.username}
