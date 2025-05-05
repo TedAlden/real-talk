@@ -1,5 +1,201 @@
+import { useEffect, useState } from "react";
+import { TextInput } from "flowbite-react";
+import { HiSearch, HiHashtag, HiNewspaper, HiUserCircle } from "react-icons/hi";
+import { Tabs, TabItem, Spinner } from "flowbite-react";
+import SuggestedUsers from "../components/SuggestedUsers";
+import { getSearchResults } from "../api/searchService";
+
+import UserInteractionButtons from "../components/UserInteractionButtons";
+
+import useAuth from "../hooks/useAuth";
+
+const style = {
+  card: "p-4 bg-white rounded-md shadow dark:border dark:border-gray-700 dark:bg-gray-800",
+};
+
 function Search() {
-  return <></>;
+  const auth = useAuth();
+  const [viewer, setViewer] = useState(null);
+  const [searchResults, setSearchResults] = useState(null);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      const user = await auth.getUser();
+      setViewer(user);
+      setSearchResults(getSearchResults("ted", 0, 10));
+    };
+    fetchUser();
+  }, [auth]);
+
+  const handleSearch = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+
+    // log value
+    const searchValue = e.target[0].value;
+
+    const results = await getSearchResults(searchValue, {
+      limit: 10,
+      offset: 0,
+    });
+    if (results) {
+      setSearchResults(results.data);
+    } else {
+      console.error("Error fetching search results");
+    }
+    setLoading(false);
+  };
+
+  const onFollowChange = async (userId, isFollowing) => {
+    const updatedSuggestions = searchResults.users.map((user) =>
+      user._id === userId ? { ...user, isFollowing } : user,
+    );
+    setSearchResults(updatedSuggestions);
+  };
+
+  const createUserProfilePreview = (user) => (
+    <li key={user._id} className="py-3 sm:py-4">
+      <div className="flex items-center space-x-4">
+        <a href={`/profile/${user._id}`} className="shrink-0">
+          <img
+            className="h-auto w-16 rounded-full object-cover shadow-lg"
+            src={user?.profile_picture}
+            alt="Profile"
+          />
+        </a>
+        <div className="min-w-0 flex-1">
+          <a
+            href={`/profile/${user._id}`}
+            className="text-lg font-semibold hover:underline"
+          >
+            @{user.username}
+          </a>
+          <p className="text-md text-gray-500 dark:text-gray-400">
+            {user.mutualCount > 1
+              ? `${user.mutualCount} mutual follows`
+              : `${user.mutualCount} mutual follow`}
+          </p>
+        </div>
+        {viewer && (
+          <UserInteractionButtons
+            viewerId={viewer._id}
+            targetId={user._id}
+            onFollowChange={onFollowChange}
+            isFollowing={user.isFollowing}
+            mode="follow"
+          />
+        )}
+      </div>
+    </li>
+  );
+
+  const createPostPreview = (post) => (
+    <li key={post._id} className="py-3 sm:py-4">
+      <div className="flex items-center space-x-4">
+        <a href={`/profile/${post.userId}`} className="shrink-0">
+          <img
+            className="h-auto w-16 rounded-full object-cover shadow-lg"
+            src={post?.poster?.profile_picture}
+            alt="Profile"
+          />
+        </a>
+        <div className="min-w-0 flex-1">
+          <a
+            href={`/profile/${post.userId}`}
+            className="text-lg font-semibold hover:underline"
+          >
+            @{post.poster.username}
+          </a>
+          <p className="text-md text-gray-500 dark:text-gray-400">
+            {post.content}
+          </p>
+        </div>
+      </div>
+    </li>
+  );
+
+  return (
+    <div className="mx-auto mb-4 flex max-w-3xl flex-col gap-5">
+      <form onSubmit={handleSearch}>
+        <TextInput
+          id="real-talk-search"
+          type="text"
+          rightIcon={HiSearch}
+          placeholder="Search"
+          sizing="lg"
+          onSubmit={handleSearch}
+        />
+      </form>
+
+      <Tabs aria-label="Search result tabs" variant="pills" className="rounded">
+        <TabItem active title="Profiles" icon={HiUserCircle}>
+          <div className={`${style.card} mb-5 text-gray-900 dark:text-white`}>
+            <h1 className="mb-3 text-xl font-bold">Search results</h1>
+            <div className="flow-root p-4">
+              {!loading ? (
+                searchResults?.users?.length > 0 ? (
+                  <ul className="divide-y divide-gray-200 dark:divide-gray-700">
+                    {searchResults.users.map((user) =>
+                      createUserProfilePreview(user),
+                    )}
+                  </ul>
+                ) : (
+                  <p>No results.</p>
+                )
+              ) : (
+                <div className="p-16 text-center">
+                  <Spinner aria-label="Loading notifications data" size="xl" />
+                </div>
+              )}
+            </div>
+          </div>
+        </TabItem>
+        <TabItem title="Posts" icon={HiNewspaper}>
+          <div className={`${style.card} mb-5 text-gray-900 dark:text-white`}>
+            <h1 className="mb-3 text-xl font-bold">Search results</h1>
+            <div className="flow-root p-4">
+              {!loading ? (
+                searchResults?.posts?.length > 0 ? (
+                  <ul className="divide-y divide-gray-200 dark:divide-gray-700">
+                    {searchResults.posts.map((post) => createPostPreview(post))}
+                  </ul>
+                ) : (
+                  <p>No results.</p>
+                )
+              ) : (
+                <div className="p-16 text-center">
+                  <Spinner aria-label="Loading notifications data" size="xl" />
+                </div>
+              )}
+            </div>
+          </div>
+        </TabItem>
+        <TabItem title="Tags" icon={HiHashtag}>
+          <div className={`${style.card} mb-5 text-gray-900 dark:text-white`}>
+            <h1 className="mb-3 text-xl font-bold">Search results</h1>
+            <div className="flow-root p-4">
+              {!loading ? (
+                searchResults?.taggedPosts?.length > 0 ? (
+                  <ul className="divide-y divide-gray-200 dark:divide-gray-700">
+                    {searchResults.taggedPosts.map((post) =>
+                      createPostPreview(post),
+                    )}
+                  </ul>
+                ) : (
+                  <p>No results.</p>
+                )
+              ) : (
+                <div className="p-16 text-center">
+                  <Spinner aria-label="Loading notifications data" size="xl" />
+                </div>
+              )}
+            </div>
+          </div>
+        </TabItem>
+      </Tabs>
+    </div>
+  );
 }
 
 export default Search;
