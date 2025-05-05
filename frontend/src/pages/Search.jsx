@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback } from "react";
 import { TextInput } from "flowbite-react";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, Link } from "react-router-dom";
 import { HiSearch, HiHashtag, HiNewspaper, HiUserCircle } from "react-icons/hi";
 import { Tabs, TabItem, Spinner } from "flowbite-react";
 import { getSearchResults } from "../api/searchService";
@@ -59,20 +59,20 @@ function Search() {
   const createUserProfilePreview = (user) => (
     <li key={user._id} className="py-3 sm:py-4">
       <div className="flex items-center space-x-4">
-        <a href={`/profile/${user._id}`} className="shrink-0">
+        <Link to={`/profile/${user._id}`} className="shrink-0">
           <img
             className="h-auto w-16 rounded-full object-cover shadow-lg"
             src={user?.profile_picture}
             alt="Profile"
           />
-        </a>
+        </Link>
         <div className="min-w-0 flex-1">
-          <a
-            href={`/profile/${user._id}`}
+          <Link
+            to={`/profile/${user._id}`}
             className="text-lg font-semibold hover:underline"
           >
             @{user.username}
-          </a>
+          </Link>
           <p className="text-md text-gray-500 dark:text-gray-400">
             {user.mutualCount > 1
               ? `${user.mutualCount} mutual follows`
@@ -95,29 +95,28 @@ function Search() {
   const createPostPreview = (post) => (
     <li key={post._id} className="py-3 sm:py-4">
       <div className="flex items-center space-x-4">
-        <a href={`/profile/${post.userId}`} className="shrink-0">
+        <Link to={`/profile/${post.userId}`} className="shrink-0">
           <img
             className="h-auto w-16 rounded-full object-cover shadow-lg"
             src={post?.poster?.profile_picture}
             alt="Profile"
           />
-        </a>
+        </Link>
         <div className="min-w-0 flex-1">
-          <a
-            href={`/profile/${post.user_id}`}
+          <Link
+            to={`/profile/${post.user_id}`}
             className="text-lg font-semibold hover:underline"
           >
             @{post.poster.username}
-          </a>
+          </Link>
           <p className="text-md text-gray-500 dark:text-gray-400">
             <Markdown
               components={{
                 a: ({ ...props }) => (
-                  <a
+                  <Link
+                    to={props.href}
                     {...props}
                     className="bg-blue-400 bg-opacity-50 px-1 font-semibold text-blue-600 hover:text-blue-700 hover:underline dark:text-blue-100"
-                    target="_blank"
-                    rel="noopener noreferrer"
                   />
                 ),
               }}
