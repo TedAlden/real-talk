@@ -15,6 +15,7 @@ import Layout from "./layouts/Layout";
 import Home from "./pages/Home";
 import FeedLatest from "./pages/FeedLatest";
 import FeedFollowing from "./pages/FeedFollowing";
+import Search from "./pages/Search";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Landing from "./pages/Landing";
@@ -48,6 +49,7 @@ function App() {
                 <Routes>
                   <Route element={<Layout />}>
                     <Route path="/" element={<Home />} />
+                    <Route path="/search" element={<Search />} />
                     <Route path="/login" element={<Login />} />
                     <Route path="/register" element={<Register />} />
                     <Route path="/landing" element={<Landing />} />
