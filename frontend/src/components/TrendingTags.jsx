@@ -88,6 +88,6 @@ export default function TrendingTags({ className = "" }) {
           <p>No trending tags.</p>
         )}
       </div>
-    </div>
+    </Card>
   );
 }
