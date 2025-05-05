@@ -14,7 +14,6 @@ import Comment from "./Comment";
 import PostCarousel from "./PostCarousel";
 import ReportWindow from "./ReportWindow";
 import { banTarget } from "../api/adminService";
-import { Link } from "react-router-dom";
 
 function Post({ post, viewer, onDelete, focusedComment }) {
   const [postData, setPostData] = useState(post);
