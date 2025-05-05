@@ -1,9 +1,11 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { TextInput } from "flowbite-react";
+import { useSearchParams } from "react-router-dom";
 import { HiSearch, HiHashtag, HiNewspaper, HiUserCircle } from "react-icons/hi";
 import { Tabs, TabItem, Spinner } from "flowbite-react";
-import SuggestedUsers from "../components/SuggestedUsers";
 import { getSearchResults } from "../api/searchService";
+
+import Markdown from "react-markdown";
 
 import UserInteractionButtons from "../components/UserInteractionButtons";
 
@@ -15,36 +17,36 @@ const style = {
 
 function Search() {
   const auth = useAuth();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [viewer, setViewer] = useState(null);
   const [searchResults, setSearchResults] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    const fetchUser = async () => {
-      const user = await auth.getUser();
-      setViewer(user);
-      setSearchResults(getSearchResults("ted", 0, 10));
-    };
-    fetchUser();
-  }, [auth]);
+  const showSearchResults = useCallback(async (query) => {
+    query = query.replace("#", "");
+    setLoading(true);
+    try {
+      const results = await getSearchResults(query, {
+        limit: 10,
+        offset: 0,
+      });
+      if (results) {
+        setSearchResults(results.data);
+      } else {
+        console.error("Error fetching search results");
+      }
+    } catch (error) {
+      console.error("Error in showSearchResults:", error);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
   const handleSearch = async (e) => {
     e.preventDefault();
-    setLoading(true);
-
-    // log value
-    const searchValue = e.target[0].value;
-
-    const results = await getSearchResults(searchValue, {
-      limit: 10,
-      offset: 0,
-    });
-    if (results) {
-      setSearchResults(results.data);
-    } else {
-      console.error("Error fetching search results");
-    }
-    setLoading(false);
+    const query = e.target[0].value;
+    setSearchParams({ q: query });
+    showSearchResults(query);
   };
 
   const onFollowChange = async (userId, isFollowing) => {
@@ -114,6 +116,22 @@ function Search() {
       </div>
     </li>
   );
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      const user = await auth.getUser();
+      setViewer(user);
+    };
+    fetchUser();
+  }, [auth]);
+
+  useEffect(() => {
+    const query = searchParams.get("q");
+    if (query) {
+      showSearchResults(query.replace("#", ""));
+      document.getElementById("real-talk-search").value = query;
+    }
+  }, [showSearchResults, searchParams]);
 
   return (
     <div className="mx-auto mb-4 flex max-w-3xl flex-col gap-5">
