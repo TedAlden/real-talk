@@ -174,7 +174,7 @@ function Search() {
                   <p>No results.</p>
                 )
               ) : (
-                <div className="p-16 text-center">
+                <div className="text-center">
                   <Spinner aria-label="Loading notifications data" size="xl" />
                 </div>
               )}
@@ -194,7 +194,7 @@ function Search() {
                   <p>No results.</p>
                 )
               ) : (
-                <div className="p-16 text-center">
+                <div className="text-center">
                   <Spinner aria-label="Loading notifications data" size="xl" />
                 </div>
               )}
@@ -216,7 +216,7 @@ function Search() {
                   <p>No results.</p>
                 )
               ) : (
-                <div className="p-16 text-center">
+                <div className="text-center">
                   <Spinner aria-label="Loading notifications data" size="xl" />
                 </div>
               )}
