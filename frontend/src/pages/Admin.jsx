@@ -106,7 +106,7 @@ function Admin() {
   return (
     <div className="items-center justify-center text-gray-900 dark:text-white">
       {isAdmin ? (
-        <div className="container mx-auto w-2/5 p-2">
+        <div className="container mx-auto w-full p-2 lg:w-3/5 2xl:w-1/2">
           <h1 className="mb-3 text-2xl font-bold">Admin Dashboard</h1>
           <Tabs>
             <TabItem active title="Active Reports">
