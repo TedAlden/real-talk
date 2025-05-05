@@ -109,7 +109,7 @@ function Search() {
           >
             @{post.poster.username}
           </Link>
-          <p className="text-md text-gray-500 dark:text-gray-400">
+          <div className="text-md text-gray-500 dark:text-gray-400">
             <Markdown
               components={{
                 a: ({ ...props }) => (
@@ -123,7 +123,7 @@ function Search() {
             >
               {post.content}
             </Markdown>
-          </p>
+          </div>
         </div>
       </div>
     </li>
