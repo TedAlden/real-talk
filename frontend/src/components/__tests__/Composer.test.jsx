@@ -3,7 +3,7 @@ import Composer from "../Composer";
 import { describe } from "vitest";
 
 describe("Composer", () => {
-  it("tells the max length of a text post", () => {
+  it("correctly renders composer component awaiting input", () => {
     render(<Composer mode="createPost" />);
     expect(screen.getByText("Write something...")).toBeInTheDocument();
   });

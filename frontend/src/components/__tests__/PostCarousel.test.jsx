@@ -14,4 +14,10 @@ describe("PostCarousel", () => {
     const images = screen.getAllByRole("img");
     expect(images).toHaveLength(1);
   });
+  const image_map_2 = ["../../assets/test.webp", "../../assets/test.webp", "../../assets/test.webp"];
+  it("displays a single image when given a single image to display", () => {
+    render(<PostCarousel images={image_map_2} />);
+    const images = screen.getAllByRole("img");
+    expect(images).toHaveLength(3);
+  });
 });
