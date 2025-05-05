@@ -21,6 +21,9 @@ function Search() {
   const [searchResults, setSearchResults] = useState(null);
   const [loading, setLoading] = useState(false);
 
+  /**
+   * Get search results based on the query from the API.
+   */
   const showSearchResults = useCallback(async (query) => {
     query = query.replace("#", "");
     setLoading(true);
@@ -41,6 +44,9 @@ function Search() {
     }
   }, []);
 
+  /**
+   * Handle the search form submission.
+   */
   const handleSearch = async (e) => {
     e.preventDefault();
     const query = e.target[0].value;
@@ -48,6 +54,9 @@ function Search() {
     showSearchResults(query);
   };
 
+  /**
+   * Handle the follow/unfollow action for a user in the search results.
+   */
   const onFollowChange = async (userId, isFollowing) => {
     const updatedSuggestions = searchResults.users.map((user) =>
       user._id === userId ? { ...user, isFollowing } : user,
@@ -55,6 +64,32 @@ function Search() {
     setSearchResults(updatedSuggestions);
   };
 
+  /**
+   * Set the viewer state when the component mounts.
+   */
+  useEffect(() => {
+    const fetchUser = async () => {
+      const user = await auth.getUser();
+      setViewer(user);
+    };
+    fetchUser();
+  }, [auth]);
+
+  /**
+   * Get the query from the URL parameters when the component mounts, and use
+   * this to do an initial search.
+   */
+  useEffect(() => {
+    const query = searchParams.get("q");
+    if (query) {
+      showSearchResults(query.replace("#", ""));
+      document.getElementById("real-talk-search").value = query;
+    }
+  }, [showSearchResults, searchParams]);
+
+  /**
+   * Create a user profile preview for the search results.
+   */
   const createUserProfilePreview = (user) => (
     <li key={user._id} className="py-3 sm:py-4">
       <div className="flex items-center space-x-4">
@@ -91,6 +126,9 @@ function Search() {
     </li>
   );
 
+  /**
+   * Create a post preview for the search results.
+   */
   const createPostPreview = (post) => (
     <li key={post._id} className="py-3 sm:py-4">
       <div className="flex items-center space-x-4">
@@ -137,22 +175,6 @@ function Search() {
       </div>
     </li>
   );
-
-  useEffect(() => {
-    const fetchUser = async () => {
-      const user = await auth.getUser();
-      setViewer(user);
-    };
-    fetchUser();
-  }, [auth]);
-
-  useEffect(() => {
-    const query = searchParams.get("q");
-    if (query) {
-      showSearchResults(query.replace("#", ""));
-      document.getElementById("real-talk-search").value = query;
-    }
-  }, [showSearchResults, searchParams]);
 
   return (
     <div className="mx-auto mb-4 flex max-w-3xl flex-col gap-5">
