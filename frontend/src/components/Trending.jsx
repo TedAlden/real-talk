@@ -4,7 +4,7 @@ import { Card, Dropdown, Spinner } from "flowbite-react";
 import { useQuery } from "@tanstack/react-query";
 import { getTrendingTags } from "../api/postService.js";
 
-export default function Trending({ className = "" }) {
+export default function Trending() {
   const [period, setPeriod] = useState("daily");
   const periodOptions = [
     { key: "daily", label: "Today" },
@@ -23,9 +23,11 @@ export default function Trending({ className = "" }) {
 
   const tags = response?.data;
 
+  const cardStyle =
+    "p-6 bg-white rounded-md shadow dark:border dark:border-gray-700 dark:bg-gray-800";
   return (
-    <Card
-      className={`mb-5 h-fit text-gray-900 dark:text-white ${className} shadow-sm`}
+    <div
+      className={`${cardStyle} mb-5 h-fit w-full text-gray-900 shadow-sm dark:text-white`}
     >
       <div className="xs:flex-col flex w-full flex-row items-center justify-between">
         <h1 className="text-xl font-bold">Trending</h1>
@@ -86,6 +88,6 @@ export default function Trending({ className = "" }) {
           <p>No trending tags.</p>
         )}
       </div>
-    </Card>
+    </div>
   );
 }
