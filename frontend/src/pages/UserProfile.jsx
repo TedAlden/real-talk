@@ -232,13 +232,13 @@ function UserProfile() {
   return (
     <>
       <div className="container mx-auto">
-        <div className="mx-4 mt-4 grid w-full grid-cols-7 gap-6">
-          <Trending className="col-span-2" />
+        <div className="grid w-full gap-6 lg:grid-cols-5 2xl:grid-cols-7">
+          <Trending className="col-span-5 hidden lg:col-span-2 lg:flex" />
           <div className="col-span-3 text-lg text-gray-900 dark:text-white">
             <div
               className={`mb-4 grid grid-cols-4 items-center justify-center ${style.card}`}
             >
-              <div className="col-span-4 flex items-start sm:col-span-1">
+              <div className="col-span-4 mb-4 flex justify-center sm:col-span-1 sm:mb-0 sm:items-start">
                 <img
                   className="h-auto w-28 rounded-full object-cover"
                   src={userData?.profile_picture}
@@ -248,7 +248,6 @@ function UserProfile() {
               </div>
               <div className="col-span-4 ml-2 flex flex-col justify-start gap-2 sm:col-span-3">
                 <div>
-                  {" "}
                   <div className="flex items-center justify-between">
                     <p
                       data-testid="profile-full-name"
@@ -364,7 +363,7 @@ function UserProfile() {
               </div>
             )}
           </div>
-          <div className="col-span-2">
+          <div className="col-span-5 flex hidden 2xl:col-span-2 2xl:flex">
             <SuggestedUsers viewer={viewer} />
           </div>
         </div>
