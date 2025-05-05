@@ -48,27 +48,27 @@ export default function SuggestedUsers({ viewer, method = "mutuals" }) {
         {suggestions.length > 0 ? (
           <ul className="divide-y divide-gray-200 dark:divide-gray-700">
             {suggestions.map((user) => (
-              <li key={user._id} className="py-3 sm:py-4">
-                <div className="flex items-center space-x-4">
+              <li key={user._id} className="flex shrink-0 flex-col py-3">
+                <div className="flex flex-row items-center justify-between">
                   <a href={`/profile/${user._id}`} className="shrink-0">
                     <img
-                      className="h-auto w-16 rounded-full object-cover shadow-lg"
+                      className="size-16 rounded-full object-cover shadow-lg"
                       src={user?.profile_picture}
                       alt="Profile"
                     />
                   </a>
-                  <div className="min-w-0 flex-1">
+                  <div className="mx-3 flex flex-grow flex-col text-left">
                     <a
                       href={`/profile/${user._id}`}
-                      className="text-lg font-semibold hover:underline"
+                      className="min-w-40 overflow-hidden text-ellipsis text-lg font-semibold hover:underline"
                     >
                       @{user.username}
                     </a>
-                    <p className="text-md text-gray-500 dark:text-gray-400">
+                    <span className="text-md text-gray-500 dark:text-gray-400">
                       {user.mutualCount > 1
                         ? `${user.mutualCount} mutual follows`
                         : `${user.mutualCount} mutual follow`}
-                    </p>
+                    </span>
                   </div>
                   <UserInteractionButtons
                     viewerId={viewer._id}
