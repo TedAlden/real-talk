@@ -262,7 +262,6 @@ export const getTrendingTags = async (req, res) => {
     if (!tags) {
       return res.status(404).json({ error: ErrorMsg.NO_SUCH_POST });
     }
-    console.log("Trending tags:", tags);
     return res.status(200).json(tags);
   } catch (err) {
     console.error("Get trending tags error:", err);
