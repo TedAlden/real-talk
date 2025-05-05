@@ -9,7 +9,7 @@ function FeedLayout({ children, viewer }) {
         <div className="col-span-3 text-lg text-gray-900 dark:text-white">
           {children}
         </div>
-        <div className="col-span-5 flex hidden w-full 2xl:col-span-2 2xl:flex">
+        <div className="col-span-5 flex hidden w-full self-start 2xl:col-span-2 2xl:flex">
           <SuggestedUsers viewer={viewer} />
         </div>
       </div>
