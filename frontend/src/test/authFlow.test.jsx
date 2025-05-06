@@ -73,11 +73,12 @@ describe("Authentication Flow", () => {
 
     // Check registerUser was called with provided values
     await waitFor(() => {
-      expect(authService.registerUser).toHaveBeenCalledWith(
-        "testuser",
-        "test@example.com",
-        "Password123!",
-      );
+      expect(authService.registerUser).toHaveBeenCalledWith({
+        username: "testuser",
+        email: "test@example.com",
+        password: "Password123!",
+        date_of_birth: expect.any(Date),
+      });
     });
 
     // get rid of register page
