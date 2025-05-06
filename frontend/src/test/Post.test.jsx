@@ -4,10 +4,8 @@ import Post from "../components/Post";
 import * as userCache from "../hooks/useUserCache";
 import * as authHook from "../hooks/useAuth";
 import * as postService from "../api/postService";
-import {
-  QueryClient,
-  QueryClientProvider,
-} from "@tanstack/react-query";
+import { BrowserRouter } from "react-router-dom";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 vi.mock("react-markdown", () => ({
   __esModule: true,
@@ -51,7 +49,7 @@ const post = {
   updated_at: new Date().toISOString(),
   likes: [],
   comments: [],
-  poster: mockUser
+  poster: mockUser,
 };
 
 const queryClient = new QueryClient({
@@ -73,7 +71,14 @@ const setup = (viewerId = "user-1") => {
 
   render(
     <QueryClientProvider client={queryClient}>
-      <Post post={post} viewer={viewerId === "user-1" ? mockUser : { _id: viewerId }} onDelete={onDelete} />
+      <BrowserRouter>
+        {" "}
+        <Post
+          post={post}
+          viewer={viewerId === "user-1" ? mockUser : { _id: viewerId }}
+          onDelete={onDelete}
+        />
+      </BrowserRouter>
     </QueryClientProvider>,
   );
   return { onDelete };
@@ -82,7 +87,9 @@ const setup = (viewerId = "user-1") => {
 describe("Post component", () => {
   it("displays posters username and post content", async () => {
     setup();
-    expect(screen.getByTestId("post-username")).toHaveTextContent("@username-1");
+    expect(screen.getByTestId("post-username")).toHaveTextContent(
+      "@username-1",
+    );
     expect(screen.getByTestId("post-text")).toHaveTextContent("Post content");
   });
 
@@ -90,14 +97,14 @@ describe("Post component", () => {
     setup();
     const editButton = screen.getByText("Edit post");
     const deleteButton = screen.getByText("Delete post");
-    
+
     expect(editButton).toBeInTheDocument();
     expect(deleteButton).toBeInTheDocument();
   });
 
   it("does not show edit and delete options for other users", async () => {
     setup("user-2");
-    
+
     expect(screen.queryByText("Edit post")).not.toBeInTheDocument();
     expect(screen.queryByText("Delete post")).not.toBeInTheDocument();
     expect(screen.getByText("Report post")).toBeInTheDocument();
@@ -105,7 +112,9 @@ describe("Post component", () => {
 
   it("allows deleting a post", async () => {
     const { onDelete } = setup();
-    vi.spyOn(postService, "deletePostById").mockResolvedValue({ success: true });
+    vi.spyOn(postService, "deletePostById").mockResolvedValue({
+      success: true,
+    });
 
     fireEvent.click(screen.getByText("Delete post"));
 
@@ -117,23 +126,25 @@ describe("Post component", () => {
 
   it("enters edit mode and updates post", async () => {
     setup();
-    
+
     fireEvent.click(screen.getByText("Edit post"));
     expect(screen.getByText("Submit")).toBeInTheDocument();
-    
+
     fireEvent.click(screen.getByText("Submit"));
-    
-    expect(screen.getByTestId("post-text")).toHaveTextContent("Updated content");
+
+    expect(screen.getByTestId("post-text")).toHaveTextContent(
+      "Updated content",
+    );
   });
 
   it("cancels edit mode", async () => {
     setup();
-    
+
     fireEvent.click(screen.getByText("Edit post"));
     expect(screen.getByText("Cancel")).toBeInTheDocument();
-    
+
     fireEvent.click(screen.getByText("Cancel"));
-    
+
     expect(screen.getByTestId("post-text")).toHaveTextContent("Post content");
   });
 });

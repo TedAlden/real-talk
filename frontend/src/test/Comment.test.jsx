@@ -3,7 +3,7 @@ import Comment from "../components/Comment";
 import { vi } from "vitest";
 import * as userCache from "../hooks/useUserCache";
 import * as postService from "../api/postService";
-
+import { BrowserRouter } from "react-router-dom";
 vi.mock("react-markdown", () => ({
   __esModule: true,
   default: ({ children }) => <div>{children}</div>,
@@ -59,12 +59,14 @@ describe("Comment component", () => {
     const onDelete = vi.fn();
 
     render(
-      <Comment
-        postId="post-1"
-        comment={comment}
-        viewer={viewer}
-        onDelete={onDelete}
-      />,
+      <BrowserRouter>
+        <Comment
+          postId="post-1"
+          comment={comment}
+          viewer={viewer}
+          onDelete={onDelete}
+        />{" "}
+      </BrowserRouter>,
     );
     return { onDelete };
   };
