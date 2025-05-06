@@ -99,7 +99,8 @@ export const userUpdateSchema = {
         minNumbers: 1,
         minSymbols: 1,
       },
-      errorMessage: "Password must be at least 8 characters long and contain at least one lowercase letter, one uppercase letter, one number, and one special character",
+      errorMessage:
+        "Password must be at least 8 characters long and contain at least one lowercase letter, one uppercase letter, one number, and one special character",
     },
     trim: true,
   },
@@ -159,5 +160,41 @@ export const followIdSchema = {
     isMongoId: {
       errorMessage: "Invalid follower ID",
     },
+  },
+};
+
+export const registerSchema = {
+  email: {
+    in: ["body"],
+    optional: { options: { checkFalsy: true } },
+    isEmail: {
+      errorMessage: "Must be a valid email address",
+    },
+    normalizeEmail: true,
+  },
+  username: {
+    in: ["body"],
+    optional: { options: { checkFalsy: true } },
+    isAlphanumeric: {
+      errorMessage: "Username must contain only letters and numbers",
+    },
+    trim: true,
+    escape: true,
+  },
+  password: {
+    in: ["body"],
+    optional: { options: { checkFalsy: true } },
+    isStrongPassword: {
+      options: {
+        minLength: 8,
+        minLowercase: 1,
+        minUppercase: 1,
+        minNumbers: 1,
+        minSymbols: 1,
+      },
+      errorMessage:
+        "Password must be at least 8 characters long and contain at least one lowercase letter, one uppercase letter, one number, and one special character",
+    },
+    trim: true,
   },
 };

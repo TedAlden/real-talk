@@ -11,11 +11,7 @@ import {
 
 const authRouter = express.Router();
 
-authRouter.post(
-  "/register",
-  useValidators("username", "email", "password"),
-  register
-);
+authRouter.post("/register", useValidators("register"), register);
 authRouter.post("/login", useValidators("username", "password"), login);
 authRouter.post("/verify-email", useValidators("email", "token"), verifyEmail);
 authRouter.post("/forgot-password", useValidators("email"), forgotPassword);
