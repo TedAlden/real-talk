@@ -19,7 +19,7 @@ function Register() {
     username: "",
     password: "",
     email: "",
-    date_of_birth: "",
+    date_of_birth: new Date(),
   });
   const [alertMessage, setAlertMessage] = useState({});
 
@@ -117,6 +117,7 @@ function Register() {
               <Datepicker
                 id="date_of_birth"
                 name="date_of_birth"
+                maxDate={new Date()}
                 required
                 weekStart={1}
                 onChange={(value) =>
