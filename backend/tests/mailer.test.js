@@ -24,7 +24,7 @@ describe("User email verification", () => {
     await request(app).post("/auth/register").send({
       username: "UserToBeVerified",
       email: "test@example.com",
-      password: "password",
+      password: "Password@1",
       isVerified: false,
     });
   });

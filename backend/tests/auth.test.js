@@ -45,7 +45,7 @@ describe("User Authentication", () => {
       const res = await request(app).post("/auth/register").send({
         username: "newtestuser",
         email: "new.test.email@gmail.com",
-        password: "newpassword123",
+        password: "newPassword@123",
       });
 
       expect(res.body).toHaveProperty("message", SuccessMsg.REGISTRATION_OK);
@@ -57,7 +57,7 @@ describe("User Authentication", () => {
       const res = await request(app).post("/auth/register").send({
         username: testUsers.sameUsernameUser.username,
         email: "new.email@gmail.com",
-        password: "newpassword2",
+        password: "newPassword@2",
       });
 
       expect(res.body.error).toBe(ErrorMsg.USERNAME_TAKEN);
@@ -68,7 +68,7 @@ describe("User Authentication", () => {
       const res = await request(app).post("/auth/register").send({
         username: "newUser2",
         email: testUsers.sameEmailUser.email,
-        password: "securepassword2",
+        password: "Securepassword@2",
       });
 
       expect(res.body.error).toBe(ErrorMsg.EMAIL_TAKEN);
