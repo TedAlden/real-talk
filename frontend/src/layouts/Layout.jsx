@@ -17,10 +17,16 @@ import Alert from "../components/Alert";
 import useAlert from "../hooks/useAlert";
 import useAuth from "../hooks/useAuth";
 
+/**
+ * Private layout with sidebar navigation and screen time alerts
+ * Handles user authentication and admin features
+ */
 export default function PrivateLayout() {
+  // Auth and user state
   const [viewer, setViewer] = useState(null);
   const auth = useAuth();
 
+  // Load user data on mount
   useEffect(() => {
     if (auth.loggedIn) {
       auth.getUser().then((user) => {
@@ -29,6 +35,7 @@ export default function PrivateLayout() {
     }
   }, [auth]);
 
+  // Initialize screen time alerts
   const alert = useAlert({
     thresholds: [
       { threshold: 601, message: "10 minutes left" },
@@ -40,10 +47,12 @@ export default function PrivateLayout() {
     color: "info",
   });
 
+  // Check admin status for additional nav items
   const isAdmin = viewer?.is_admin;
 
   return (
     <div className="flex h-screen bg-gray-50 dark:bg-gray-900">
+      {/* Screen time alert */}
       {alert.show && (
         <div className="fixed top-4 left-1/2 transform -translate-x-1/2 z-50 w-[90%] max-w-xl">
           <Alert
@@ -56,8 +65,9 @@ export default function PrivateLayout() {
         </div>
       )}
 
-<Sidebar>
-      <SidebarItem
+      {/* Navigation sidebar */}
+      <Sidebar>
+        <SidebarItem
           link="/"
           icon={<House className="h-6 w-6" />}
           text="Home"
@@ -101,6 +111,8 @@ export default function PrivateLayout() {
           />
         )}
       </Sidebar>
+
+      {/* Main content area */}
       <div className="flex h-screen flex-1 flex-col">
         <TopBar />
         <main
