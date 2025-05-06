@@ -36,16 +36,23 @@ import {
 } from "flowbite-react";
 import Unauthorised from "../components/Unauthorised.jsx";
 
+/**
+ * User settings page with multiple tabs for different settings categories
+ * Handles profile, account, personal info and usage limit settings
+ */
 function UserSettings() {
+  // Auth and form state
   const auth = useAuth();
   const [formData, setFormData] = useState({});
   const [alertMessage, setAlertMessage] = useState("");
   const [loading, setLoading] = useState(true);
 
+  // Password change state
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const originalData = useRef({});
 
+  // Load user data and saved preferences from localStorage
   useEffect(() => {
     if (auth.loggedIn) {
       auth
@@ -79,6 +86,7 @@ function UserSettings() {
     }
   }, [auth]);
 
+  // Handle profile picture upload and conversion
   const handleProfilePictureChange = async (e) => {
     const { files } = e.target;
     const file = files[0];
@@ -86,6 +94,7 @@ function UserSettings() {
     base64 && setFormData({ ...formData, profile_picture: base64 });
   };
 
+  // Handle form field changes with nested object support
   const handleFormChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => {
@@ -99,12 +108,14 @@ function UserSettings() {
     });
   };
 
+  // Handle form submission and updates
   const handleFormSubmit = async (e) => {
     e.preventDefault();
     const newUser = {
       ...formData,
     };
   
+    // Save usage preferences to localStorage
     if (newUser.usage?.time_limit) {
       localStorage.setItem(
         "usage_time_limit",
@@ -126,6 +137,7 @@ function UserSettings() {
       );
     }
 
+    // Handle password update if provided
     if (newPassword !== "" || confirmPassword !== "") {
       if (newPassword == confirmPassword) {
         newUser.password = newPassword;
@@ -155,9 +167,9 @@ function UserSettings() {
       });
     }
 
-    // window.location.reload();
   };
 
+  // Loading and auth checks
   if (loading)
     return (
       <div className="p-16 text-center">
@@ -170,6 +182,7 @@ function UserSettings() {
   return (
     <>
       <Tabs aria-label="Tabs with underline" variant="underline">
+        {/* Profile tab - Basic user information */}
         <TabItem title="Profile" icon={HiUser}>
           {loading ? (
             <div className="p-16 text-center">
@@ -210,7 +223,6 @@ function UserSettings() {
                       name="username"
                       type="text"
                       placeholder="username"
-                      // addon="@"
                       icon={HiAtSymbol}
                       required
                       value={formData?.username}
@@ -237,6 +249,8 @@ function UserSettings() {
             </div>
           )}
         </TabItem>
+
+        {/* Account tab - Email, password and 2FA settings */}
         <TabItem title="Account" icon={HiCog}>
           {loading ? (
             <div className="p-16 text-center">
@@ -288,7 +302,6 @@ function UserSettings() {
                       name="confirm-password"
                       type="password"
                       placeholder="••••••••"
-                      // value={confirmPassword}
                       onChange={(e) => setConfirmPassword(e.target.value)}
                     />
                   </div>
@@ -345,6 +358,8 @@ function UserSettings() {
             </div>
           )}
         </TabItem>
+
+        {/* Personal tab - Detailed user information */}
         <TabItem title="Personal" icon={HiLockClosed}>
           {loading ? (
             <div className="p-16 text-center">
@@ -506,6 +521,8 @@ function UserSettings() {
             </div>
           )}
         </TabItem>
+
+        {/* Usage limits tab - Time and accessibility settings */}
         <TabItem title="Usage limits" icon={HiClock}>
           {loading ? (
             <div className="p-16 text-center">
@@ -591,8 +608,9 @@ function UserSettings() {
             </div>
           )}
         </TabItem>
-
       </Tabs>
+
+      {/* Alert messages */}
       {Object.keys(alertMessage).length > 0 && (
         <div className="flex flex-col items-center justify-center">
           <div className="w-full sm:max-w-2xl">
