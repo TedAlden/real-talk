@@ -42,14 +42,14 @@ describe("Users Controller", () => {
   });
 
   let consoleSpy;
-  beforeEach(() => {
-    consoleSpy = jest.spyOn(console, "log").mockImplementation(() => {});
-    jest.spyOn(console, "error").mockImplementation(() => {});
-  });
+  // beforeEach(() => {
+  //   consoleSpy = jest.spyOn(console, "log").mockImplementation(() => {});
+  //   jest.spyOn(console, "error").mockImplementation(() => {});
+  // });
 
-  afterEach(() => {
-    consoleSpy.mockRestore();
-  });
+  // afterEach(() => {
+  //   consoleSpy.mockRestore();
+  // });
 
   describe("getUsersByQuery", () => {
     test("should retrieve all users when no query parameters are provided", async () => {
@@ -225,6 +225,10 @@ describe("Users Controller", () => {
         params: { id: testIds[4] },
         body: {
           username: "updatedUsername",
+          mfa: {
+            enabled: false,
+            secret: "hi",
+          },
         },
       };
 

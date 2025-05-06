@@ -130,6 +130,9 @@ export const updateUserById = async (req, res) => {
     const updatedUser = {
       ...matchedData(req),
     };
+    if (Object.keys(updatedUser).length === 0) {
+      Object.assign(updatedUser, req.body);
+    }
 
     console.log(req.body);
 
@@ -142,7 +145,6 @@ export const updateUserById = async (req, res) => {
     // Workaround for MFA secret being lost after enabled status being changed
     // Should ideally move over to PATCH requests in future to fix issues like
     // this (with nested user objects)
-
     // Update user in database
     await userCollection.updateOne(
       { _id: new ObjectId(id) },
