@@ -1,20 +1,32 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 
+/**
+ * Hook for managing infinite scrolling feed of posts.
+ * Handles pagination, scroll events, and post CRUD operations.
+ * 
+ * @param {Object} viewer - Current user viewing the feed.
+ * @param {number} postsPerPage - Number of posts to load per page.
+ * @param {Function} fetchFeedFunction - API call to fetch posts.
+ */
 export default function useScrollingFeed({
   viewer,
   postsPerPage = 5,
   fetchFeedFunction,
 }) {
+  // Feed state management
   const [posts, setPosts] = useState([]);
   const [feedLoading, setFeedLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
   const [page, setPage] = useState(0);
   const firstLoad = useRef(true);
 
+  // Distance from bottom to trigger next page
   const scrollMargin = 10;
 
   /**
    * Fetch posts from the server.
+   * 
+   * @param {number} pageNumber - Current page number to fetch.
    */
   const fetchPosts = useCallback(
     async (pageNumber) => {
@@ -41,8 +53,7 @@ export default function useScrollingFeed({
   );
 
   /**
-   * Handle scroll event to load more posts when scrolling to the bottom of the
-   * feed.
+   * Handle scroll event to load more posts when scrolling to the bottom of the feed.
    */
   const handleScroll = useCallback(() => {
     if (feedLoading || !hasMore) return;
@@ -57,14 +68,18 @@ export default function useScrollingFeed({
   }, [fetchPosts, page, hasMore, feedLoading]);
 
   /**
-   * Handle post deleted.
+   * Handle post deletion.
+   * 
+   * @param {string} postId - ID of the post to delete.
    */
   const onPostDeleted = (postId) => {
     setPosts((prevPosts) => prevPosts.filter((post) => post._id !== postId));
   };
 
   /**
-   * Handle post created.
+   * Handle post creation.
+   * 
+   * @param {Object} post - New post to add to the feed.
    */
   const onPostCreated = (post) => {
     setPosts((prevPosts) => [post, ...prevPosts]);
