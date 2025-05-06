@@ -21,12 +21,15 @@ describe("User email verification", () => {
       });
 
     await db.collection("users").deleteMany({}); // Delete all users from table
-    await request(app).post("/auth/register").send({
-      username: "UserToBeVerified",
-      email: "test@example.com",
-      password: "Password@1",
-      isVerified: false,
-    });
+    await request(app)
+      .post("/auth/register")
+      .send({
+        username: "UserToBeVerified",
+        email: "test@example.com",
+        password: "Password@1",
+        date_of_birth: new Date("2000-01-01"),
+        isVerified: false,
+      });
   });
 
   afterAll(async () => {

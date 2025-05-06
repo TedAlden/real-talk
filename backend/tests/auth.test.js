@@ -42,11 +42,14 @@ describe("User Authentication", () => {
 
   describe("POST /auth/register", () => {
     test("should register a new user", async () => {
-      const res = await request(app).post("/auth/register").send({
-        username: "newtestuser",
-        email: "new.test.email@gmail.com",
-        password: "newPassword@123",
-      });
+      const res = await request(app)
+        .post("/auth/register")
+        .send({
+          username: "newtestuser",
+          email: "new.test.email@gmail.com",
+          password: "newPassword@123",
+          date_of_birth: new Date("2000-01-01"),
+        });
 
       expect(res.body).toHaveProperty("message", SuccessMsg.REGISTRATION_OK);
       expect(res.statusCode).toBe(201);
@@ -54,32 +57,41 @@ describe("User Authentication", () => {
     });
 
     test("should not register a user with existing username", async () => {
-      const res = await request(app).post("/auth/register").send({
-        username: testUsers.sameUsernameUser.username,
-        email: "new.email@gmail.com",
-        password: "newPassword@2",
-      });
+      const res = await request(app)
+        .post("/auth/register")
+        .send({
+          username: testUsers.sameUsernameUser.username,
+          email: "new.email@gmail.com",
+          password: "newPassword@2",
+          date_of_birth: new Date("2000-01-01"),
+        });
 
       expect(res.body.error).toBe(ErrorMsg.USERNAME_TAKEN);
       expect(res.statusCode).toBe(409);
     });
 
     test("should not register a user with existing email", async () => {
-      const res = await request(app).post("/auth/register").send({
-        username: "newUser2",
-        email: testUsers.sameEmailUser.email,
-        password: "Securepassword@2",
-      });
+      const res = await request(app)
+        .post("/auth/register")
+        .send({
+          username: "newUser2",
+          email: testUsers.sameEmailUser.email,
+          password: "Securepassword@2",
+          date_of_birth: new Date("2000-01-01"),
+        });
 
       expect(res.body.error).toBe(ErrorMsg.EMAIL_TAKEN);
       expect(res.statusCode).toBe(409);
     });
 
     test("should not register a user with missing fields", async () => {
-      const res = await request(app).post("/auth/register").send({
-        username: "whereDidMyPasswordGo",
-        email: "test2.email@gmail.com",
-      });
+      const res = await request(app)
+        .post("/auth/register")
+        .send({
+          username: "whereDidMyPasswordGo",
+          email: "test2.email@gmail.com",
+          date_of_birth: new Date("2000-01-01"),
+        });
 
       expect(res.body.error).toBe(ErrorMsg.NEEDS_PASSWORD);
       expect(res.statusCode).toBe(400);

@@ -203,4 +203,14 @@ export const registerSchema = {
     },
     trim: true,
   },
+  date_of_birth: {
+    in: ["body"],
+    notEmpty: {
+      errorMessage: "Date of birth is required.",
+    },
+    isISO8601: {
+      errorMessage: "Please enter a valid date format.",
+    },
+    toDate: true,
+  },
 };
