@@ -166,7 +166,9 @@ export const followIdSchema = {
 export const registerSchema = {
   email: {
     in: ["body"],
-    optional: { options: { checkFalsy: true } },
+    notEmpty: {
+      errorMessage: "Email is required.",
+    },
     isEmail: {
       errorMessage: "Must be a valid email address",
     },
@@ -174,7 +176,9 @@ export const registerSchema = {
   },
   username: {
     in: ["body"],
-    optional: { options: { checkFalsy: true } },
+    notEmpty: {
+      errorMessage: "Username is required.",
+    },
     isAlphanumeric: {
       errorMessage: "Username must contain only letters and numbers",
     },
@@ -183,7 +187,9 @@ export const registerSchema = {
   },
   password: {
     in: ["body"],
-    optional: { options: { checkFalsy: true } },
+    notEmpty: {
+      errorMessage: "Password is required.",
+    },
     isStrongPassword: {
       options: {
         minLength: 8,
