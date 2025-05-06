@@ -10,14 +10,21 @@ import { useNavigate } from "react-router-dom";
 import { Spinner } from "flowbite-react";
 import Unauthorised from "../components/Unauthorised.jsx";
 
+// Custom event for notification updates
 export const NOTIFICATION_UPDATE_EVENT = "notification-update";
 
+/**
+ * Displays and manages user notifications
+ * Handles notification deletion and mark-all-read functionality
+ */
 export default function NotificationsPage() {
+  // State management
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(true);
   const auth = useAuth();
   const navigate = useNavigate();
 
+  // Fetch notifications from API
   const getNotifications = useCallback(async () => {
     setLoading(true);
     try {
@@ -35,10 +42,12 @@ export default function NotificationsPage() {
     }
   }, [auth]);
 
+  // Load notifications on mount and navigation
   useEffect(() => {
     getNotifications();
   }, [navigate, getNotifications]);
 
+  // Handle single notification deletion
   const onDelete = async (timestamp) => {
     try {
       const oldNotifications = [...notifications];

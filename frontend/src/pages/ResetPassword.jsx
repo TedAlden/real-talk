@@ -5,16 +5,22 @@ import { resetPassword } from "../api/authService";
 import { HiInformationCircle } from "react-icons/hi";
 import { Alert, Button, Label, TextInput } from "flowbite-react";
 
+/**
+ * Password reset page that validates token and handles password update
+ * Redirects if no valid token is present
+ */
 function ResetPassword() {
+  // Navigation and token handling
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+  const token = searchParams.get("token");
 
+  // Form state management
   const [newPassword, setNewPassword] = useState("");
   const [confirmedPassword, setConfirmedPassword] = useState("");
   const [alertMessage, setAlertMessage] = useState("");
 
-  const token = searchParams.get("token");
-
+  // Check for valid token
   useEffect(() => {
     // Redirect away immediately if no token is found
     if (!token) {
@@ -23,6 +29,7 @@ function ResetPassword() {
     }
   });
 
+  // Handle password update submission
   const handleSubmitPassword = async (e) => {
     e.preventDefault();
 
@@ -55,14 +62,19 @@ function ResetPassword() {
   return (
     <div className="flex flex-col items-center justify-center p-8">
       <div className="w-full rounded-lg bg-white shadow dark:border dark:border-gray-700 dark:bg-gray-800 sm:max-w-md md:mt-0 xl:p-0">
+        {/* Password reset form container */}
         <div className="space-y-4 p-6 sm:p-8 md:space-y-6">
+          {/* Form header */}
           <h1 className="text-xl font-bold leading-tight tracking-tight text-gray-900 dark:text-white md:text-2xl">
             Forgotten your password?
           </h1>
+
+          {/* Password reset form */}
           <form
             className="flex max-w-md flex-col gap-4"
             onSubmit={handleSubmitPassword}
           >
+            {/* New password input */}
             <div>
               <div className="mb-2 block">
                 <Label htmlFor="password-1" value="New Password" />
@@ -88,6 +100,8 @@ function ResetPassword() {
               />
             </div>
             <Button type="submit">Update</Button>
+
+            {/* Alert messages */}
             {Object.keys(alertMessage).length > 0 && (
               <div>
                 <Alert

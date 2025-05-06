@@ -8,14 +8,22 @@ import Unauthorised from "../components/Unauthorised.jsx";
 
 import { Spinner, Card } from "flowbite-react";
 
+/**
+ * Displays list of users following a specific user
+ * Includes follow/unfollow functionality
+ */
 function Followers() {
+  // Setup navigation and auth
   const navigate = useNavigate();
   const auth = useAuth();
+  
+  // Track loading and follower states
   const [loading, setLoading] = useState(true);
   const [followers, setFollowers] = useState(false);
   const [viewerId, setCurrentUserId] = useState();
   const paramId = useParams().id;
 
+  // Load followers data on mount
   useEffect(() => {
     const fetchFollowerData = async () => {
       setLoading(true);
@@ -38,6 +46,7 @@ function Followers() {
     fetchFollowerData();
   }, [auth, paramId, navigate]);
 
+  // Handle follow/unfollow updates
   const onFollowChange = (targetId, isFollow) => {
     setFollowers((prev) => {
       return prev.map((user) => {

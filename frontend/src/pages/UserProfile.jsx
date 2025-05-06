@@ -30,11 +30,17 @@ const style = {
   card: "p-4 bg-white rounded-md shadow dark:border dark:border-gray-700 dark:bg-gray-800",
 };
 
+/**
+ * User profile page displaying user info and posts
+ * Handles user interactions, post management and profile stats
+ */
 function UserProfile() {
+  // Navigation and auth setup
   const auth = useAuth();
   const params = useParams();
   const navigate = useNavigate();
 
+  // Profile state management
   const [viewer, setViewer] = useState(null);
   const [userData, setUserData] = useState({});
   const [loading, setLoading] = useState(true);
@@ -45,11 +51,10 @@ function UserProfile() {
     followedByUser: 0,
   });
 
+  // Get profile ID from URL params
   const profileId = params.id; // User ID, i.e. realtalk.com/profile/:profileId
 
-  /**
-   * Use scrolling feed for the user's posts.
-   */
+  // Initialize infinite scrolling feed
   const { posts, feedLoading, hasMore, onPostDeleted, onPostCreated } =
     useScrollingFeed({
       viewer: viewer,
@@ -60,6 +65,7 @@ function UserProfile() {
       },
     });
 
+  // Filter posts for daily limit
   const dailyPosts = posts.filter((post) => {
     const postDate = new Date(post.created_at);
     const today = new Date();

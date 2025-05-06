@@ -5,18 +5,27 @@ import { verifyEmail } from "../api/authService";
 import { HiInformationCircle } from "react-icons/hi";
 import { Alert } from "flowbite-react";
 
+/**
+ * Email verification page that handles token validation
+ * Displays verification status and redirects if there's no token
+ */
 function VerifyUser() {
+  // Navigation and URL params
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+
+  // Alert message state
   const [alertMessage, setAlertMessage] = useState({
     color: "info",
     title: "Verifying token!",
     message: "Please wait...",
   });
 
+  // Get verification params from URL
   const token = searchParams.get("token");
   const email = searchParams.get("email");
 
+  // Handle verification on mount
   useEffect(() => {
     // Redirect away immediately if no token is found
     if (!(token && email)) {

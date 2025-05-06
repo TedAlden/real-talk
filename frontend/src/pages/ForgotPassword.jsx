@@ -4,10 +4,16 @@ import { sendResetEmail } from "../api/authService";
 import { HiAtSymbol, HiInformationCircle } from "react-icons/hi";
 import { Alert, Button, Checkbox, Label, TextInput } from "flowbite-react";
 
+/**
+ * Password reset request page
+ * Handles email submission for password recovery
+ */
 function ForgotPassword() {
+  // Track form state and alerts
   const [email, setEmail] = useState("");
   const [alertMessage, setAlertMessage] = useState("");
 
+  // Handle password reset email submission
   const handleSubmitEmail = async (e) => {
     e.preventDefault();
     const response = await sendResetEmail(email);

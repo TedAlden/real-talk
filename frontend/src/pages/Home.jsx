@@ -1,6 +1,10 @@
 import useAuth from "../hooks/useAuth";
 import HomeBG from "../assets/home.webp";
 
+/**
+ * Landing page that displays welcome message and hero image
+ * Personalizes greeting for logged in users
+ */
 function Home() {
   const auth = useAuth();
   console.log(auth)

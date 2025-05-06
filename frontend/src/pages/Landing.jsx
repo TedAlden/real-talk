@@ -6,10 +6,15 @@ import useAuth from "../hooks/useAuth";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "flowbite-react";
 
+/**
+ * Landing page that handles authentication forms
+ * Toggles between login and registration with animation
+ */
 function Landing() {
   const auth = useAuth();
   const [isLogin, setIsLogin] = useState(true);
 
+  // Toggle between login and register forms
   const toggleForm = () => {
     setIsLogin((prev) => !prev);
   };

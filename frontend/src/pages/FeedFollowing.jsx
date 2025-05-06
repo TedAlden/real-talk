@@ -11,10 +11,15 @@ import SuggestedUsers from "../components/SuggestedUsers.jsx";
 import { getFollowingFeed } from "../api/feeds.js";
 import Trending from "../components/Trending.jsx";
 
+/**
+ * Displays posts from followed users in an infinite scrolling feed
+ * Includes post composer and trending/suggested user sidebars
+ */
 function Feed() {
   const auth = useAuth();
   const [viewer, setViewer] = useState(null);
 
+  // Initialize infinite scrolling feed
   const { posts, feedLoading, hasMore, onPostDeleted, onPostCreated } =
     useScrollingFeed({
       viewer: viewer,
@@ -27,6 +32,7 @@ function Feed() {
       },
     });
 
+  // Load viewer data on mount
   useEffect(() => {
     if (auth.loggedIn) {
       auth.getUser().then((user) => {

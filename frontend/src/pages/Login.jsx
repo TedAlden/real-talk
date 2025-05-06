@@ -2,19 +2,24 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import useAuth from "../hooks/useAuth";
 import { useNavigate } from "react-router-dom";
-import Timer from "../components/Timer";
-import usePersistentTimer from "../hooks/usePersistentTimer";
-
 import { HiInformationCircle } from "react-icons/hi";
 import { Alert, Button, Checkbox, Label, TextInput } from "flowbite-react";
 
+/**
+ * Login page with username/password authentication
+ * Handles form submission and displays error messages
+ */
 function Login() {
+  // Auth and navigation setup
   const auth = useAuth();
+  const navigate = useNavigate();
+  
+  // Form state management
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [alertMessage, setAlertMessage] = useState({});
-  const navigate = useNavigate();
 
+  // Handle login submission
   const handleLogin = async (e) => {
     e.preventDefault();
     if (username !== "" && password !== "") {

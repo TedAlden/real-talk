@@ -6,13 +6,19 @@ import useAuth from "../hooks/useAuth";
 import { HiInformationCircle } from "react-icons/hi";
 import { Alert, Button, Checkbox, Label, TextInput } from "flowbite-react";
 
+/**
+ * Registration page with email verification
+ * Handles new user account creation
+ */
 function Register() {
+  // Auth and form state
   const auth = useAuth();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [email, setEmail] = useState("");
   const [alertMessage, setAlertMessage] = useState({});
 
+  // Handle registration submission
   const handleRegister = async (e) => {
     e.preventDefault();
     const response = await registerUser(username, email, password);

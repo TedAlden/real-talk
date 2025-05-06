@@ -5,12 +5,18 @@ import useAuth from "../hooks/useAuth";
 import { HiInformationCircle } from "react-icons/hi";
 import { Alert, Button, Label, TextInput } from "flowbite-react";
 
+/**
+ * Two-factor authentication verification page
+ * Handles OTP input and verification
+ */
 function EnterOTP() {
+  // Auth and navigation setup
   const auth = useAuth();
   const navigate = useNavigate();
   const [pin, setPin] = useState("");
   const [alertMessage, setAlertMessage] = useState({});
 
+  // Redirect if already authenticated
   useEffect(() => {
     if (auth?.token?.type === "authenticated") {
       // If user already has a fully authenticated token, they shouldn't be here
@@ -18,6 +24,7 @@ function EnterOTP() {
     }
   }, [auth.token, navigate]);
 
+  // Handle OTP submission
   const handleSubmitOTP = async (e) => {
     e.preventDefault();
     try {

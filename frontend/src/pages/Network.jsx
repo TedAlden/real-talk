@@ -8,18 +8,28 @@ import { useSearchParams } from "react-router-dom";
 
 import { Spinner, Card, Tabs } from "flowbite-react";
 
+/**
+ * Network page displays followers and following lists
+ * Handles tab switching and follow/unfollow functionality
+ */
 function Network() {
+  // Setup auth and URL params
   const auth = useAuth();
   const [searchParams, setSearchParams] = useSearchParams();
+
+  // State management
   const [loading, setLoading] = useState(true);
   const [followers, setFollowers] = useState([]);
   const [following, setFollowing] = useState([]);
   const [viewerId, setViewerId] = useState();
+
+  // Initialize active tab from URL params
   const [activeTab, setActiveTab] = useState(() => {
     const tabParam = searchParams.get("tab");
     return tabParam === "following" ? "following" : "followers";
   });
 
+  // Load network data on mount
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
@@ -79,6 +89,7 @@ function Network() {
     });
   };
 
+  // Handle tab changes and URL params
   const handleTabChange = (tab) => {
     // Preserve the userId parameter when changing tabs
     const userId = searchParams.get("userId");
@@ -92,6 +103,7 @@ function Network() {
     setSearchParams(newParams);
   };
 
+  // Auth check and loading states
   if (!auth.loggedIn) return <Unauthorised />;
 
   if (loading)
@@ -104,6 +116,7 @@ function Network() {
   return (
     <div className="flex justify-center">
       <Card className="mt-16 w-2/5 text-gray-900 dark:text-white">
+        {/* Tab navigation */}
         <div className="mb-4">
           <div className="border-b border-gray-200 dark:border-gray-700">
             <ul className="-mb-px flex flex-wrap text-center text-sm font-medium">
@@ -135,7 +148,9 @@ function Network() {
           </div>
         </div>
 
+        {/* User lists container */}
         <div className="flow-root">
+          {/* Followers tab content */}
           {activeTab === "followers" && (
             <>
               <h5 className="mb-4 text-xl font-bold leading-none">Followers</h5>
@@ -182,6 +197,7 @@ function Network() {
             </>
           )}
 
+          {/* Following tab content */}
           {activeTab === "following" && (
             <>
               <h5 className="mb-4 text-xl font-bold leading-none">Following</h5>

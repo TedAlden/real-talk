@@ -6,10 +6,17 @@ import { getPostById } from "../api/postService";
 import { useCacheUpdater } from "../hooks/useUserCache";
 import { getSafeObject } from "../util/defaultObjects";
 
+/**
+ * Displays a single post with focused comment highlighting
+ * Handles post data fetching and viewer authentication
+ */
 function SinglePost() {
+  // URL params and auth setup
   const paramId = useParams().id;
   const [searchParams] = useSearchParams();
   const focusedCommentId = searchParams.get("comment");
+  
+  // State management
   const auth = useAuth();
   const [viewer, setViewer] = useState(null);
   const [post, setPost] = useState(null);
