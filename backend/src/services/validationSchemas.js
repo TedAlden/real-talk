@@ -91,7 +91,7 @@ export const userUpdateSchema = {
   password: {
     in: ["body"],
     optional: { options: { checkFalsy: true } },
-    /*     isStrongPassword: {
+    isStrongPassword: {
       options: {
         minLength: 8,
         minLowercase: 1,
@@ -100,7 +100,7 @@ export const userUpdateSchema = {
         minSymbols: 1,
       },
       errorMessage: "Password must be at least 8 characters long and contain at least one lowercase letter, one uppercase letter, one number, and one special character",
-    }, */
+    },
     trim: true,
   },
   biography: {
