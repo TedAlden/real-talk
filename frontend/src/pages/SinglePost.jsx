@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { Link, useParams, useSearchParams } from "react-router-dom";
 import Post from "../components/Post";
+import Unauthorised from "../components/Unauthorised";
 import useAuth from "../hooks/useAuth";
 import { getPostById } from "../api/postService";
 import { useCacheUpdater } from "../hooks/useUserCache";
@@ -39,6 +40,8 @@ function SinglePost() {
     fetchUser();
     fetchPostDate();
   }, [auth, fetchPostDate]);
+
+  if (!auth.loggedIn) return <Unauthorised />;
 
   if (!post) {
     return <div>Sorry! This post doesn't exist</div>;

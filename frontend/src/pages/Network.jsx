@@ -25,6 +25,7 @@ function Network() {
       setLoading(true);
       try {
         const user = await auth.getUser();
+        if (!user) return;
         setViewerId(user._id);
 
         // Get userId from URL params or default to current user

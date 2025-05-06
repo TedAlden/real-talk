@@ -21,17 +21,30 @@ describe("User email verification", () => {
       });
 
     await db.collection("users").deleteMany({}); // Delete all users from table
-    await request(app).post("/auth/register").send({
-      username: "UserToBeVerified",
-      email: "test@example.com",
-      password: "password",
-      isVerified: false,
-    });
+    await request(app)
+      .post("/auth/register")
+      .send({
+        username: "UserToBeVerified",
+        email: "test@example.com",
+        password: "Password@1",
+        date_of_birth: new Date("2000-01-01"),
+        isVerified: false,
+      });
   });
 
   afterAll(async () => {
     sendMailMock.mockRestore();
     await closeDB(db);
+  });
+
+  let consoleSpy;
+  beforeEach(() => {
+    consoleSpy = jest.spyOn(console, "log").mockImplementation(() => {});
+    jest.spyOn(console, "error").mockImplementation(() => {});
+  });
+
+  afterEach(() => {
+    consoleSpy.mockRestore();
   });
 
   test("registration should send a verification email", async () => {

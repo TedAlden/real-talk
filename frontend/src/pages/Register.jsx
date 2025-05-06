@@ -4,18 +4,28 @@ import { Link } from "react-router-dom";
 import useAuth from "../hooks/useAuth";
 
 import { HiInformationCircle } from "react-icons/hi";
-import { Alert, Button, Checkbox, Label, TextInput } from "flowbite-react";
+import {
+  Alert,
+  Button,
+  Checkbox,
+  Label,
+  TextInput,
+  Datepicker,
+} from "flowbite-react";
 
 function Register() {
   const auth = useAuth();
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [email, setEmail] = useState("");
+  const [formData, setFormData] = useState({
+    username: "",
+    password: "",
+    email: "",
+    date_of_birth: new Date(),
+  });
   const [alertMessage, setAlertMessage] = useState({});
 
   const handleRegister = async (e) => {
     e.preventDefault();
-    const response = await registerUser(username, email, password);
+    const response = await registerUser(formData);
 
     if (response.success !== false) {
       setAlertMessage({
@@ -67,7 +77,9 @@ function Register() {
                 type="email"
                 placeholder="yourname@site.com"
                 required
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={(e) =>
+                  setFormData({ ...formData, email: e.target.value })
+                }
               />
             </div>
             <div>
@@ -79,7 +91,9 @@ function Register() {
                 type="text"
                 placeholder="username"
                 required
-                onChange={(e) => setUsername(e.target.value)}
+                onChange={(e) =>
+                  setFormData({ ...formData, username: e.target.value })
+                }
               />
             </div>
             <div>
@@ -91,7 +105,24 @@ function Register() {
                 type="password"
                 placeholder="••••••••"
                 required
-                onChange={(e) => setPassword(e.target.value)}
+                onChange={(e) =>
+                  setFormData({ ...formData, password: e.target.value })
+                }
+              />
+            </div>
+            <div>
+              <div className="mb-2 block">
+                <Label htmlFor="date_of_birth" value="Date of Birth" />
+              </div>
+              <Datepicker
+                id="date_of_birth"
+                name="date_of_birth"
+                maxDate={new Date()}
+                required
+                weekStart={1}
+                onChange={(value) =>
+                  setFormData({ ...formData, date_of_birth: value })
+                }
               />
             </div>
             <div className="flex items-center gap-2">

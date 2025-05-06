@@ -91,7 +91,7 @@ export const userUpdateSchema = {
   password: {
     in: ["body"],
     optional: { options: { checkFalsy: true } },
-    /*     isStrongPassword: {
+    isStrongPassword: {
       options: {
         minLength: 8,
         minLowercase: 1,
@@ -99,8 +99,9 @@ export const userUpdateSchema = {
         minNumbers: 1,
         minSymbols: 1,
       },
-      errorMessage: "Password must be at least 8 characters long and contain at least one lowercase letter, one uppercase letter, one number, and one special character",
-    }, */
+      errorMessage:
+        "Password must be at least 8 characters long and contain at least one lowercase letter, one uppercase letter, one number, and one special character",
+    },
     trim: true,
   },
   biography: {
@@ -159,5 +160,57 @@ export const followIdSchema = {
     isMongoId: {
       errorMessage: "Invalid follower ID",
     },
+  },
+};
+
+export const registerSchema = {
+  email: {
+    in: ["body"],
+    notEmpty: {
+      errorMessage: "Email is required.",
+    },
+    isEmail: {
+      errorMessage: "Must be a valid email address",
+    },
+    normalizeEmail: true,
+  },
+  username: {
+    in: ["body"],
+    notEmpty: {
+      errorMessage: "Username is required.",
+    },
+    isAlphanumeric: {
+      errorMessage: "Username must contain only letters and numbers",
+    },
+    trim: true,
+    escape: true,
+  },
+  password: {
+    in: ["body"],
+    notEmpty: {
+      errorMessage: "Password is required.",
+    },
+    isStrongPassword: {
+      options: {
+        minLength: 8,
+        minLowercase: 1,
+        minUppercase: 1,
+        minNumbers: 1,
+        minSymbols: 1,
+      },
+      errorMessage:
+        "Password must be at least 8 characters long and contain at least one lowercase letter, one uppercase letter, one number, and one special character",
+    },
+    trim: true,
+  },
+  date_of_birth: {
+    in: ["body"],
+    notEmpty: {
+      errorMessage: "Date of birth is required.",
+    },
+    isISO8601: {
+      errorMessage: "Please enter a valid date format.",
+    },
+    toDate: true,
   },
 };

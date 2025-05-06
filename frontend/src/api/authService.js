@@ -13,12 +13,15 @@ export async function loginUser(username, password) {
   }
 }
 
-export async function registerUser(username, email, password) {
+export async function registerUser(user) {
+  const { username, email, password, date_of_birth } = user;
+
   try {
     const response = await axiosInstance.post("/auth/register", {
       username,
       email,
       password,
+      date_of_birth,
     });
     return response;
   } catch (error) {
