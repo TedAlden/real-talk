@@ -31,6 +31,15 @@ describe("User Authentication", () => {
       unverifiedUser: createdUsers.users[3],
     };
   });
+  let consoleSpy;
+  beforeEach(() => {
+    consoleSpy = jest.spyOn(console, "log").mockImplementation(() => {});
+    jest.spyOn(console, "error").mockImplementation(() => {});
+  });
+
+  afterEach(() => {
+    consoleSpy.mockRestore();
+  });
 
   afterAll(async () => {
     // Restore original mailer implementation

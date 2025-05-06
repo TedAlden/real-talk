@@ -37,6 +37,16 @@ describe("User email verification", () => {
     await closeDB(db);
   });
 
+  let consoleSpy;
+  beforeEach(() => {
+    consoleSpy = jest.spyOn(console, "log").mockImplementation(() => {});
+    jest.spyOn(console, "error").mockImplementation(() => {});
+  });
+
+  afterEach(() => {
+    consoleSpy.mockRestore();
+  });
+
   test("registration should send a verification email", async () => {
     const mailData = sendMailMock.mock.calls[0][0];
 
