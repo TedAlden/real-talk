@@ -138,6 +138,11 @@ export const updateUserById = async (req, res) => {
       updatedUser.password = await bcrypt.hash(updatedUser.password, 10);
     }
 
+    updatedUser.mfa.secret = user.mfa.secret;
+    // Workaround for MFA secret being lost after enabled status being changed
+    // Should ideally move over to PATCH requests in future to fix issues like
+    // this (with nested user objects)
+
     // Update user in database
     await userCollection.updateOne(
       { _id: new ObjectId(id) },
