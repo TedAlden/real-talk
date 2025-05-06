@@ -6,6 +6,7 @@ import useScrollingFeed from "../hooks/useScrollingFeed.js";
 
 import Post from "../components/Post.jsx";
 import Composer from "../components/Composer.jsx";
+import Unauthorised from "../components/Unauthorised.jsx";
 import FeedLayout from "../layouts/FeedLayout.jsx";
 
 import { getLatestFeed } from "../api/feeds.js";
@@ -28,6 +29,8 @@ function Feed() {
       });
     }
   }, [auth]);
+
+  if (!auth.loggedIn) return <Unauthorised />;
 
   return (
     <FeedLayout viewer={viewer}>
