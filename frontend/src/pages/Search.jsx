@@ -89,7 +89,10 @@ function Search() {
         query = query.replace("#", "");
       }
       showSearchResults(query);
-      document.getElementById("real-talk-search").value = query;
+      const searchBar = document.getElementById("real-talk-search");
+      if (searchBar) {
+        searchBar.value = query;
+      }
     }
   }, [showSearchResults, searchParams]);
 
@@ -113,11 +116,11 @@ function Search() {
           >
             @{user.username}
           </Link>
-          <p className="text-md text-gray-500 dark:text-gray-400">
+          {/* <p className="text-md text-gray-500 dark:text-gray-400">
             {user.mutualCount > 1
               ? `${user.mutualCount} mutual follows`
               : `${user.mutualCount} mutual follow`}
-          </p>
+          </p> */}
         </div>
         {viewer && (
           <UserInteractionButtons
