@@ -45,9 +45,12 @@ describe("Follower functionality", () => {
       status: jest.fn().mockReturnThis(),
       json: jest.fn(),
     };
+    consoleSpy = jest.spyOn(console, "log").mockImplementation(() => {});
+    jest.spyOn(console, "error").mockImplementation(() => {});
   });
 
   afterEach(async () => {
+    consoleSpy.mockRestore();
     await db.collection("followers").deleteMany({});
   });
 

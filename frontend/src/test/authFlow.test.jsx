@@ -3,7 +3,7 @@ import { screen, waitFor } from "@testing-library/react";
 import renderWithProviders, { mockNavigate } from "./setupTests";
 import Login from "../pages/Login";
 import Register from "../pages/Register";
-import PublicNavbar from "../components/PublicNavbar";
+import PublicNavbar from "../components/Sidebar";
 
 describe("Authentication Flow", () => {
   const mockUser = {
@@ -73,11 +73,12 @@ describe("Authentication Flow", () => {
 
     // Check registerUser was called with provided values
     await waitFor(() => {
-      expect(authService.registerUser).toHaveBeenCalledWith(
-        "testuser",
-        "test@example.com",
-        "Password123!",
-      );
+      expect(authService.registerUser).toHaveBeenCalledWith({
+        username: "testuser",
+        email: "test@example.com",
+        password: "Password123!",
+        date_of_birth: expect.any(Date),
+      });
     });
 
     // get rid of register page
@@ -109,9 +110,9 @@ describe("Authentication Flow", () => {
 
     // if user is logged in they should see logout buttons
     await waitFor(() => {
-      // 2 logout text, one in button, one in navbar
+      // 1 logout text, one in button (one in navbar no longer exists)
       const logoutLinks = screen.getAllByText("Logout");
-      expect(logoutLinks).toHaveLength(2);
+      expect(logoutLinks).toHaveLength(1);
     });
     // click logout link
     await loginUser.click(screen.getAllByText("Logout")[0]);

@@ -1,6 +1,11 @@
 import "./App.css";
 import React, { useState, createContext } from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import {
+  Navigate,
+  BrowserRouter as Router,
+  Routes,
+  Route,
+} from "react-router-dom";
 import AuthProvider from "./context/AuthProvider";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
@@ -12,9 +17,9 @@ const queryClient = new QueryClient();
 
 import Layout from "./layouts/Layout";
 
-import Home from "./pages/Home";
 import FeedLatest from "./pages/FeedLatest";
 import FeedFollowing from "./pages/FeedFollowing";
+import Search from "./pages/Search";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Landing from "./pages/Landing";
@@ -30,6 +35,8 @@ import Network from "./pages/Network";
 import SinglePost from "./pages/SinglePost";
 import NotificationsPage from "./pages/Notifications";
 import Admin from "./pages/Admin";
+import Trending from "./pages/Trending";
+
 function App() {
   const [grayscale, setGrayscale] = useState(0);
 
@@ -45,7 +52,11 @@ function App() {
               <div className="container min-w-full">
                 <Routes>
                   <Route element={<Layout />}>
-                    <Route path="/" element={<Home />} />
+                    <Route
+                      path="/"
+                      element={<Navigate replace to="/feed/latest" />}
+                    />
+                    <Route path="/search" element={<Search />} />
                     <Route path="/login" element={<Login />} />
                     <Route path="/register" element={<Register />} />
                     <Route path="/landing" element={<Landing />} />
@@ -70,6 +81,7 @@ function App() {
                       element={<NotificationsPage />}
                     />
                     <Route path="/admin" element={<Admin />} />
+                    <Route path="/trending" element={<Trending />} />
                   </Route>
                 </Routes>
               </div>

@@ -1,6 +1,10 @@
 import { body, query, validationResult, checkSchema } from "express-validator";
 import { ErrorMsg } from "./responseMessages.js";
-import { userUpdateSchema, followIdSchema } from "./validationSchemas.js";
+import {
+  userUpdateSchema,
+  followIdSchema,
+  registerSchema,
+} from "./validationSchemas.js";
 
 const validatorMap = {
   email: () =>
@@ -23,6 +27,7 @@ const validatorMap = {
 
   user_update: () => checkSchema(userUpdateSchema),
   follows: () => checkSchema(followIdSchema),
+  register: () => checkSchema(registerSchema),
   post_content: () =>
     body("content")
       .trim()

@@ -1,6 +1,7 @@
 import React from "react";
-import { useEffect, useState } from "react";
-import { Card, Dropdown, Spinner } from "flowbite-react";
+import { useState } from "react";
+import { Link } from "react-router-dom";
+import { Dropdown, Spinner } from "flowbite-react";
 import { useQuery } from "@tanstack/react-query";
 import { getTrendingTags } from "../api/postService.js";
 
@@ -9,7 +10,7 @@ import { getTrendingTags } from "../api/postService.js";
  * Uses React Query for data fetching and caching
  * @param {string} className - Additional CSS classes
  */
-export default function Trending({ className = "" }) {
+export default function TrendingTags() {
   // Period selection state
   const [period, setPeriod] = useState("daily");
 
@@ -33,13 +34,18 @@ export default function Trending({ className = "" }) {
 
   const tags = response?.data;
 
+  const cardStyle =
+    "p-6 bg-white rounded-md shadow dark:border dark:border-gray-700 dark:bg-gray-800";
+
   return (
-    <Card className={`mb-5 h-fit text-gray-900 dark:text-white ${className}`}>
-      {/* Period selector header */}
-      <div className="text-md flex w-full flex-row items-center justify-between">
+    <div
+      className={`${cardStyle} mb-5 h-fit w-full text-gray-900 dark:text-white`}
+    >
+      <div className="xs:flex-col flex w-full flex-row items-center justify-between">
         <h1 className="text-xl font-bold">Trending</h1>
+        {/* Period selector header */}
         <Dropdown
-          className=""
+          className="text-md"
           inline
           label={
             periodOptions.find((option) => option.key === period)?.label ||
@@ -77,18 +83,18 @@ export default function Trending({ className = "" }) {
 
         {/* Tags list or empty state */}
         {!isLoading && !error && tags?.length > 0 ? (
-          <ul className="gap-6">
+          <ul className="divide-y divide-gray-200 dark:divide-gray-700">
             {tags.map((tag, idx) => (
               <li key={idx} className="py-3 sm:py-4">
                 <div className="flex items-center justify-start gap-6">
                   <span className="text-xl font-normal">{idx + 1}. </span>
                   <div className="flex flex-col">
-                    <a
-                      href={`/search?tag=${tag.name}`}
+                    <Link
+                      to={`/search?q=%23${tag.name}`}
                       className="rounded-lg text-lg font-semibold text-blue-950 dark:text-blue-100"
                     >
                       {tag.name}
-                    </a>
+                    </Link>
                     <span className="text-sm text-gray-500 dark:text-gray-400">
                       {tag.postCount} posts
                     </span>
@@ -101,6 +107,6 @@ export default function Trending({ className = "" }) {
           <p>No trending tags.</p>
         )}
       </div>
-    </Card>
+    </div>
   );
 }

@@ -71,6 +71,7 @@ describe("User Profile Flow", () => {
   });
 
   vi.mock("../hooks/useAuth");
+  vi.mock("../hooks/useScrollingFeed")
 
   beforeEach(() => {
     vi.resetAllMocks();

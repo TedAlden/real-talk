@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import "@testing-library/jest-dom";
-import DropdownMenu from "./DropdownMenu";
+import DropdownMenu from "../components/DropdownMenu";
 
 // Create a simple test icon component
 const TestIcon = () => <span data-testid="test-icon">Icon</span>;

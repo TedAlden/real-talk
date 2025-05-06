@@ -26,8 +26,9 @@ const base32_encode = base32.default.encode;
  */
 export const register = async (req, res) => {
   try {
-    const { username, email, password } = req.body;
+    const { username, email, password, date_of_birth } = req.body;
     const db = await connectDB();
+    console.log(username, email, password, date_of_birth);
     const userCollection = db.collection("users");
 
     // Check if username is already registered
@@ -48,10 +49,6 @@ export const register = async (req, res) => {
 
     // Generate a random base-32 token for MFA (two-factor authentication)
     const mfaSecret = base32_encode(crypto.randomBytes(32).toString("hex"));
-
-    // Set dummy date of birth - this will be added to the register form later
-    const date_of_birth = new Date();
-    date_of_birth.setFullYear(date_of_birth.getFullYear() - 20);
 
     // Generate default profile picture
     const b64ProfilePicture = await fetch(

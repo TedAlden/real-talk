@@ -35,6 +35,7 @@ function Network() {
       setLoading(true);
       try {
         const user = await auth.getUser();
+        if (!user) return;
         setViewerId(user._id);
 
         // Get userId from URL params or default to current user
@@ -115,7 +116,7 @@ function Network() {
 
   return (
     <div className="flex justify-center">
-      <Card className="mt-16 w-2/5 text-gray-900 dark:text-white">
+      <Card className="w-full text-gray-900 dark:text-white lg:mt-16 lg:w-3/5 2xl:w-1/2">
         {/* Tab navigation */}
         <div className="mb-4">
           <div className="border-b border-gray-200 dark:border-gray-700">

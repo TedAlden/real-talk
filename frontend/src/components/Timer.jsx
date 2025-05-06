@@ -49,7 +49,7 @@ function Timer() {
     100 - ((totalTimeInSeconds - timeRemaining) / totalTimeInSeconds) * 100;
 
   return (
-    <div className="w-full">
+    <div className="w-full" role="timerbar">
       <div className="flex justify-center">
         <div className="pointer-events-none absolute dark:text-white">
           {timerMinutes}:{String(timerSeconds).padStart(2, "0")}

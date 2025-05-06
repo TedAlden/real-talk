@@ -14,7 +14,7 @@ function UserInteractionButtons({
   targetId,
   onFollowChange,
   isFollowing,
-  mode = "default",
+  mode = "follow",
 }) {
   // Track loading and follow states
   const [loading, setLoading] = useState(false);
