@@ -6,7 +6,7 @@ function UserInteractionButtons({
   targetId,
   onFollowChange,
   isFollowing,
-  mode = "default",
+  mode = "follow",
 }) {
   const [loading, setLoading] = useState(false);
   const [followState, setFollowState] = useState(false);

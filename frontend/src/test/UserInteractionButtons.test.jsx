@@ -33,16 +33,6 @@ describe("UserInteractionButtons", () => {
     );
     expect(screen.getByText("Follow")).toBeInTheDocument();
   });
-  it("should display the report button initially", () => {
-    render(
-      <UserInteractionButtons
-        viewerId="user-1"
-        targetId="user-2"
-        isFollowing={false}
-      />,
-    );
-    expect(screen.getByText("Report")).toBeInTheDocument();
-  });
   it("should display 'Unfollow' button when following", () => {
     render(
       <UserInteractionButtons
@@ -52,15 +42,5 @@ describe("UserInteractionButtons", () => {
       />,
     );
     expect(screen.getByText("Unfollow")).toBeInTheDocument();
-  });
-  it("should display the report button when following", () => {
-    render(
-      <UserInteractionButtons
-        viewerId="user-1"
-        targetId="user-2"
-        isFollowing={true}
-      />,
-    );
-    expect(screen.getByText("Report")).toBeInTheDocument();
   });
 });
