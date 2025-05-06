@@ -26,6 +26,10 @@ import {
 import "@mdxeditor/editor/style.css";
 import { decode } from "html-entities";
 import { FaImages } from "react-icons/fa6";
+
+/**
+ * Strips markdown formatting from text to get plain content length
+ */
 const stripMarkdown = (md) => {
   return (
     md
@@ -43,6 +47,9 @@ const stripMarkdown = (md) => {
   );
 };
 
+/**
+ * Converts hashtags to markdown links and collects tag array
+ */
 const hashtagsToLinks = (content) => {
   const tags = [];
   const decodedContent = decode(content);
@@ -58,11 +65,22 @@ const hashtagsToLinks = (content) => {
   return { processedContent, tags };
 };
 
+/**
+ * Converts markdown links back to hashtag format for editing
+ */
 const linksToHashtags = (content) => {
   return content.replace(/\[#(\w+)\]\(\/[^)]+\)/g, "#$1");
 };
 
+/**
+ * A rich text editor component for creating/editing posts and comments
+ * @param {Function} onSubmit - Callback when content is submitted
+ * @param {Function} onCancel - Callback when editing is cancelled
+ * @param {Object} target - Post/Comment being edited
+ * @param {string} mode - 'createPost', 'editPost', 'createComment', or 'editComment'
+ */
 function Composer({ onSubmit, onCancel, target, mode }) {
+  // State for managing editor content and media
   const [content, setContent] = useState(() => {
     const initialContent = target?.content || "";
     switch (mode) {
@@ -85,6 +103,10 @@ function Composer({ onSubmit, onCancel, target, mode }) {
 
   const MAX_POST_LENGTH = 5000;
 
+  /**
+   * Handles content changes in the editor
+   * @param {string} content - Updated content from the editor
+   */
   const handleContentChange = (content) => {
     const visibleLength = stripMarkdown(content).length;
     if (visibleLength <= MAX_POST_LENGTH) {
@@ -92,12 +114,19 @@ function Composer({ onSubmit, onCancel, target, mode }) {
     }
   };
 
+  /**
+   * Resets content and cancels editing
+   */
   const handleCancel = () => {
     setContent(prevContent);
     onCancel();
     setResetKey((prevKey) => prevKey + 1);
   };
 
+  /**
+   * Handles media file selection and conversion
+   * @param {Event} e - File input change event
+   */
   const handleMediaChange = async (e) => {
     const files = Array.from(e.target.files);
     if (files.length === 0) {
@@ -132,6 +161,9 @@ function Composer({ onSubmit, onCancel, target, mode }) {
     }
   }, [mode, target?.content]);
 
+  /**
+   * Submits the content to the server
+   */
   const handleSubmit = async () => {
     if (isSubmitting) return;
 

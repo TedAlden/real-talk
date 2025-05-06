@@ -1,6 +1,14 @@
 import { useState, useEffect } from "react";
 import { followUser, unfollowUser } from "../api/followersService.js";
 
+/**
+ * Buttons for user interactions (follow/unfollow/report)
+ * @param {string} viewerId - ID of current user
+ * @param {string} targetId - ID of user being interacted with
+ * @param {Function} onFollowChange - Callback when follow state changes
+ * @param {boolean} isFollowing - Initial follow state
+ * @param {string} mode - Display mode ('default' or 'follow')
+ */
 function UserInteractionButtons({
   viewerId,
   targetId,
@@ -8,15 +16,18 @@ function UserInteractionButtons({
   isFollowing,
   mode = "default",
 }) {
+  // Track loading and follow states
   const [loading, setLoading] = useState(false);
   const [followState, setFollowState] = useState(false);
 
+  // Update follow state when props change
   useEffect(() => {
     setFollowState(isFollowing);
   }, [targetId, isFollowing]);
 
   if (viewerId === targetId) return null;
 
+  // Handle follow/unfollow action
   const handleFollowAction = async () => {
     if (loading) return;
 

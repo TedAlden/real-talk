@@ -8,11 +8,17 @@ import {
 import useAuth from "../hooks/useAuth.js";
 import { useNavigate } from "react-router-dom";
 
+/**
+ * Notification bell component with dropdown for user notifications
+ * Shows count of unread notifications and allows deletion
+ */
 export default function Notifications() {
+  // Track notifications list
   const [notifications, setNotifications] = useState([]);
   const auth = useAuth();
   const navigate = useNavigate();
 
+  // Fetch notifications for current user
   const getNotifications = useCallback(async () => {
     try {
       const user = await auth.getUser();
@@ -26,10 +32,13 @@ export default function Notifications() {
       console.error("Error fetching notifications:", error);
     }
   }, [auth]);
+
+  // Load notifications on mount and route changes
   useEffect(() => {
     getNotifications();
   }, [navigate, getNotifications]);
 
+  // Handle notification deletion
   const onDelete = async (timestamp) => {
     try {
       const oldNotifications = [...notifications];
@@ -90,6 +99,7 @@ export default function Notifications() {
         </div>
       }
     >
+      {/* Notification bell with counter */}
       <button
         className="relative p-1 dark:text-gray-500 dark:hover:text-white hover:text-gray-900 text-gray-500"
         onClick={getNotifications}

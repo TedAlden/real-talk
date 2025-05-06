@@ -7,9 +7,15 @@ import useAuth from "../hooks/useAuth";
 import { getNotificationsById } from "../api/notificationService";
 import { NOTIFICATION_UPDATE_EVENT } from "../pages/Notifications";
 
+// Context for sharing expanded state with children
 const SidebarContext = createContext();
 
+/**
+ * Collapsible sidebar navigation component
+ * @param {ReactNode} children - SidebarItem components to render
+ */
 export default function Sidebar({ children }) {
+  // Track expanded/collapsed state
   const [expanded, setExpanded] = useState(false);
   const auth = useAuth();
   const navigate = useNavigate();
@@ -68,17 +74,28 @@ export default function Sidebar({ children }) {
   );
 }
 
+/**
+ * Individual navigation item within the sidebar
+ * @param {ReactNode} icon - Icon element to display
+ * @param {string} text - Label text
+ * @param {boolean} alert - Show alert indicator
+ * @param {string} link - Navigation target
+ */
 export function SidebarItem({ icon, text, alert, link }) {
+  // Access sidebar expanded state from context
   const { expanded } = useContext(SidebarContext);
   const navigate = useNavigate();
   const location = useLocation();
   const [notificationCount, setNotificationCount] = useState(0);
   const auth = useAuth();
+
+  // Check if this item is currently active
   const isActive =
     link === "/"
       ? location.pathname === "/"
       : location.pathname.startsWith(link);
   
+  // Handle notifications polling and updates
   useEffect(() => {
     if (text === "Notifications" && auth.loggedIn) {
       const fetchNotifications = async () => {

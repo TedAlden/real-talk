@@ -8,8 +8,19 @@ import {
 import { useState } from "react";
 import _ from "lodash";
 import { createReport } from "../api/adminService";
+
+// Valid target types
 const validTypes = ["user", "post", "comment"];
 
+/**
+ * Window for submitting reports on content/users
+ * Handles report creation and submission states
+ * @param {Object} target - The item being reported
+ * @param {string} targetType - Type of report target (user/post/comment)
+ * @param {Object} reporter - User submitting the report
+ * @param {Function} onClose - Callback when modal is closed
+ * @param {boolean} visible - Controls modal visibility
+ */
 export default function ReportWindow({
   target,
   targetType,
@@ -17,6 +28,7 @@ export default function ReportWindow({
   onClose,
   visible = false,
 }) {
+  // Track form state and submission status
   const [status, setStatus] = useState("creating");
   const [content, setContent] = useState("");
   const [error, setError] = useState("");
@@ -25,6 +37,7 @@ export default function ReportWindow({
     return null;
   }
 
+  // Handle report submission
   const handleSubmit = async (e) => {
     e.preventDefault();
     setStatus("submitting");

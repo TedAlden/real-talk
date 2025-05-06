@@ -3,9 +3,16 @@ import { useEffect, useState } from "react";
 import UserInteractionButtons from "./UserInteractionButtons";
 import { getSuggestedFollows } from "../api/followersService";
 
+/**
+ * Displays a list of suggested users to follow based on different methods
+ * @param {Object} viewer - Current logged in user
+ * @param {string} method - Suggestion method ('mutuals', 'areas', 'interests')
+ */
 export default function SuggestedUsers({ viewer, method = "mutuals" }) {
+  // Track suggested users list
   const [suggestions, setSuggestions] = useState([]);
 
+  // Fetch suggestions on mount and method change
   useEffect(() => {
     const fetchSuggestions = async () => {
       if (!viewer) return;
@@ -26,6 +33,7 @@ export default function SuggestedUsers({ viewer, method = "mutuals" }) {
     fetchSuggestions();
   }, [viewer, method]);
 
+  // Handle follow/unfollow updates
   const onFollowChange = async (userId, isFollowing) => {
     const updatedSuggestions = suggestions.map((user) =>
       user._id === userId ? { ...user, isFollowing } : user,
@@ -33,12 +41,14 @@ export default function SuggestedUsers({ viewer, method = "mutuals" }) {
     setSuggestions(updatedSuggestions);
   };
 
+  // Validate suggestion method
   if (method !== "mutuals" && method !== "areas" && method !== "interests") {
     console.error(
       "Invalid method provided. Use 'mutuals', 'areas', or 'interests'.",
     );
     return null;
   }
+
   const cardStyle =
     "p-4 bg-white rounded-md shadow dark:border dark:border-gray-700 dark:bg-gray-800";
   return (

@@ -4,13 +4,23 @@ import { Card, Dropdown, Spinner } from "flowbite-react";
 import { useQuery } from "@tanstack/react-query";
 import { getTrendingTags } from "../api/postService.js";
 
+/**
+ * Displays trending hashtags with period selection
+ * Uses React Query for data fetching and caching
+ * @param {string} className - Additional CSS classes
+ */
 export default function Trending({ className = "" }) {
+  // Period selection state
   const [period, setPeriod] = useState("daily");
+
+  // Period selection options
   const periodOptions = [
     { key: "daily", label: "Today" },
     { key: "weekly", label: "This Week" },
     { key: "monthly", label: "This Month" },
   ];
+
+  // Fetch trending tags with React Query
   const {
     data: response,
     isLoading,
@@ -25,6 +35,7 @@ export default function Trending({ className = "" }) {
 
   return (
     <Card className={`mb-5 h-fit text-gray-900 dark:text-white ${className}`}>
+      {/* Period selector header */}
       <div className="text-md flex w-full flex-row items-center justify-between">
         <h1 className="text-xl font-bold">Trending</h1>
         <Dropdown
@@ -45,12 +56,17 @@ export default function Trending({ className = "" }) {
           ))}
         </Dropdown>
       </div>
+
+      {/* Tags list container */}
       <div className="flex flow-root flex-col p-4">
+        {/* Loading state */}
         {isLoading && (
           <div className="flex items-center justify-center">
             <Spinner aria-label="Loading" />
           </div>
         )}
+
+        {/* Error state */}
         {error && (
           <div className="flex items-center justify-center bg-red-200 dark:bg-red-800">
             <p className="text-red-500 dark:text-red-200">
@@ -59,6 +75,7 @@ export default function Trending({ className = "" }) {
           </div>
         )}
 
+        {/* Tags list or empty state */}
         {!isLoading && !error && tags?.length > 0 ? (
           <ul className="gap-6">
             {tags.map((tag, idx) => (

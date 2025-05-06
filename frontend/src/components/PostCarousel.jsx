@@ -1,5 +1,6 @@
 import { Carousel, createTheme } from "flowbite-react";
 
+// Custom theme configuration for carousel controls and indicators
 const carouselTheme = createTheme({
   indicators: {
     active: {
@@ -15,10 +16,18 @@ const carouselTheme = createTheme({
   },
 });
 
+/**
+ * Displays post images either as a single image or in a carousel
+ * @param {string[]} images - Array of image URLs to display
+ */
 function PostCarousel({ images }) {
+  // Return null if no images
   if (images.length === 0) {
     return null;
-  } else if (images.length === 1) {
+  } 
+  
+  // Single image display
+  else if (images.length === 1) {
     return (
       <div className="mt-4 flex h-96 w-full items-center justify-center rounded-md bg-gray-900">
         <img
@@ -28,7 +37,10 @@ function PostCarousel({ images }) {
         />
       </div>
     );
-  } else {
+  } 
+  
+  // Multiple images carousel
+  else {
     return (
       <Carousel
         data-testid="post-media"

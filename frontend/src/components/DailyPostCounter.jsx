@@ -1,5 +1,12 @@
+/**
+ * Displays the user's daily post count and limit status
+ * @param {number} posts - Number of posts made today by the user
+ */
 function DailyPostCounter({ posts }) {
+  // Maximum number of posts allowed per day
   const DAILY_POST_LIMIT = 1;
+  
+  // Check if user has reached their daily post limit
   const isLimitReached = posts >= DAILY_POST_LIMIT;
   
   return (

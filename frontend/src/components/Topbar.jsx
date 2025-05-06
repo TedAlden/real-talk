@@ -1,6 +1,9 @@
 import React from "react";
 import Timer from "./Timer";
 
+/**
+ * Top navigation bar with app title and usage timer
+ */
 export default function TopBar() {
   return (
     <>
