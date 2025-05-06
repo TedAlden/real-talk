@@ -5,6 +5,7 @@ import { Tabs, TabItem, Spinner, TextInput } from "flowbite-react";
 
 import Markdown from "react-markdown";
 
+import Unauthorised from "../components/Unauthorised";
 import UserInteractionButtons from "../components/UserInteractionButtons";
 import { getSearchResults } from "../api/searchService";
 import useAuth from "../hooks/useAuth";
@@ -180,6 +181,8 @@ function Search() {
       </div>
     </li>
   );
+
+  if (!auth.loggedIn) return <Unauthorised />;
 
   return (
     <div className="mx-auto mb-4 flex max-w-3xl flex-col gap-5">
