@@ -41,6 +41,7 @@ function Timer() {
   // Update grayscale effect based on remaining time
   useEffect(() => {
     const halfWay = totalTimeInSeconds / 2;
+    if (isNaN(timeRemaining)) return;
     setGrayscale(timeRemaining >= halfWay ? thresholdFraction : 1);
   }, [timeRemaining, setGrayscale]);
 
