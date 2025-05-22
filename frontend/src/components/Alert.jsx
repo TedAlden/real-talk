@@ -1,8 +1,5 @@
-import React from 'react';
-import { Toast } from 'flowbite-react';
-import {
-  HiInformationCircle,
-} from 'react-icons/hi';
+import { Toast } from "flowbite-react";
+import { HiInformationCircle } from "react-icons/hi";
 
 // Icon mapping for different alert types
 const ICONS = {
@@ -17,15 +14,13 @@ const ICONS = {
  * @param {string} title - Main alert heading
  * @param {string} message - Optional alert description
  */
-export default function Alert({ show, onClose, color = 'info', title, message }) {
+export default function Alert({ onClose, color = "info", title, message }) {
   // Get appropriate icon based on alert type
   const Icon = ICONS[color] || ICONS.info;
 
-  if (!show) return null;
-
   return (
     // Container with central positioning
-    <div className="absolute inset-x-0 top-[80px] flex justify-center z-50">
+    <div className="absolute inset-x-0 top-[80px] z-50 flex justify-center">
       <Toast className="whitespace-nowrap">
         {/* Icon section */}
         <div className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-gray-500 dark:bg-gray-800 dark:text-gray-400">
@@ -33,7 +28,8 @@ export default function Alert({ show, onClose, color = 'info', title, message })
         </div>
         {/* Alert content */}
         <div className="ml-1 text-sm font-normal">
-          <span className="font-semibold">{title}</span>{message && ` ${message}`}
+          <span className="font-semibold">{title}</span>
+          {message && ` ${message}`}
         </div>
         {/* Close button */}
         <Toast.Toggle onClick={onClose} />
