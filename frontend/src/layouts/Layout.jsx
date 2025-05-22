@@ -37,16 +37,7 @@ export default function PrivateLayout() {
   }, [auth]);
 
   // Initialize screen time alerts
-  const alert = useAlert({
-    thresholds: [
-      { threshold: 601, message: "10 minutes left" },
-      { threshold: 301, message: "5 minutes left" },
-      { threshold: 180, message: "3 minutes left" },
-      { threshold: 60, message: "1 minute left" },
-    ],
-    title: "Screen Time Alert:",
-    color: "info",
-  });
+  const alert = useAlert();
 
   // Check admin status for additional nav items
   const isAdmin = viewer?.is_admin;
