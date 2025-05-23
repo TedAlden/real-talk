@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Outlet } from "react-router-dom";
 import {
   User,
@@ -23,9 +23,9 @@ import useAuth from "../hooks/useAuth";
  * Handles user authentication and admin features
  */
 export default function PrivateLayout() {
-  // Auth and user state
-  const [viewer, setViewer] = useState(null);
   const auth = useAuth();
+  const alert = useAlert();
+  const [viewer, setViewer] = useState(null);
 
   // Load user data on mount
   useEffect(() => {
@@ -35,21 +35,6 @@ export default function PrivateLayout() {
       });
     }
   }, [auth]);
-
-  // Initialize screen time alerts
-  const alert = useAlert({
-    thresholds: [
-      { threshold: 601, message: "10 minutes left" },
-      { threshold: 301, message: "5 minutes left" },
-      { threshold: 180, message: "3 minutes left" },
-      { threshold: 60, message: "1 minute left" },
-    ],
-    title: "Screen Time Alert:",
-    color: "info",
-  });
-
-  // Check admin status for additional nav items
-  const isAdmin = viewer?.is_admin;
 
   return (
     <div className="flex h-screen bg-gray-50 dark:bg-gray-900">
@@ -111,7 +96,7 @@ export default function PrivateLayout() {
           text="Settings"
         />
 
-        {isAdmin && (
+        {viewer?.is_admin && (
           <SidebarItem
             link="/admin"
             icon={<ShieldBan className="h-6 w-6" />}
